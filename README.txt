@@ -10,12 +10,3 @@ HOW TO USE
 - Page text, links, menu: edit data.json only.
 - Tip: white video background blends into the cream page. Keep the file under ~10 MB.
 
-SOUND (autoplay)
-================
-Browsers never allow sound before the visitor does something, so:
-- The video starts muted, and sound starts on the visitor's first click / key press / tap anywhere.
-- If the browser allows it, sound starts immediately with no click.
-- For a guaranteed start, set  "splash": true  in data.json ("intro" section).
-  Visitors then see a "Click to enter" screen, and one click starts the sound.
-- To keep the video always silent until the Listen button is pressed:  "autoPlaySound": false
-
