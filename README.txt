@@ -19,7 +19,3 @@ Browsers never allow sound before the visitor does something, so:
   Visitors then see a "Click to enter" screen, and one click starts the sound.
 - To keep the video always silent until the Listen button is pressed:  "autoPlaySound": false
 
-PROFILE PHOTO
-=============
-The round photo next to your name in the navbar is assets/profile.jpg (square image, any size).
-To change it, replace that file. To remove it, delete "avatar" from data.json.
