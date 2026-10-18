@@ -31,17 +31,26 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;          /* empty header area does not block clicks */
 }
 .nav > * { pointer-events: auto; }
-.nav__logo { font-weight: 600; font-size: 15px; letter-spacing: .02em; }
+.nav__logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; letter-spacing: .02em; }
+.nav__avatar {
+  width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex: none;
+  border: 2px solid #fff; box-shadow: 0 2px 8px rgba(21, 21, 31, .18);
+}
 .nav__links {
-  display: flex; gap: clamp(14px, 2vw, 32px);
+  display: flex; gap: 2px;
   background: var(--nav-bg);
-  padding: 12px 28px;
+  padding: 6px;
   border-radius: var(--nav-radius);
   border: 1px solid var(--nav-line);
   box-shadow: 0 4px 18px rgba(21, 21, 31, .07);
 }
-.nav__links a { font-size: 14px; color: var(--muted); transition: color .2s; white-space: nowrap; }
-.nav__links a:hover { color: var(--ink); }
+.nav__links a {
+  font-size: 13.5px; color: var(--muted); white-space: nowrap;
+  padding: 8px 13px; border-radius: 999px;
+  transition: color .2s, background .2s;
+}
+.nav__links a:hover { color: var(--ink); background: rgba(21, 21, 31, .05); }
+.nav__links a.active { color: var(--ink); background: rgba(21, 21, 31, .11); }
 .nav__toggle { display: none; background: none; border: 0; font-size: 24px; cursor: pointer; color: var(--ink); }
 
 /* ---------- Hero ---------- */
@@ -89,7 +98,7 @@ a { color: inherit; text-decoration: none; }
   grid-column: 3; grid-row: 2; align-self: end; justify-self: end;
   position: relative; z-index: 2;
   display: flex; flex-direction: column; align-items: stretch; gap: 12px;
-  padding-bottom: 12px; min-width: 200px;
+  padding-bottom: 12px;
 }
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -126,12 +135,12 @@ a { color: inherit; text-decoration: none; }
 /* round glass chat button with a green "online" dot */
 .btn--orb {
   position: relative; align-self: flex-end;
-  width: 46px; height: 46px; padding: 0; border-radius: 50%;
+  width: 42px; height: 42px; padding: 0; border-radius: 50%;
   background: linear-gradient(145deg, #eceef7, #c2c5d8); color: #1d1d29;
   border-color: rgba(255, 255, 255, .75);
   box-shadow: 0 8px 18px rgba(21, 21, 31, .22), inset 0 2px 3px rgba(255, 255, 255, .85), inset 0 -2px 5px rgba(21, 21, 31, .08);
 }
-.btn--orb svg { width: 20px; height: 20px; stroke-width: 1.8; }
+.btn--orb svg { width: 19px; height: 19px; stroke-width: 1.8; }
 .btn--orb:hover { transform: scale(1.07); }
 .btn--orb .dot {
   position: absolute; top: 1px; right: 1px; width: 11px; height: 11px; border-radius: 50%;
@@ -145,20 +154,21 @@ a { color: inherit; text-decoration: none; }
 }
 @media (prefers-reduced-motion: reduce) { .btn--orb .dot { animation: none; } }
 
-/* small round play button (sits above the three corner buttons) */
+/* small round play button: top-right of the hero, under the navbar */
 .voice {
-  align-self: flex-end;
-  width: 38px; height: 38px; border-radius: 50%;
+  position: absolute; z-index: 3;
+  top: calc(var(--nav-h) + 56px); right: 10vw;
+  width: 36px; height: 36px; border-radius: 50%;
   display: grid; place-items: center; padding: 0;
-  border: 1.5px solid rgba(21, 21, 31, .45); background: transparent; color: var(--ink); cursor: pointer;
+  border: 1.5px solid rgba(21, 21, 31, .75); background: transparent; color: var(--ink); cursor: pointer;
   transition: transform .2s, background .2s;
 }
 .voice:hover { transform: scale(1.08); background: rgba(21, 21, 31, .07); }
-.voice svg { width: 16px; height: 16px; fill: currentColor; }
+.voice svg { width: 14px; height: 14px; fill: currentColor; }
 .voice[hidden] { display: none; }
 
 /* ---------- Mobile ---------- */
-@media (max-width: 1100px) {
+@media (max-width: 980px) {
   .nav__toggle { display: block; }
   .nav__links {
     position: absolute; top: calc(var(--nav-h) - 6px);
@@ -171,7 +181,7 @@ a { color: inherit; text-decoration: none; }
     max-height: 380px; padding: 6px 0; border-width: 1px;
     box-shadow: 0 10px 30px rgba(21, 21, 31, .12);
   }
-  .nav__links a { padding: 13px 22px; }
+  .nav__links a { padding: 13px 22px; border-radius: 14px; }
 
   .hero { grid-template-columns: 1fr; grid-template-rows: auto auto auto; align-items: start; text-align: center; }
   .hero__photo { grid-column: 1; grid-row: 2; height: 52vh; }
@@ -180,7 +190,7 @@ a { color: inherit; text-decoration: none; }
   .hero__actions { grid-column: 1; grid-row: 3; flex-direction: row; flex-wrap: wrap; justify-content: center; justify-self: center; margin-top: 16px; min-width: 0; }
   .btn { padding: 10px 18px; }
   .btn--dark, .btn--glass { padding: 12px 20px; }
-  .voice { align-self: center; }
+  .voice { top: calc(var(--nav-h) + 8px); right: clamp(20px, 5vw, 64px); }
   .hero__bgname { top: 38%; }
 }
 

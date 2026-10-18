@@ -18,13 +18,38 @@ function render(data) {
   document.title = site.title;
 
   // Navbar
-  $("logo").textContent = person.logoText;
+  const logo = $("logo");
+  logo.textContent = "";
+  if (person.avatar) {
+    const av = document.createElement("img");
+    av.className = "nav__avatar"; av.src = person.avatar; av.alt = "";
+    av.addEventListener("error", () => av.remove());          // missing file -> just the name
+    logo.appendChild(av);
+  }
+  const nm = document.createElement("span"); nm.textContent = person.logoText; logo.appendChild(nm);
   const nav = $("navLinks");
+  const navLinks = [];
   navbar.forEach((item) => {
     const a = link(item);
-    a.addEventListener("click", () => nav.classList.remove("open"));
+    a.addEventListener("click", () => { nav.classList.remove("open"); setActive(a); });
     nav.appendChild(a);
+    navLinks.push(a);
   });
+
+  // Active item gets the grey pill. Top of page = first item (About); while scrolling the
+  // item whose section has reached the upper part of the screen becomes active.
+  function setActive(el) { navLinks.forEach((l) => l.classList.toggle("active", l === el)); }
+  function spy() {
+    let current = navLinks[0];
+    navLinks.forEach((l) => {
+      const t = document.querySelector(l.getAttribute("href"));
+      if (t && t.getBoundingClientRect().top <= innerHeight * 0.35) current = l;
+    });
+    setActive(current);
+  }
+  let ticking = false;
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { spy(); ticking = false; }); } }, { passive: true });
+  spy();
   $("navToggle").addEventListener("click", () => nav.classList.toggle("open"));
 
   // Hero text

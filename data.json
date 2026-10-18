@@ -9,7 +9,8 @@
     "role": "Full Stack Developer",
     "subtitle": "Creative developer · AI & ML · Web technology",
     "video": "assets/intro.mp4",
-    "voiceIntro": "Hi, I'm Mahim Ahmad, a full stack developer focused on AI and machine learning. Welcome to my portfolio."
+    "voiceIntro": "Hi, I'm Mahim Ahmad, a full stack developer focused on AI and machine learning. Welcome to my portfolio.",
+    "avatar": "assets/profile.jpg"
   },
   "navbar": [
     {
@@ -43,19 +44,6 @@
   ],
   "hero": {
     "actions": [
-      {
-        "label": "Download CV",
-        "link": "assets/resume.pdf",
-        "download": "Mahim-Ahmad-CV.pdf",
-        "style": "dark",
-        "icon": "download"
-      },
-      {
-        "label": "Explore work",
-        "link": "#projects",
-        "style": "glass",
-        "icon": "arrow"
-      },
       {
         "type": "chat",
         "label": "Chatbot",
