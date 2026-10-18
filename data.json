@@ -8,7 +8,6 @@
     "logoText": "Mahim Ahmad",
     "role": "Full Stack Developer",
     "subtitle": "Creative developer · AI & ML · Web technology",
-    "photo": "assets/photo.jpg",
     "video": "assets/intro.mp4",
     "voiceIntro": "Hi, I'm Mahim Ahmad, a full stack developer focused on AI and machine learning. Welcome to my portfolio."
   },
@@ -43,28 +42,26 @@
     }
   ],
   "hero": {
-    "primaryButton": {
-      "label": "See my work →",
-      "link": "#projects"
-    },
-    "links": [
+    "actions": [
       {
-        "label": "Let's talk",
-        "link": "#contact"
+        "label": "Download CV",
+        "link": "assets/resume.pdf",
+        "download": "Mahim-Ahmad-CV.pdf",
+        "style": "dark",
+        "icon": "download"
       },
       {
-        "label": "Resume",
-        "link": "assets/resume.pdf"
-      }
-    ],
-    "social": [
-      {
-        "label": "GitHub",
-        "link": "https://github.com/Mahim-Ahmad"
+        "label": "Explore work",
+        "link": "#projects",
+        "style": "glass",
+        "icon": "arrow"
       },
       {
-        "label": "LinkedIn",
-        "link": "https://www.linkedin.com/in/mahim-ahmad-b73b4a383/"
+        "type": "chat",
+        "label": "Chatbot",
+        "style": "orb",
+        "icon": "chat",
+        "online": true
       }
     ]
   },
@@ -72,5 +69,25 @@
     "autoPlaySound": true,
     "splash": false,
     "splashText": "Click to enter"
+  },
+  "social": [
+    {
+      "label": "GitHub",
+      "link": "https://github.com/Mahim-Ahmad"
+    },
+    {
+      "label": "LinkedIn",
+      "link": "https://www.linkedin.com/in/mahim-ahmad-b73b4a383/"
+    }
+  ],
+  "chatbot": {
+    "enabled": true,
+    "title": "Ask about Mahim",
+    "subtitle": "AI assistant",
+    "welcome": "Hi! Ask me anything about Mahim's skills, projects or education.",
+    "placeholder": "Type your question...",
+    "apiUrl": "",
+    "offlineMessage": "The chatbot is not connected yet. Set chatbot.apiUrl in data.json to your API endpoint.",
+    "errorMessage": "Sorry, I could not reach the chatbot. Please try again."
   }
 }

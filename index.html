@@ -32,24 +32,28 @@
       </div>
 
       <div class="hero__photo">
-        <img id="photo" alt="Portrait">
         <video id="heroVideo" hidden muted loop playsinline preload="metadata"></video>
-        <div class="hero__placeholder" id="placeholder">
-          <span>Your photo here</span>
-          <small>assets/photo.jpg</small>
-        </div>
       </div>
 
-      <div class="hero__actions">
-        <a class="btn" id="primaryBtn" href="#"></a>
-        <div class="hero__links" id="heroLinks"></div>
-        <div class="hero__social" id="heroSocial"></div>
-        <button class="voice" id="voiceBtn" aria-label="Play intro voice">🔊 Listen</button>
+      <div class="hero__actions" id="heroActions">
+        <button class="voice" id="voiceBtn" type="button" aria-label="Play intro"></button>
       </div>
     </section>
 
     <!-- Next sections (About, Skills, Projects...) will go here -->
   </main>
+
+  <aside class="chat" id="chat" hidden aria-label="Chatbot">
+    <header class="chat__head">
+      <div><strong id="chatTitle"></strong><span id="chatSub"></span></div>
+      <button type="button" id="chatClose" aria-label="Close chat">✕</button>
+    </header>
+    <div class="chat__log" id="chatLog" aria-live="polite"></div>
+    <form class="chat__form" id="chatForm">
+      <input id="chatInput" type="text" autocomplete="off" aria-label="Your message">
+      <button type="submit">Send</button>
+    </form>
+  </aside>
 
   <script src="script.js"></script>
 </body>
