@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="splash" id="splash" hidden>
+    <div class="splash__name" id="splashName"></div>
+    <button class="splash__btn" id="splashBtn"></button>
+  </div>
+
+  <header class="nav">
+    <a class="nav__logo" id="logo" href="#home"></a>
+    <button class="nav__toggle" id="navToggle" aria-label="Menu">☰</button>
+    <nav class="nav__links" id="navLinks"></nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero__bgname" id="bgName" aria-hidden="true"></div>
+
+      <div class="hero__text">
+        <h1 class="hero__role" id="role"></h1>
+        <p class="hero__sub" id="subtitle"></p>
+      </div>
+
+      <div class="hero__photo">
+        <img id="photo" alt="Portrait">
+        <video id="heroVideo" hidden muted loop playsinline preload="metadata"></video>
+        <div class="hero__placeholder" id="placeholder">
+          <span>Your photo here</span>
+          <small>assets/photo.jpg</small>
+        </div>
+      </div>
+
+      <div class="hero__actions">
+        <a class="btn" id="primaryBtn" href="#"></a>
+        <div class="hero__links" id="heroLinks"></div>
+        <div class="hero__social" id="heroSocial"></div>
+        <button class="voice" id="voiceBtn" aria-label="Play intro voice">🔊 Listen</button>
+      </div>
+    </section>
+
+    <!-- Next sections (About, Skills, Projects...) will go here -->
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

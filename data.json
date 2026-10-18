@@ -1,0 +1,76 @@
+{
+  "site": {
+    "title": "Mahim Ahmad | Full Stack Developer"
+  },
+  "person": {
+    "name": "Mahim Ahmad",
+    "shortName": "Mahim",
+    "logoText": "Mahim Ahmad",
+    "role": "Full Stack Developer",
+    "subtitle": "Creative developer · AI & ML · Web technology",
+    "photo": "assets/photo.jpg",
+    "video": "assets/intro.mp4",
+    "voiceIntro": "Hi, I'm Mahim Ahmad, a full stack developer focused on AI and machine learning. Welcome to my portfolio."
+  },
+  "navbar": [
+    {
+      "label": "About",
+      "link": "#about"
+    },
+    {
+      "label": "News & Highlights",
+      "link": "#news"
+    },
+    {
+      "label": "Education",
+      "link": "#education"
+    },
+    {
+      "label": "Skills",
+      "link": "#skills"
+    },
+    {
+      "label": "Projects",
+      "link": "#projects"
+    },
+    {
+      "label": "Certificates",
+      "link": "#certificates"
+    },
+    {
+      "label": "Contact",
+      "link": "#contact"
+    }
+  ],
+  "hero": {
+    "primaryButton": {
+      "label": "See my work →",
+      "link": "#projects"
+    },
+    "links": [
+      {
+        "label": "Let's talk",
+        "link": "#contact"
+      },
+      {
+        "label": "Resume",
+        "link": "assets/resume.pdf"
+      }
+    ],
+    "social": [
+      {
+        "label": "GitHub",
+        "link": "https://github.com/Mahim-Ahmad"
+      },
+      {
+        "label": "LinkedIn",
+        "link": "https://www.linkedin.com/in/mahim-ahmad-b73b4a383/"
+      }
+    ]
+  },
+  "intro": {
+    "autoPlaySound": true,
+    "splash": false,
+    "splashText": "Click to enter"
+  }
+}
