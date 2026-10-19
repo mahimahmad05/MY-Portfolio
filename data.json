@@ -435,5 +435,69 @@
         }
       ]
     }
+  },
+  "contact": {
+    "number": "06",
+    "title": "Contact",
+    "icon": "send",
+    "subheading": "Ready to collaborate on a project, an internship, or just talk tech? I'd love to hear from you.",
+    "infoTitle": "Contact Information",
+    "socialTitle": "Connect With Me",
+    "formTitle": "Send Message",
+    "formNote": "Opens your email app with this message pre-filled — no data is stored or sent anywhere else.",
+    "info": [
+      {
+        "icon": "mail",
+        "label": "Email",
+        "value": "mdmahimahmad131@gmail.com",
+        "href": "mailto:mdmahimahmad131@gmail.com"
+      },
+      {
+        "icon": "phone",
+        "label": "Phone",
+        "value": "01960603846",
+        "href": "tel:+8801960603846"
+      },
+      {
+        "icon": "pin",
+        "label": "Location",
+        "value": "Dhaka, Bangladesh",
+        "href": null
+      }
+    ],
+    "social": [
+      {
+        "icon": "github",
+        "label": "GitHub",
+        "sub": "Projects & Code",
+        "href": "https://github.com/mahimahmad05"
+      },
+      {
+        "icon": "linkedin",
+        "label": "LinkedIn",
+        "sub": "Professional Network",
+        "href": "https://www.linkedin.com/in/mahimahmad05/"
+      },
+      {
+        "icon": "whatsapp",
+        "label": "WhatsApp",
+        "sub": "Quick Chat",
+        "href": "https://wa.me/8801960603846"
+      }
+    ],
+    "ctaTitle": "Let's Build Something Together",
+    "ctaText": "Whether it's a web app, an AI-powered tool, or a system design challenge — I'm always excited to collaborate on interesting projects.",
+    "ctaButtons": [
+      {
+        "label": "Email Me",
+        "icon": "mail",
+        "href": "mailto:mdmahimahmad131@gmail.com"
+      },
+      {
+        "label": "Call Now",
+        "icon": "phone",
+        "href": "tel:+8801960603846"
+      }
+    ]
   }
 }

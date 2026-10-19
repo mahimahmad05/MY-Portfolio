@@ -77,6 +77,7 @@ function render(data) {
   $("navToggle").addEventListener("click", () => nav.classList.toggle("open"));
 
   if (window.renderSkills) renderSkills(data.skills);
+  if (window.renderContact) renderContact(data.contact);
 
   const chatCfg = data.chatbot || {};
   const chat = chatCfg.enabled === false ? null : initChat(chatCfg);

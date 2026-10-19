@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="pages.css">
+  <link rel="stylesheet" href="contact.css">
 </head>
 <body data-title="Contact">
 
@@ -24,9 +24,55 @@
   </header>
 
   <main>
-    <section class="page-sec">
-      <h1 class="page-sec__title">Contact</h1>
-      <p class="page-sec__soon">Coming soon.</p>
+    <section class="contact-sec" id="contact" hidden>
+      <div class="contact-wrap">
+        <div class="sec-head">
+          <span class="sec-num"><span id="contactNum"></span></span>
+          <span class="sec-title" id="contactTitle"></span>
+          <span class="sec-head-icon" id="contactHeadIcon"></span>
+          <span class="sec-line"></span>
+        </div>
+        <p class="contact-sub-top" id="contactSub"></p>
+
+        <div class="contact-grid">
+          <div class="contact-col">
+            <div class="contact-card">
+              <div class="card-topbar"></div>
+              <div class="contact-card-head"><span id="contactInfoIcon"></span><span id="contactInfoTitle"></span></div>
+              <div id="contactInfoList"></div>
+            </div>
+            <div class="contact-card">
+              <div class="card-topbar"></div>
+              <div class="contact-card-head"><span id="contactSocialIcon"></span><span id="contactSocialTitle"></span></div>
+              <div class="social-grid" id="contactSocialList"></div>
+            </div>
+          </div>
+          <div class="contact-col">
+            <div class="contact-card">
+              <div class="card-topbar"></div>
+              <div class="contact-card-head"><span id="contactFormIcon"></span><span id="contactFormTitle"></span></div>
+              <form id="contactForm" class="contact-form">
+                <label class="cf-label" for="cfName">Full Name</label>
+                <input class="cf-input" type="text" id="cfName" placeholder="Enter your full name" required>
+                <label class="cf-label" for="cfEmail">Email Address</label>
+                <input class="cf-input" type="email" id="cfEmail" placeholder="your.email@domain.com" required>
+                <label class="cf-label" for="cfSubject">Subject</label>
+                <input class="cf-input" type="text" id="cfSubject" placeholder="Project inquiry, collaboration, etc.">
+                <label class="cf-label" for="cfMessage">Message</label>
+                <textarea class="cf-input cf-textarea" id="cfMessage" rows="5" placeholder="Tell me a bit about what you have in mind..." required></textarea>
+                <button type="submit" class="cf-submit">Send Message <span id="cfSubmitIcon"></span></button>
+                <p class="cf-note" id="cfNote"></p>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-cta">
+          <h3 id="contactCtaTitle"></h3>
+          <p id="contactCtaText"></p>
+          <div class="contact-cta-buttons" id="contactCtaButtons"></div>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -42,6 +88,7 @@
     </form>
   </aside>
 
+  <script src="contact.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
