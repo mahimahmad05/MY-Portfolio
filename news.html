@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="pages.css">
+  <link rel="stylesheet" href="news.css">
 </head>
 <body data-title="News & Highlights">
 
@@ -24,9 +24,23 @@
   </header>
 
   <main>
-    <section class="page-sec">
-      <h1 class="page-sec__title">News & Highlights</h1>
-      <p class="page-sec__soon">Coming soon.</p>
+    <section class="nw-sec" id="newsSec" hidden>
+      <div class="nw-wrap">
+        <div class="sec-head">
+          <span class="sec-num"><span id="nwNum"></span></span>
+          <span class="sec-title" id="nwTitle"></span>
+          <span class="sec-head-icon" id="nwHeadIcon"></span>
+          <span class="sec-line"></span>
+        </div>
+        <div class="sub-sec" id="nwNews" hidden>
+          <div class="sub-head"><span class="sub-icon"></span><span class="sub-title"></span></div>
+          <div id="newsList"></div>
+        </div>
+        <div class="sub-sec" id="nwHigh" hidden>
+          <div class="sub-head"><span class="sub-icon"></span><span class="sub-title"></span></div>
+          <div class="hl-wrap" id="hlWrap"></div>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -42,6 +56,7 @@
     </form>
   </aside>
 
+  <script src="news.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

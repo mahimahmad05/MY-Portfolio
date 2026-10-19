@@ -827,5 +827,73 @@
       "profileLabel": "View Full GitHub Profile",
       "noteLabel": "Live data for github.com/mahimahmad05"
     }
+  },
+  "news": {
+    "number": "05",
+    "title": "News & Highlights",
+    "icon": "newspaper",
+    "visibleCount": 5,
+    "moreLabel": "See More",
+    "lessLabel": "See Less",
+    "news": {
+      "title": "News",
+      "icon": "bell",
+      "items": [
+        {
+          "title": "Working on RecycleHub",
+          "date": "",
+          "description": "Building RecycleHub, a smart AI-powered resale system, as a system-analysis project turned working prototype."
+        },
+        {
+          "title": "Working on Portfolio Website",
+          "date": "",
+          "description": "Designing and building this personal portfolio site from the ground up."
+        },
+        {
+          "title": "Completed RecycleHub SRS & UML Documentation",
+          "date": "",
+          "description": "Finished the SRS with 38 functional requirements, Level 0/1 DFDs, and sequence diagrams for the SE231 System Analysis and Design project."
+        },
+        {
+          "title": "Presented RecycleHub to Course Instructor",
+          "date": "",
+          "description": "Delivered a 14-slide presentation covering the project proposal, use case diagrams, and stakeholder analysis."
+        },
+        {
+          "title": "Set Up WSL2 for OS Lab Work",
+          "date": "",
+          "description": "Configured WSL2 with Ubuntu on Windows to run the OS and System Programming lab environment."
+        },
+        {
+          "title": "Practicing Linux & System Calls",
+          "date": "",
+          "description": "Working through basic Linux terminal commands and getting introduced to the fork() system call."
+        },
+        {
+          "title": "Solved CPU Scheduling Problems",
+          "date": "",
+          "description": "Worked through Round Robin, SJF, SRTF, and preemptive priority scheduling problems for the OS course."
+        },
+        {
+          "title": "Exploring React for UI Development",
+          "date": "",
+          "description": "Started learning React to build cleaner, component-based interfaces for future projects."
+        },
+        {
+          "title": "Organized Section 43J Exam Routine",
+          "date": "",
+          "description": "Created an exam routine and seat plan graphic to help classmates in Section 43J stay organized."
+        }
+      ]
+    },
+    "highlights": {
+      "title": "Highlights",
+      "icon": "image",
+      "items": [
+        "assets/highlights/pic1.jpg",
+        "assets/highlights/pic2.jpg",
+        "assets/highlights/pic3.jpg"
+      ]
+    }
   }
 }
