@@ -674,5 +674,101 @@
         "image": "certificates/cert-18.jpg"
       }
     ]
+  },
+  "education": {
+    "number": "01",
+    "title": "Education",
+    "icon": "gradcap",
+    "semesterHint": "Enter each completed semester’s GPA — CGPA updates automatically.",
+    "viewLabel": "View Certificate",
+    "items": [
+      {
+        "type": "university",
+        "level": "B.Sc",
+        "institution": "Daffodil International University",
+        "session": "Ongoing — Summer 2026",
+        "totalSemesters": 12,
+        "semesterGPAs": [
+          3.77,
+          4,
+          4,
+          3.71,
+          4,
+          4
+        ],
+        "logo": "assets/diu-logo.jpg",
+        "certificate": null
+      },
+      {
+        "level": "HSC",
+        "institution": "Afajuddin Memorial College",
+        "session": "2022 – 2023",
+        "gpa": "5.00",
+        "logo": "assets/afajuddin-logo.jpg",
+        "certificate": "assets/certificates/hsc.jpg"
+      },
+      {
+        "level": "SSC",
+        "institution": "Afajuddin Memorial High School",
+        "session": "2020 – 2021",
+        "gpa": "5.00",
+        "logo": "assets/afajuddin-logo.jpg",
+        "certificate": "assets/certificates/ssc.jpg"
+      }
+    ],
+    "languages": {
+      "title": "Languages",
+      "icon": "globe",
+      "items": [
+        {
+          "name": "Bangla",
+          "flag": "🇧🇩",
+          "level": "Native",
+          "percent": 100
+        },
+        {
+          "name": "English",
+          "flag": "🇬🇧",
+          "level": "Professional Working Proficiency",
+          "percent": 85
+        }
+      ]
+    },
+    "values": {
+      "title": "Values",
+      "icon": "shield",
+      "items": [
+        {
+          "icon": "target",
+          "title": "Continuous Learning",
+          "description": "Always exploring new tools, languages, and frameworks to stay ahead of the curve."
+        },
+        {
+          "icon": "shield",
+          "title": "Integrity",
+          "description": "Honest, transparent work — in code reviews, team credit, and academic honesty alike."
+        },
+        {
+          "icon": "handshake",
+          "title": "Collaboration",
+          "description": "Software is a team sport. I value clear communication over solo heroics."
+        },
+        {
+          "icon": "spark",
+          "title": "Problem-Solving Mindset",
+          "description": "I break complex systems into diagrams before I break them into code."
+        },
+        {
+          "icon": "compass",
+          "title": "Attention to Detail",
+          "description": "From SRS documents to pixel-level UI polish — the small things compound."
+        },
+        {
+          "icon": "rocket",
+          "title": "Ownership",
+          "description": "I follow through on what I commit to, from first draft to final deployment."
+        }
+      ]
+    }
   }
 }

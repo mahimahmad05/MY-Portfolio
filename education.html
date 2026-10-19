@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="pages.css">
+  <link rel="stylesheet" href="education.css">
 </head>
 <body data-title="Education">
 
@@ -24,11 +24,37 @@
   </header>
 
   <main>
-    <section class="page-sec">
-      <h1 class="page-sec__title">Education</h1>
-      <p class="page-sec__soon">Coming soon.</p>
+    <section class="edu-sec" id="education" hidden>
+      <div class="edu-wrap">
+        <div class="sec-head">
+          <span class="sec-num"><span id="eduNum"></span></span>
+          <span class="sec-title" id="eduTitle"></span>
+          <span class="sec-head-icon" id="eduHeadIcon"></span>
+          <span class="sec-line"></span>
+        </div>
+        <div class="edu-list" id="eduList"></div>
+
+        <div class="sub-sec" id="eduLang" hidden>
+          <div class="sub-head"><span class="sub-icon"></span><span class="sub-title"></span></div>
+          <div class="lang-grid" id="langList"></div>
+        </div>
+
+        <div class="sub-sec" id="eduValues" hidden>
+          <div class="sub-head"><span class="sub-icon"></span><span class="sub-title"></span></div>
+          <div class="value-grid" id="valuesList"></div>
+        </div>
+      </div>
     </section>
   </main>
+
+  <div class="ex-modal" id="eduModal" aria-hidden="true">
+    <div class="ex-backdrop" id="eduBackdrop"></div>
+    <div class="ex-box">
+      <button class="ex-close" id="eduClose" type="button" aria-label="Close">&times;</button>
+      <img src="" alt="Certificate" id="eduImage">
+      <p class="ex-fallback" id="eduFallback">Certificate image not added yet.</p>
+    </div>
+  </div>
 
   <aside class="chat" id="chat" hidden aria-label="Chatbot">
     <header class="chat__head">
@@ -42,6 +68,7 @@
     </form>
   </aside>
 
+  <script src="education.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
