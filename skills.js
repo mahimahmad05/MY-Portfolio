@@ -12,6 +12,8 @@
     eye:   I('<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'),
   };
 
+  const canHover = window.matchMedia && matchMedia("(hover: hover) and (pointer: fine)").matches;
+
   function el(tag, cls, text, kids) {
     const n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -80,7 +82,12 @@
       btn.type = "button";
       btn.innerHTML = ICONS.eye;
       btn.appendChild(el("span", "", cfg.detailLabel || "Detail View"));
-      btn.addEventListener("click", () => openModal(cat));
+      btn.addEventListener("click", () => { hidePop(); openModal(cat); });   // click: big popup in the middle, closes with x / backdrop / Esc
+      if (canHover) {                                                  // mouse over the card: small popup right on that card
+        let t = null;
+        card.addEventListener("mouseenter", () => { clearTimeout(t); t = setTimeout(() => showPop(card, cat), 100); });
+        card.addEventListener("mouseleave", () => { clearTimeout(t); hidePop(); });
+      }
       card.appendChild(btn);
 
       grid.appendChild(card);
@@ -104,15 +111,8 @@
     });
   }
 
-  // ---- Detail popup with animated bars ----
-  function openModal(cat) {
-    const m = document.getElementById("skillModal");
-    document.getElementById("skillModalIcon").innerHTML = ICONS[cat.icon] || ICONS.code;
-    document.getElementById("skillModalTitle").textContent = cat.title;
-    document.getElementById("skillModalDesc").textContent = cat.description;
-
-    const rows = document.getElementById("skillModalRows");
-    rows.textContent = "";
+  // ---- rows with animated bars (used by both popups) ----
+  function buildRows(cat, parent) {
     const fills = [];
     cat.items.forEach((it) => {
       const left = el("div", "skr-left", "", [
@@ -123,16 +123,47 @@
       if (it.tag) right.appendChild(el("span", "skr-tag", it.tag));
       right.appendChild(el("span", "skr-pct", (it.percent || 0) + "%"));
       const fill = el("div", "skr-bar-fill");
-      rows.appendChild(el("div", "skill-row", "", [el("div", "skr-top", "", [left, right]), el("div", "skr-bar", "", [fill])]));
+      parent.appendChild(el("div", "skill-row", "", [el("div", "skr-top", "", [left, right]), el("div", "skr-bar", "", [fill])]));
       fills.push([fill, it.percent || 0]);
     });
+    fills.forEach(([n]) => (n.style.width = "0%"));
+    void parent.offsetWidth;
+    setTimeout(() => fills.forEach(([n, p]) => (n.style.width = p + "%")), 60);
+  }
 
+  // ---- Small popup that opens on top of the hovered card ----
+  let pop = null;
+  function hidePop() { if (pop) { pop.remove(); pop = null; } }
+  function showPop(card, cat) {
+    hidePop();
+    const grid = card.parentElement;
+    pop = el("div", "skill-pop");
+    const rows = el("div", "skill-pop-rows");
+    pop.appendChild(rows);
+    // sits right above the "Detail View" button (covers the card's top part), so the button stays visible and clickable
+    const g = grid.getBoundingClientRect(), c = card.getBoundingClientRect();
+    const btn = card.querySelector(".skc-detail-btn").getBoundingClientRect();
+    const bottomY = btn.top - g.top - 10;                       // popup's bottom edge
+    pop.style.left = (c.left - g.left) + "px";
+    pop.style.width = c.width + "px";
+    pop.style.minHeight = (bottomY - (c.top - g.top)) + "px";   // at least as tall as the part of the card above the button
+    grid.appendChild(pop);
+    buildRows(cat, rows);
+    pop.style.top = (bottomY - pop.offsetHeight) + "px";       // taller lists grow upwards
+  }
+
+  // ---- Big popup (click) ----
+  function openModal(cat) {
+    const m = document.getElementById("skillModal");
+    document.getElementById("skillModalIcon").innerHTML = ICONS[cat.icon] || ICONS.code;
+    document.getElementById("skillModalTitle").textContent = cat.title;
+    document.getElementById("skillModalDesc").textContent = cat.description;
+    const rows = document.getElementById("skillModalRows");
+    rows.textContent = "";
     m.classList.add("open"); m.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
     m.querySelector(".skill-modal-scroll").scrollTop = 0;
-    fills.forEach(([n]) => (n.style.width = "0%"));
-    void rows.offsetWidth;
-    setTimeout(() => fills.forEach(([n, p]) => (n.style.width = p + "%")), 60);
+    buildRows(cat, rows);
   }
   function closeModal() {
     const m = document.getElementById("skillModal");
