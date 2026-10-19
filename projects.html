@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="pages.css">
+  <link rel="stylesheet" href="projects.css">
 </head>
 <body data-title="Projects">
 
@@ -24,11 +24,36 @@
   </header>
 
   <main>
-    <section class="page-sec">
-      <h1 class="page-sec__title">Projects</h1>
-      <p class="page-sec__soon">Coming soon.</p>
+    <section class="proj-sec" id="projects" hidden>
+      <div class="proj-wrap">
+        <div class="sec-head">
+          <span class="sec-num"><span id="projNum"></span></span>
+          <span class="sec-title" id="projTitle"></span>
+          <span class="sec-head-icon" id="projHeadIcon"></span>
+          <span class="sec-line"></span>
+        </div>
+        <div class="proj-grid" id="projGrid"></div>
+
+        <div class="proj-gh" id="projGithub" hidden>
+          <div class="gh-head"><span class="gh-icon" id="ghIcon"></span><span class="gh-title" id="ghTitle"></span></div>
+          <p class="gh-sub" id="ghSub"></p>
+          <div class="gh-stats" id="ghStats"></div>
+          <div class="gh-chart-card"><img id="ghChart" alt="GitHub contribution graph"></div>
+          <p class="gh-note" id="ghNote"></p>
+          <div class="gh-cta"><a id="ghProfileBtn" target="_blank" rel="noopener"></a></div>
+        </div>
+      </div>
     </section>
   </main>
+
+  <div class="px-modal" id="projModal" aria-hidden="true">
+    <div class="px-backdrop" id="projBackdrop"></div>
+    <div class="px-box">
+      <button class="px-close" id="projClose" type="button" aria-label="Close">&times;</button>
+      <img src="" alt="Project screenshot" id="projImage">
+      <p class="px-fallback" id="projFallback">Project image not added yet.</p>
+    </div>
+  </div>
 
   <aside class="chat" id="chat" hidden aria-label="Chatbot">
     <header class="chat__head">
@@ -42,6 +67,7 @@
     </form>
   </aside>
 
+  <script src="projects.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

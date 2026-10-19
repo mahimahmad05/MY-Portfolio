@@ -80,6 +80,7 @@ function render(data) {
   if (window.renderContact) renderContact(data.contact);
   if (window.renderCertificates) renderCertificates(data.certificates);
   if (window.renderEducation) renderEducation(data.education);
+  if (window.renderProjects) renderProjects(data.projects);
   if (window.renderFooter) renderFooter(data);
 
   const chatCfg = data.chatbot || {};

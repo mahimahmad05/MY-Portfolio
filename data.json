@@ -61,7 +61,7 @@
   "social": [
     {
       "label": "GitHub",
-      "link": "https://github.com/Mahim-Ahmad"
+      "link": "https://github.com/mahimahmad05"
     },
     {
       "label": "LinkedIn",
@@ -470,7 +470,7 @@
         "icon": "github",
         "label": "GitHub",
         "sub": "Projects & Code",
-        "href": "https://github.com/Mahim-Ahmad"
+        "href": "https://github.com/mahimahmad05"
       },
       {
         "icon": "linkedin",
@@ -693,7 +693,6 @@
           4,
           4,
           3.71,
-          4,
           4
         ],
         "logo": "assets/diu-logo.jpg",
@@ -769,6 +768,64 @@
           "description": "I follow through on what I commit to, from first draft to final deployment."
         }
       ]
+    }
+  },
+  "projects": {
+    "number": "03",
+    "title": "Projects",
+    "icon": "rocket",
+    "githubLabel": "GitHub",
+    "liveLabel": "Live Site",
+    "items": [
+      {
+        "title": "projects-1",
+        "description": "Frontend assignment project built and deployed as a live web app.",
+        "image": "assets/projects/project-01.jpg",
+        "github": "https://github.com/Mahim-Ahmad/ASSIGNMENT-PRACTICE-6",
+        "live": "https://digitooweb.netlify.app/"
+      },
+      {
+        "title": "projects-2",
+        "description": "A book-focused web application with a clean browsing experience.",
+        "image": "assets/projects/project-02.jpg",
+        "github": "https://github.com/Mahim-Ahmad/book-vibe",
+        "live": "https://earnest-narwhal-089e48.netlify.app/"
+      },
+      {
+        "title": "projects-3",
+        "description": "Front-end practice assignment deployed via GitHub Pages.",
+        "image": "assets/projects/project-03.jpg",
+        "github": "https://github.com/Mahim-Ahmad/Assignment-2",
+        "live": "https://mahim-ahmad.github.io/Assignment-2/"
+      },
+      {
+        "title": "projects-4",
+        "description": "Assignment project focused on a job-listing style web app.",
+        "image": "assets/projects/project-04.jpg",
+        "github": "https://github.com/Mahim-Ahmad/Assignment_4",
+        "live": "https://assignment-4-job.netlify.app/"
+      },
+      {
+        "title": "projects-5",
+        "description": "A tracker app that pulls and displays GitHub issues.",
+        "image": "assets/projects/project-05.jpg",
+        "github": "https://github.com/Mahim-Ahmad/Assignment_5_GitHub-Issues-Tracker",
+        "live": "https://assignment-5-github-issues-traker.netlify.app/"
+      },
+      {
+        "title": "projects-6",
+        "description": "Event management style web project.",
+        "image": "assets/projects/project-06.jpg",
+        "github": "https://github.com/Mahim-Ahmad/Eventrix",
+        "live": ""
+      }
+    ],
+    "github": {
+      "username": "mahimahmad05",
+      "title": "GitHub Activity",
+      "subheading": "Real-time stats pulled from my GitHub profile",
+      "profileLabel": "View Full GitHub Profile",
+      "noteLabel": "Live data for github.com/mahimahmad05"
     }
   }
 }
