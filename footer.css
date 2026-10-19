@@ -8,6 +8,10 @@
 }
 .site-footer::before { content: ""; position: absolute; top: -1px; left: 0; right: 0; height: 2px; background: var(--accent); }
 .footer-top { display: grid; grid-template-columns: 1.2fr 1.3fr 1fr; gap: 40px; padding: 56px 28px 40px; max-width: 1100px; margin: 0 auto; }
+.footer-brand { text-align: center; }
+.footer-brand-tagline { margin-left: auto; margin-right: auto; }
+.footer-social { justify-content: center; }
+.footer-col-title { text-align: center; }
 .footer-brand-name { font-weight: 800; font-size: 26px; letter-spacing: .02em; color: var(--accent); margin-bottom: 12px; }
 .footer-brand-tagline { max-width: 320px; font-size: 13.5px; line-height: 1.7; color: var(--ink-dim); margin-bottom: 22px; }
 .footer-social { display: flex; gap: 10px; }

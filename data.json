@@ -479,10 +479,28 @@
         "href": "https://www.linkedin.com/in/mahim-ahmad-b73b4a383/"
       },
       {
+        "icon": "facebook",
+        "label": "Facebook",
+        "sub": "Say Hello",
+        "href": "https://facebook.com/yourusername"
+      },
+      {
+        "icon": "twitter",
+        "label": "Twitter",
+        "sub": "Thoughts & Updates",
+        "href": "https://twitter.com/yourusername"
+      },
+      {
         "icon": "whatsapp",
         "label": "WhatsApp",
         "sub": "Quick Chat",
         "href": "https://wa.me/8801960603846"
+      },
+      {
+        "icon": "beecrowd",
+        "label": "Beecrowd",
+        "sub": "Problem Solving",
+        "href": "https://judge.beecrowd.com/en/profile/yourusername"
       }
     ],
     "ctaTitle": "Let's Build Something Together",
@@ -514,6 +532,13 @@
       "Projects": "rocket",
       "Certificates": "award",
       "Contact": "message"
-    }
+    },
+    "extraLinks": [
+      {
+        "label": "Home",
+        "link": "index.html",
+        "icon": "spark"
+      }
+    ]
   }
 }
