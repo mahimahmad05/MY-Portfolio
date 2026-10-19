@@ -449,8 +449,8 @@
       {
         "icon": "mail",
         "label": "Email",
-        "value": "mdmahimahmad131@gmail.com",
-        "href": "mailto:mdmahimahmad131@gmail.com"
+        "value": "mahim242-35-705@diu.edu.bd",
+        "href": "mailto:mahim242-35-705@diu.edu.bd"
       },
       {
         "icon": "phone",
@@ -470,13 +470,13 @@
         "icon": "github",
         "label": "GitHub",
         "sub": "Projects & Code",
-        "href": "https://github.com/mahimahmad05"
+        "href": "https://github.com/Mahim-Ahmad"
       },
       {
         "icon": "linkedin",
         "label": "LinkedIn",
         "sub": "Professional Network",
-        "href": "https://www.linkedin.com/in/mahimahmad05/"
+        "href": "https://www.linkedin.com/in/mahim-ahmad-b73b4a383/"
       },
       {
         "icon": "whatsapp",
@@ -491,7 +491,7 @@
       {
         "label": "Email Me",
         "icon": "mail",
-        "href": "mailto:mdmahimahmad131@gmail.com"
+        "href": "mailto:mahim242-35-705@diu.edu.bd"
       },
       {
         "label": "Call Now",
@@ -499,5 +499,21 @@
         "href": "tel:+8801960603846"
       }
     ]
+  },
+  "footer": {
+    "tagline": "Software Engineering student building with AI as a development partner — one diagram, one commit at a time.",
+    "quickLinksTitle": "Quick Links",
+    "contactTitle": "Get In Touch",
+    "copyright": "© 2026 MAHIM AHMAD — SOFTWARE ENGINEERING PORTFOLIO",
+    "credit": "Designed & Built with ♥ using HTML, CSS & JS",
+    "linkIcons": {
+      "About": "users",
+      "News & Highlights": "spark",
+      "Education": "gradcap",
+      "Skills": "tools",
+      "Projects": "rocket",
+      "Certificates": "award",
+      "Contact": "message"
+    }
   }
 }

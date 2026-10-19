@@ -78,6 +78,7 @@ function render(data) {
 
   if (window.renderSkills) renderSkills(data.skills);
   if (window.renderContact) renderContact(data.contact);
+  if (window.renderFooter) renderFooter(data);
 
   const chatCfg = data.chatbot || {};
   const chat = chatCfg.enabled === false ? null : initChat(chatCfg);
