@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="about.css">
 </head>
 <body>
 
@@ -45,6 +46,27 @@
       <div class="hero__actions" id="heroActions"></div>
     </section>
 
+    <section class="ab-sec" id="about" hidden>
+      <div class="ab-wrap">
+        <div class="ab-intro">
+          <div class="ab-eyebrow"><span id="abEyebrow"></span></div>
+          <h2 class="ab-name" id="abName"></h2>
+          <p class="ab-type"><span id="abType"></span><span class="cur"></span></p>
+          <p class="ab-tagline" id="abTagline"></p>
+          <div class="ab-cta" id="abCta"></div>
+        </div>
+      </div>
+      <div class="ab-marquee" id="abMarquee" aria-hidden="true"><div class="ab-track" id="abTrack"></div></div>
+      <div class="ab-wrap">
+        <div class="ab-card">
+          <div class="card-topbar"></div>
+          <h3 class="ab-heading" id="abHeading"></h3>
+          <div class="ab-paras" id="abParas"></div>
+          <div class="ab-info" id="abInfo"></div>
+          <div class="ab-stats" id="abStats"></div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <aside class="chat" id="chat" hidden aria-label="Chatbot">
@@ -59,6 +81,7 @@
     </form>
   </aside>
 
+  <script src="about.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

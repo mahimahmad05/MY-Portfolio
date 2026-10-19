@@ -895,5 +895,201 @@
         "assets/highlights/pic3.jpg"
       ]
     }
+  },
+  "about": {
+    "eyebrow": "Hello, I'm",
+    "name": "Mahim Ahmad",
+    "roles": [
+      "Software Engineering Student",
+      "AI-Driven Developer",
+      "AI/ML Enthusiast",
+      "Problem Solver"
+    ],
+    "tagline": [
+      {
+        "text": "I build software with "
+      },
+      {
+        "text": "AI as a development partner",
+        "hl": "hl1"
+      },
+      {
+        "text": " — writing, debugging, and shipping faster by learning how to work alongside intelligent tools. Looking ahead, I'm setting my sights on "
+      },
+      {
+        "text": "DevOps",
+        "hl": "hl2"
+      },
+      {
+        "text": " and going deeper into "
+      },
+      {
+        "text": "AI/ML engineering",
+        "hl": "hl3"
+      },
+      {
+        "text": "."
+      }
+    ],
+    "buttons": [
+      {
+        "label": "Get In Touch",
+        "href": "contact.html",
+        "icon": "message"
+      },
+      {
+        "label": "Download CV",
+        "href": "assets/cv.pdf",
+        "icon": "download",
+        "download": true
+      },
+      {
+        "label": "Hire Me",
+        "href": "contact.html",
+        "icon": "spark"
+      }
+    ],
+    "tech": [
+      {
+        "name": "C",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg"
+      },
+      {
+        "name": "C++",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg"
+      },
+      {
+        "name": "Java",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg"
+      },
+      {
+        "name": "Python",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
+      },
+      {
+        "name": "JavaScript",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"
+      },
+      {
+        "name": "HTML5",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg"
+      },
+      {
+        "name": "CSS3",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg"
+      },
+      {
+        "name": "Tailwind CSS",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg"
+      },
+      {
+        "name": "React",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+      },
+      {
+        "name": "Node.js",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
+      },
+      {
+        "name": "Next.js",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg"
+      },
+      {
+        "name": "TensorFlow",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg"
+      },
+      {
+        "name": "OpenCV",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg"
+      },
+      {
+        "name": "Scikit-Learn",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scikitlearn/scikitlearn-original.svg"
+      },
+      {
+        "name": "MySQL",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg"
+      },
+      {
+        "name": "Git",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"
+      },
+      {
+        "name": "GitHub",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+      },
+      {
+        "name": "Linux",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg"
+      },
+      {
+        "name": "Ubuntu",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-plain.svg"
+      },
+      {
+        "name": "VS Code",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg"
+      },
+      {
+        "name": "Figma",
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg"
+      }
+    ],
+    "card": {
+      "heading": "Software Engineering Student & AI-Driven Developer",
+      "paragraphs": [
+        "I'm an SE student who likes taking a system apart on paper before touching a keyboard — DFDs, use case diagrams, and SRS documents first, code second. That habit currently powers RecycleHub, a system-analysis project turned into a working AI prototype.",
+        "I build software with AI as a development partner — writing, debugging, and shipping faster by learning how to work alongside intelligent tools. Alongside coursework, I spend time in the terminal — Linux fundamentals, WSL2 setups, and the lower layers of how an OS actually schedules and runs things.",
+        "With 18+ certificates across Python, TensorFlow, NLP, and Generative AI, I keep learning beyond the classroom — always aiming ahead toward DevOps and deeper AI/ML engineering."
+      ],
+      "info": [
+        {
+          "label": "Name",
+          "value": "Mahim"
+        },
+        {
+          "label": "University",
+          "value": "Daffodil International University"
+        },
+        {
+          "label": "Program",
+          "value": "B.Sc in Software Engineering"
+        },
+        {
+          "label": "Batch",
+          "value": "43"
+        },
+        {
+          "label": "Location",
+          "value": "Dhaka, Bangladesh"
+        },
+        {
+          "label": "Email",
+          "value": "mahim242-35-705@diu.edu.bd"
+        }
+      ],
+      "stats": [
+        {
+          "num": 10,
+          "suffix": "+",
+          "label": "Projects Completed"
+        },
+        {
+          "num": 18,
+          "suffix": "+",
+          "label": "Certificates Earned"
+        },
+        {
+          "num": 20,
+          "suffix": "+",
+          "label": "Technologies Used"
+        },
+        {
+          "num": 3,
+          "suffix": "",
+          "label": "Years of Learning"
+        }
+      ]
+    }
   }
 }
