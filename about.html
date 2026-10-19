@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="pages.css">
+</head>
+<body data-title="About">
+
+  <div class="pageload on" id="pageload" aria-hidden="true">
+    <div class="pageload__name">MAHIM</div>
+    <div class="pageload__bar"><i></i></div>
+  </div>
+
+  <header class="nav">
+    <a class="nav__logo" id="logo" href="#home"></a>
+    <button class="nav__toggle" id="navToggle" aria-label="Menu">☰</button>
+    <nav class="nav__links" id="navLinks"></nav>
+  </header>
+
+  <main>
+    <section class="page-sec">
+      <h1 class="page-sec__title">About</h1>
+      <p class="page-sec__soon">Coming soon.</p>
+    </section>
+  </main>
+
+  <aside class="chat" id="chat" hidden aria-label="Chatbot">
+    <header class="chat__head">
+      <div><strong id="chatTitle"></strong><span id="chatSub"></span></div>
+      <button type="button" id="chatClose" aria-label="Close chat">✕</button>
+    </header>
+    <div class="chat__log" id="chatLog" aria-live="polite"></div>
+    <form class="chat__form" id="chatForm">
+      <input id="chatInput" type="text" autocomplete="off" aria-label="Your message">
+      <button type="submit">Send</button>
+    </form>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>

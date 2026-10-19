@@ -1,0 +1,4 @@
+/* placeholder pages (About, News, Education, Projects, Certificates, Contact) until they are built */
+.page-sec { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 120px 24px 60px; text-align: center; }
+.page-sec__title { font-size: clamp(34px, 6vw, 72px); font-weight: 800; letter-spacing: -.03em; }
+.page-sec__soon { color: var(--muted); }

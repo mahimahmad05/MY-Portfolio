@@ -3,6 +3,41 @@
 
 const $ = (id) => document.getElementById(id);
 
+// ---------- Page loader: shows while a page opens / when going to another page ----------
+const loader = $("pageload");
+const loadStart = Date.now();
+function pageReady() {
+  if (!loader) return;
+  const wait = Math.max(0, 650 - (Date.now() - loadStart));      // show the loader at least a moment
+  setTimeout(() => loader.classList.remove("on"), wait);
+}
+addEventListener("pageshow", (e) => { if (e.persisted && loader) loader.classList.remove("on"); });
+document.addEventListener("click", (e) => {
+  const a = e.target.closest && e.target.closest("a[href]");
+  if (!a || !loader || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+  if (a.target === "_blank" || a.hasAttribute("download")) return;
+  const u = new URL(a.href, location.href);
+  if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash)) return;
+  if (u.pathname === location.pathname && !u.hash) { e.preventDefault(); return; }   // already on this page
+  e.preventDefault();
+  loader.classList.add("on");
+  setTimeout(() => (location.href = u.href), 450);
+});
+
+// Small icon set (fixed strings, safe to use as innerHTML)
+const ICONS = {
+  download: '<path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>',
+  arrow:    '<path d="M5 12h14m0 0l-6-6m6 6l-6 6"/>',
+  chat:     '<path d="M21 11.5a8.4 8.4 0 01-1 4 8.5 8.5 0 01-7.6 4.6 8.4 8.4 0 01-3.9-.9L3 21l1.9-5.4a8.4 8.4 0 01-.9-3.9 8.5 8.5 0 014.6-7.6 8.4 8.4 0 014-1h.5A8.5 8.5 0 0121 11v.5z"/>',
+};
+function iconEl(name) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML = ICONS[name] || "";
+  return svg;
+}
+
 function link(item) {
   const a = document.createElement("a");
   a.href = item.link;
@@ -15,64 +50,57 @@ function render(data) {
   const { person, navbar, hero, site } = data;
   const intro = data.intro || {};
 
-  document.title = site.title;
+  const pageTitle = document.body.dataset.title;
+  document.title = pageTitle ? pageTitle + " | " + site.title : site.title;
 
   // Navbar
   const logo = $("logo");
   logo.textContent = "";
   if (person.avatar) {
+    const ring = document.createElement("span");
+    ring.className = "avatar-ring";
     const av = document.createElement("img");
-    av.className = "nav__avatar"; av.src = person.avatar; av.alt = "";
-    av.addEventListener("error", () => av.remove());          // missing file -> just the name
-    logo.appendChild(av);
+    av.src = person.avatar; av.alt = "";
+    av.addEventListener("error", () => ring.remove());        // missing file -> just the name
+    ring.appendChild(av);
+    logo.appendChild(ring);
   }
   const nm = document.createElement("span"); nm.textContent = person.logoText; logo.appendChild(nm);
+  logo.setAttribute("href", "index.html");
   const nav = $("navLinks");
-  const navLinks = [];
+  const here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
   navbar.forEach((item) => {
     const a = link(item);
-    a.addEventListener("click", () => { nav.classList.remove("open"); setActive(a); });
+    if (item.link.toLowerCase() === here) a.classList.add("active");   // current page = grey pill
     nav.appendChild(a);
-    navLinks.push(a);
   });
-
-  // Active item gets the grey pill. Top of page = first item (About); while scrolling the
-  // item whose section has reached the upper part of the screen becomes active.
-  function setActive(el) { navLinks.forEach((l) => l.classList.toggle("active", l === el)); }
-  function spy() {
-    let current = navLinks[0];
-    navLinks.forEach((l) => {
-      const t = document.querySelector(l.getAttribute("href"));
-      if (t && t.getBoundingClientRect().top <= innerHeight * 0.35) current = l;
-    });
-    setActive(current);
-  }
-  let ticking = false;
-  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { spy(); ticking = false; }); } }, { passive: true });
-  spy();
   $("navToggle").addEventListener("click", () => nav.classList.toggle("open"));
 
+  if (window.renderSkills) renderSkills(data.skills);
+
+  const chatCfg = data.chatbot || {};
+  const chat = chatCfg.enabled === false ? null : initChat(chatCfg);
+  if ($("home")) renderHome(data, chat, intro);
+  else if (chat) addChatFab(chat);
+  pageReady();
+}
+
+// Floating chat button for every page except the home page (home has it in the hero)
+function addChatFab(chat) {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "btn btn--orb chat-fab"; b.setAttribute("aria-label", "Chatbot");
+  b.appendChild(iconEl("chat"));
+  const d = document.createElement("span"); d.className = "dot"; b.appendChild(d);
+  b.addEventListener("click", chat.open);
+  document.body.appendChild(b);
+}
+
+function renderHome(data, chat, intro) {
+  const { person, hero } = data;
   // Hero text
   $("bgName").textContent = person.shortName;
   $("role").textContent = person.role + ".";
   $("subtitle").textContent = person.subtitle;
-
-  // Bottom-corner actions: Explore Work, Resume, chatbot (all from data.json -> hero.actions)
-  const chatCfg = data.chatbot || {};
-  const chat = chatCfg.enabled === false ? null : initChat(chatCfg);
-  // Small icon set (fixed strings, safe to use as innerHTML)
-  const ICONS = {
-    download: '<path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>',
-    arrow:    '<path d="M5 12h14m0 0l-6-6m6 6l-6 6"/>',
-    chat:     '<path d="M21 11.5a8.4 8.4 0 01-1 4 8.5 8.5 0 01-7.6 4.6 8.4 8.4 0 01-3.9-.9L3 21l1.9-5.4a8.4 8.4 0 01-.9-3.9 8.5 8.5 0 014.6-7.6 8.4 8.4 0 014-1h.5A8.5 8.5 0 0121 11v.5z"/>',
-  };
-  function iconEl(name) {
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 24 24");
-    svg.setAttribute("aria-hidden", "true");
-    svg.innerHTML = ICONS[name] || "";
-    return svg;
-  }
 
   hero.actions.forEach((a) => {
     let el;
@@ -280,6 +308,7 @@ fetch("data.json")
   .then((r) => r.json())
   .then(render)
   .catch(() => {
+    if (loader) loader.classList.remove("on");
     document.body.insertAdjacentHTML(
       "afterbegin",
       '<p style="padding:90px 24px;font-family:sans-serif">data.json load hoy ni. ' +

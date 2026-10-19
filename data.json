@@ -15,31 +15,31 @@
   "navbar": [
     {
       "label": "About",
-      "link": "#about"
+      "link": "about.html"
     },
     {
       "label": "News & Highlights",
-      "link": "#news"
+      "link": "news.html"
     },
     {
       "label": "Education",
-      "link": "#education"
+      "link": "education.html"
     },
     {
       "label": "Skills",
-      "link": "#skills"
+      "link": "skills.html"
     },
     {
       "label": "Projects",
-      "link": "#projects"
+      "link": "projects.html"
     },
     {
       "label": "Certificates",
-      "link": "#certificates"
+      "link": "certificates.html"
     },
     {
       "label": "Contact",
-      "link": "#contact"
+      "link": "contact.html"
     }
   ],
   "hero": {
@@ -77,5 +77,363 @@
     "apiUrl": "",
     "offlineMessage": "The chatbot is not connected yet. Set chatbot.apiUrl in data.json to your API endpoint.",
     "errorMessage": "Sorry, I could not reach the chatbot. Please try again."
+  },
+  "skills": {
+    "number": "02",
+    "title": "Skills",
+    "intro": "Comprehensive skill matrix spanning programming languages, software engineering, web development, AI/ML, tools, design, and soft skills.",
+    "icon": "tools",
+    "detailLabel": "Detail View",
+    "allLabel": "All Skills",
+    "categories": [
+      {
+        "id": "programming-languages",
+        "title": "Programming Languages",
+        "description": "Core languages used across coursework, coding practice, and project builds.",
+        "icon": "code",
+        "items": [
+          {
+            "name": "C",
+            "tag": "Fundamentals",
+            "percent": 85,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg"
+          },
+          {
+            "name": "C++",
+            "tag": "Pointers & STL",
+            "percent": 88,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg"
+          },
+          {
+            "name": "Java",
+            "tag": "OOP Basics",
+            "percent": 75,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg"
+          },
+          {
+            "name": "Python",
+            "tag": "Scripting & ML",
+            "percent": 90,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
+          },
+          {
+            "name": "JavaScript",
+            "tag": "ES6+ Vanilla",
+            "percent": 82,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"
+          }
+        ]
+      },
+      {
+        "id": "web-development",
+        "title": "Web Development",
+        "description": "Front-end and back-end engineering for modern web applications.",
+        "icon": "globe",
+        "items": [
+          {
+            "name": "HTML5",
+            "tag": "Semantic Web",
+            "percent": 92,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg"
+          },
+          {
+            "name": "CSS3",
+            "tag": "Flexbox & Grid",
+            "percent": 90,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg"
+          },
+          {
+            "name": "Tailwind CSS",
+            "tag": "Utility Styling",
+            "percent": 85,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg"
+          },
+          {
+            "name": "React",
+            "tag": "Component Architecture",
+            "percent": 78,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+          },
+          {
+            "name": "Node.js",
+            "tag": "Backend Runtime",
+            "percent": 75,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
+          },
+          {
+            "name": "Next.js",
+            "tag": "SSR & Routing",
+            "percent": 70,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg"
+          }
+        ]
+      },
+      {
+        "id": "ai-ml",
+        "title": "AI / ML",
+        "description": "Machine learning, computer vision, and NLP for intelligent product features.",
+        "icon": "code",
+        "items": [
+          {
+            "name": "TensorFlow",
+            "tag": "Deep Learning",
+            "percent": 78,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tensorflow/tensorflow-original.svg"
+          },
+          {
+            "name": "OpenCV",
+            "tag": "Computer Vision",
+            "percent": 75,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg"
+          },
+          {
+            "name": "Scikit-Learn",
+            "tag": "Classical ML",
+            "percent": 80,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scikitlearn/scikitlearn-original.svg"
+          },
+          {
+            "name": "NLP",
+            "tag": "Text Processing",
+            "percent": 72,
+            "logo": "https://cdn.simpleicons.org/naturallanguageprocessing"
+          }
+        ]
+      },
+      {
+        "id": "tools-platforms",
+        "title": "Tools & Platforms",
+        "description": "IDEs, version control, databases, and system-level environments.",
+        "icon": "tools",
+        "items": [
+          {
+            "name": "SQL",
+            "tag": "Queries & Joins",
+            "percent": 85,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg"
+          },
+          {
+            "name": "XAMPP",
+            "tag": "Apache & MySQL",
+            "percent": 78,
+            "logo": "https://cdn.simpleicons.org/xampp/FB7A24"
+          },
+          {
+            "name": "Code::Blocks",
+            "tag": "C/C++ IDE",
+            "percent": 82,
+            "logo": "https://cdn.simpleicons.org/codeblocks/41B9F5"
+          },
+          {
+            "name": "PyCharm",
+            "tag": "Python IDE",
+            "percent": 80,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pycharm/pycharm-original.svg"
+          },
+          {
+            "name": "VS Code",
+            "tag": "IDE Mastery",
+            "percent": 92,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg"
+          },
+          {
+            "name": "Git",
+            "tag": "Version Control",
+            "percent": 88,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"
+          },
+          {
+            "name": "GitHub",
+            "tag": "Repos & Collaboration",
+            "percent": 88,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+          },
+          {
+            "name": "Linux",
+            "tag": "Shell Basics",
+            "percent": 78,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg"
+          },
+          {
+            "name": "Ubuntu",
+            "tag": "WSL2 Setup",
+            "percent": 78,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-plain.svg"
+          },
+          {
+            "name": "VirtualBox",
+            "tag": "Virtualization",
+            "percent": 72,
+            "logo": "https://cdn.simpleicons.org/virtualbox/183A61"
+          },
+          {
+            "name": "Arduino IDE",
+            "tag": "Embedded Basics",
+            "percent": 65,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/arduino/arduino-original.svg"
+          },
+          {
+            "name": "Trello",
+            "tag": "Task Management",
+            "percent": 82,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/trello/trello-plain.svg"
+          }
+        ]
+      },
+      {
+        "id": "creative-design",
+        "title": "Creative & Design",
+        "description": "Visual design, photo editing, and video production tools.",
+        "icon": "brush",
+        "items": [
+          {
+            "name": "Canva",
+            "tag": "UI & Marketing Assets",
+            "percent": 85,
+            "logo": "https://cdn.simpleicons.org/canva/00C4CC"
+          },
+          {
+            "name": "CapCut",
+            "tag": "Video Suite",
+            "percent": 80,
+            "logo": "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/capcut-color.svg"
+          },
+          {
+            "name": "Adobe Premiere Pro",
+            "tag": "Video Editing",
+            "percent": 70,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/premierepro/premierepro-original.svg"
+          },
+          {
+            "name": "Adobe Photoshop",
+            "tag": "Photo Editing",
+            "percent": 70,
+            "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-plain.svg"
+          }
+        ]
+      },
+      {
+        "id": "productivity",
+        "title": "Productivity Tools",
+        "description": "Office suite tools for documentation, data, and presentations.",
+        "icon": "tools",
+        "items": [
+          {
+            "name": "MS Word",
+            "tag": "Documentation",
+            "percent": 88,
+            "logo": "https://cdn.simpleicons.org/microsoftword/2B579A"
+          },
+          {
+            "name": "MS Excel",
+            "tag": "Data Analysis",
+            "percent": 80,
+            "logo": "https://cdn.simpleicons.org/microsoftexcel/217346"
+          },
+          {
+            "name": "MS PowerPoint",
+            "tag": "Presentation Design",
+            "percent": 90,
+            "logo": "https://cdn.simpleicons.org/microsoftpowerpoint/B7472A"
+          }
+        ]
+      },
+      {
+        "id": "soft-skills",
+        "title": "Soft Skills",
+        "description": "Interpersonal capabilities for collaborative engineering and leadership.",
+        "icon": "users",
+        "items": [
+          {
+            "name": "Teamwork",
+            "tag": "Agile Collaboration",
+            "percent": 90,
+            "logo": ""
+          },
+          {
+            "name": "Communication",
+            "tag": "Technical Writing",
+            "percent": 88,
+            "logo": ""
+          },
+          {
+            "name": "Problem Solving",
+            "tag": "Root Cause Analysis",
+            "percent": 92,
+            "logo": ""
+          }
+        ]
+      },
+      {
+        "id": "software-engineering",
+        "title": "Software Engineering",
+        "description": "System-level thinking, structuring, and problem-solving principles.",
+        "icon": "code",
+        "items": [
+          {
+            "name": "Data Structures & Algorithms",
+            "tag": "Problem Solving",
+            "percent": 85,
+            "logo": ""
+          },
+          {
+            "name": "OOP",
+            "tag": "Design Principles",
+            "percent": 85,
+            "logo": ""
+          },
+          {
+            "name": "Software Architecture",
+            "tag": "System Design",
+            "percent": 80,
+            "logo": ""
+          },
+          {
+            "name": "SRS & UML Modeling",
+            "tag": "DFD, Use Case",
+            "percent": 88,
+            "logo": ""
+          },
+          {
+            "name": "Database Systems",
+            "tag": "Relational DB",
+            "percent": 82,
+            "logo": ""
+          },
+          {
+            "name": "Statistics",
+            "tag": "Applied Math",
+            "percent": 78,
+            "logo": ""
+          }
+        ]
+      }
+    ],
+    "services": {
+      "title": "Services",
+      "icon": "tools",
+      "items": [
+        {
+          "icon": "code",
+          "title": "Frontend Development",
+          "description": "Building clean, component-driven interfaces with HTML, CSS, and JavaScript."
+        },
+        {
+          "icon": "globe",
+          "title": "Responsive Web Design",
+          "description": "Layouts that adapt cleanly across mobile, tablet, and desktop."
+        },
+        {
+          "icon": "tools",
+          "title": "AI-Assisted Development",
+          "description": "Writing, debugging, and shipping software faster with AI as a development partner."
+        },
+        {
+          "icon": "brush",
+          "title": "System Analysis & Design",
+          "description": "Turning requirements into DFDs, use case diagrams, and SRS documents before writing a line of code."
+        }
+      ]
+    }
   }
 }
