@@ -3,15 +3,42 @@
 
 const $ = (id) => document.getElementById(id);
 
-// ---------- Page loader: shows while a page opens / when going to another page ----------
+// ---------- Page loader: curtain with MAHIM letters + % counter. Shows while a page opens / when going to another page ----------
 const loader = $("pageload");
 const loadStart = Date.now();
+let plPct = 0, plRaf = 0, plPctEl = null, plFill = null;
+function buildLoader() {
+  if (!loader || loader.dataset.ready) return;
+  loader.dataset.ready = "1";
+  const word = (loader.querySelector(".pageload__name") || {}).textContent || "MAHIM";
+  loader.textContent = "";
+  const name = document.createElement("div"); name.className = "pageload__name"; name.setAttribute("aria-hidden", "true");
+  [...word].forEach((ch, i) => { const s = document.createElement("span"); s.textContent = ch; s.style.animationDelay = i * 0.09 + "s"; name.appendChild(s); });
+  const dot = document.createElement("span"); dot.className = "pl-dot"; dot.textContent = "."; dot.style.animationDelay = [...word].length * 0.09 + "s"; name.appendChild(dot);
+  const hi = document.createElement("div"); hi.className = "pageload__hi";
+  const words = ["👋", "💻", "🚀", "✨", "🔥", "🎯"]; let wi = 0;
+  const hs = document.createElement("span"); hs.textContent = words[0]; hi.appendChild(hs);
+  setInterval(() => { if (!loader.classList.contains("on")) return; wi = (wi + 1) % words.length; hs.style.animation = "none"; void hs.offsetWidth; hs.style.animation = ""; hs.textContent = words[wi]; }, 180);
+  const bar = document.createElement("div"); bar.className = "pageload__bar"; plFill = document.createElement("i"); bar.appendChild(plFill);
+  plPctEl = document.createElement("div"); plPctEl.className = "pageload__pct"; plPctEl.textContent = "0";
+  loader.append(hi, name, bar, plPctEl);
+}
+function plSet(p) { plPct = p; if (plFill) plFill.style.width = p + "%"; if (plPctEl) plPctEl.textContent = Math.round(p); }
+function plRun() {                                   // eases toward 90% while the page is loading
+  cancelAnimationFrame(plRaf);
+  const t0 = performance.now();
+  (function f(now) { const p = 90 * (1 - Math.exp(-(now - t0) / 180)); if (p > plPct) plSet(p); plRaf = requestAnimationFrame(f); })(t0);
+}
+buildLoader(); plRun();
 function pageReady() {
   if (!loader) return;
-  const wait = Math.max(0, 650 - (Date.now() - loadStart));      // show the loader at least a moment
-  setTimeout(() => loader.classList.remove("on"), wait);
+  const wait = Math.max(0, 450 - (Date.now() - loadStart));      // show the loader at least a moment
+  setTimeout(() => {
+    cancelAnimationFrame(plRaf); plSet(100);
+    setTimeout(() => loader.classList.remove("on"), 150);
+  }, wait);
 }
-addEventListener("pageshow", (e) => { if (e.persisted && loader) loader.classList.remove("on"); });
+addEventListener("pageshow", (e) => { if (e.persisted && loader) { plSet(100); loader.classList.remove("on"); } });
 document.addEventListener("click", (e) => {
   const a = e.target.closest && e.target.closest("a[href]");
   if (!a || !loader || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
@@ -20,8 +47,8 @@ document.addEventListener("click", (e) => {
   if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash)) return;
   if (u.pathname === location.pathname && !u.hash) { e.preventDefault(); return; }   // already on this page
   e.preventDefault();
-  loader.classList.add("on");
-  setTimeout(() => (location.href = u.href), 450);
+  plSet(0); plRun(); loader.classList.add("on");
+  setTimeout(() => (location.href = u.href), 380);
 });
 
 // Small icon set (fixed strings, safe to use as innerHTML)
