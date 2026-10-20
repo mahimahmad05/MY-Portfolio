@@ -15,31 +15,45 @@
   "navbar": [
     {
       "label": "About",
-      "link": "about.html"
+      "link": "about.html",
+      "emoji": "👋",
+      "fun": "Nice to meet you!"
     },
     {
       "label": "News & Highlights",
-      "link": "news.html"
+      "link": "news.html",
+      "emoji": "📰",
+      "fun": "Fresh updates, hot off the press"
     },
     {
       "label": "Education",
-      "link": "education.html"
+      "link": "education.html",
+      "emoji": "🎓",
+      "fun": "Learning never stops"
     },
     {
       "label": "Skills",
-      "link": "skills.html"
+      "link": "skills.html",
+      "emoji": "⚡",
+      "fun": "Tools of the trade"
     },
     {
       "label": "Projects",
-      "link": "projects.html"
+      "link": "projects.html",
+      "emoji": "🚀",
+      "fun": "Built with love & coffee"
     },
     {
       "label": "Certificates",
-      "link": "certificates.html"
+      "link": "certificates.html",
+      "emoji": "🏆",
+      "fun": "Proud moments"
     },
     {
       "label": "Contact",
-      "link": "contact.html"
+      "link": "contact.html",
+      "emoji": "💌",
+      "fun": "Let's build something together!"
     }
   ],
   "hero": {

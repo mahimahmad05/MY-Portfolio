@@ -118,15 +118,20 @@ function renderPageNav(navbar) {
     const ic = document.createElement("span"); ic.className = "page-nav__icon"; ic.appendChild(iconEl("arrow"));
     const tx = document.createElement("span"); tx.className = "page-nav__text";
     const lb = document.createElement("span"); lb.className = "page-nav__label"; lb.textContent = dir === "prev" ? "Previous" : "Next";
-    const tt = document.createElement("span"); tt.className = "page-nav__title"; tt.textContent = item.label;
+    const tt = document.createElement("span"); tt.className = "page-nav__title"; tt.textContent = (item.emoji ? item.emoji + " " : "") + item.label;
     tx.append(lb, tt);
     if (dir === "prev") a.append(ic, tx); else a.append(tx, ic);
     return a;
   };
   if (i > 0) box.appendChild(make(navbar[i - 1], "prev"));
+  if (navbar[i].fun) {                       // little message with an emoji in the middle
+    const f = document.createElement("span"); f.className = "page-nav__fun";
+    const em = document.createElement("span"); em.className = "page-nav__emoji"; em.setAttribute("aria-hidden", "true"); em.textContent = navbar[i].emoji || "✨";
+    f.append(em, document.createTextNode(" " + navbar[i].fun));
+    box.appendChild(f);
+  }
   if (i < navbar.length - 1) box.appendChild(make(navbar[i + 1], "next"));
   if (!box.children.length) return;
-  if (i === 0) box.classList.add("page-nav--end");
   main.appendChild(box);
 }
 
