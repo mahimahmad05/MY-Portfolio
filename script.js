@@ -83,6 +83,7 @@ function render(data) {
   if (window.renderProjects) renderProjects(data.projects);
   if (window.renderNews) renderNews(data.news);
   if (window.renderAbout) renderAbout(data.about);
+  renderPageNav(navbar);
   if (window.renderFooter) renderFooter(data);
 
   const chatCfg = data.chatbot || {};
@@ -98,6 +99,35 @@ function render(data) {
     }
   } else if (chat) addChatFab(chat);
   pageReady();
+}
+
+// Previous / Next buttons at the bottom of every page, in the same order as the navbar.
+// (The home page counts as "About", because About sits right under the hero.)
+function renderPageNav(navbar) {
+  const main = document.querySelector("main");
+  if (!main || !navbar.length) return;
+  let file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  if (file === "index.html") file = "about.html";
+  const i = navbar.findIndex((n) => n.link.toLowerCase() === file);
+  if (i === -1) return;
+  const box = document.createElement("nav");
+  box.className = "page-nav"; box.setAttribute("aria-label", "Page navigation");
+  const make = (item, dir) => {
+    const a = document.createElement("a");
+    a.className = "page-nav__btn page-nav__" + dir; a.href = item.link;
+    const ic = document.createElement("span"); ic.className = "page-nav__icon"; ic.appendChild(iconEl("arrow"));
+    const tx = document.createElement("span"); tx.className = "page-nav__text";
+    const lb = document.createElement("span"); lb.className = "page-nav__label"; lb.textContent = dir === "prev" ? "Previous" : "Next";
+    const tt = document.createElement("span"); tt.className = "page-nav__title"; tt.textContent = item.label;
+    tx.append(lb, tt);
+    if (dir === "prev") a.append(ic, tx); else a.append(tx, ic);
+    return a;
+  };
+  if (i > 0) box.appendChild(make(navbar[i - 1], "prev"));
+  if (i < navbar.length - 1) box.appendChild(make(navbar[i + 1], "next"));
+  if (!box.children.length) return;
+  if (i === 0) box.classList.add("page-nav--end");
+  main.appendChild(box);
 }
 
 // Floating chat button for every page except the home page (home has it in the hero)
