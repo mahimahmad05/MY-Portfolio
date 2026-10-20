@@ -182,6 +182,17 @@ function renderHome(data, chat, intro) {
     $("heroActions").appendChild(el);
   });
 
+  // ---- Live clock + date (data.json -> hero.clock). timeZone null = the visitor's own time ----
+  const ck = hero.clock;
+  if (ck && ck.enabled !== false && $("heroClock")) {
+    const tz = ck.timeZone || undefined;
+    const tf = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", second: ck.seconds === false ? undefined : "2-digit", hour12: ck.hour12 !== false, timeZone: tz });
+    const df = new Intl.DateTimeFormat("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: tz });
+    const tick = () => { const n = new Date(); $("clockTime").textContent = tf.format(n); $("clockDate").textContent = df.format(n); };
+    tick(); $("heroClock").hidden = false;
+    setInterval(tick, 1000);
+  }
+
   // ---- Intro: video (if person.video is set) or text-to-speech ----
   const video = $("heroVideo");
   const voiceBtn = $("voiceBtn");

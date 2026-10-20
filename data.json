@@ -65,7 +65,13 @@
         "icon": "chat",
         "online": true
       }
-    ]
+    ],
+    "clock": {
+      "enabled": true,
+      "seconds": true,
+      "hour12": true,
+      "timeZone": null
+    }
   },
   "intro": {
     "autoPlaySound": true,
