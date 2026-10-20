@@ -22,6 +22,8 @@
     const sec = $("about");
     if (!sec || !cfg) return;
     sec.hidden = false;
+    const bg = $("abBgImg");
+    if (bg && cfg.photo) { bg.onload = () => $("about").classList.add("has-photo"); bg.onerror = () => bg.remove(); bg.src = cfg.photo; }
     $("abEyeIcon").innerHTML = ICONS.spark; $("abTwIcon").innerHTML = ICONS.code;
     $("abEyebrow").textContent = cfg.eyebrow || "";
     $("abName").textContent = cfg.name || "";
