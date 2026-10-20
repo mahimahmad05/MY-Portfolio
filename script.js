@@ -186,9 +186,25 @@ function renderHome(data, chat, intro) {
   const ck = hero.clock;
   if (ck && ck.enabled !== false && $("heroClock")) {
     const tz = ck.timeZone || undefined;
-    const tf = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", second: ck.seconds === false ? undefined : "2-digit", hour12: ck.hour12 !== false, timeZone: tz });
-    const df = new Intl.DateTimeFormat("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: tz });
-    const tick = () => { const n = new Date(); $("clockTime").textContent = tf.format(n); $("clockDate").textContent = df.format(n); };
+    const h12 = ck.hour12 !== false;
+    const hm = new Intl.DateTimeFormat("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: h12, timeZone: tz });
+    const dt = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: tz });
+    const tiles = document.querySelectorAll("#heroClock .ck-tile");
+    const setTile = (el, ch) => {                         // flip the tile when its digit changes
+      if (el.textContent === ch) return;
+      const first = el.textContent === "";
+      el.textContent = ch;
+      if (!first) { el.classList.remove("flip"); void el.offsetWidth; el.classList.add("flip"); }
+    };
+    const tick = () => {
+      const n = new Date(), p = hm.formatToParts(n);
+      const g = (t) => (p.find((x) => x.type === t) || {}).value || "";
+      const H = g("hour"), M = g("minute");
+      setTile(tiles[0], H[0]); setTile(tiles[1], H[1]); setTile(tiles[2], M[0]); setTile(tiles[3], M[1]);
+      $("clockAmpm").textContent = h12 ? g("dayPeriod").toUpperCase() : "";
+      $("clockSec").textContent = ck.seconds === false ? "" : ":" + g("second");
+      $("clockDate").textContent = dt.format(n).replace(/^(\w+)/, "$1,");
+    };
     tick(); $("heroClock").hidden = false;
     setInterval(tick, 1000);
   }

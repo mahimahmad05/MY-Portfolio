@@ -6,7 +6,7 @@
   <title>Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="about.css">
 </head>
@@ -44,8 +44,13 @@
       <button class="voice" id="voiceBtn" type="button" aria-label="Play intro"></button>
 
       <div class="hero__clock" id="heroClock" hidden aria-label="Current time">
-        <div class="clock__time" id="clockTime"></div>
-        <div class="clock__date" id="clockDate"></div>
+        <div class="ck-row">
+          <span class="ck-tile"></span><span class="ck-tile"></span>
+          <span class="ck-colon">:</span>
+          <span class="ck-tile"></span><span class="ck-tile"></span>
+          <span class="ck-side"><b id="clockAmpm"></b><span id="clockSec"></span></span>
+        </div>
+        <div class="ck-date" id="clockDate"></div>
       </div>
 
       <div class="hero__actions" id="heroActions"></div>
