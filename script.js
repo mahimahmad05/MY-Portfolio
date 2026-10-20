@@ -87,8 +87,16 @@ function render(data) {
 
   const chatCfg = data.chatbot || {};
   const chat = chatCfg.enabled === false ? null : initChat(chatCfg);
-  if ($("home")) renderHome(data, chat, intro);
-  else if (chat) addChatFab(chat);
+  if ($("home")) {
+    renderHome(data, chat, intro);
+    // On the home page the chat button lives in the hero; once it scrolls out of view
+    // (About section etc.) show the floating one so the chatbot is always reachable.
+    if (chat && $("heroActions")) {
+      const fab = addChatFab(chat);
+      fab.hidden = true;
+      new IntersectionObserver((es) => { fab.hidden = es[0].isIntersecting; }).observe($("heroActions"));
+    }
+  } else if (chat) addChatFab(chat);
   pageReady();
 }
 
@@ -100,6 +108,7 @@ function addChatFab(chat) {
   const d = document.createElement("span"); d.className = "dot"; b.appendChild(d);
   b.addEventListener("click", chat.open);
   document.body.appendChild(b);
+  return b;
 }
 
 function renderHome(data, chat, intro) {

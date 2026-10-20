@@ -66,6 +66,21 @@
     };
     items.forEach((t) => track.appendChild(make(t)));
     items.forEach((t) => { const x = make(t); x.setAttribute("aria-hidden", "true"); track.appendChild(x); });
+
+    // Scroll with JS (not CSS) so it keeps moving even if the computer has "reduce animations" turned on.
+    let pos = 0, last = performance.now(), paused = false;
+    wrap.addEventListener("mouseenter", () => (paused = true));
+    wrap.addEventListener("mouseleave", () => (paused = false));
+    (function frame(now) {
+      const dt = Math.min(now - last, 100); last = now;
+      const half = track.scrollWidth / 2;
+      if (!paused && half > 0) {
+        pos += (half / 32) * (dt / 1000);          // one full loop every 32 seconds
+        if (pos >= half) pos -= half;
+        track.style.transform = "translate3d(" + -pos + "px,0,0)";
+      }
+      requestAnimationFrame(frame);
+    })(last);
   }
 
   function card(c) {
