@@ -1113,5 +1113,23 @@
       ]
     },
     "photo": "assets/about-photo.jpg"
+  },
+  "backgrounds": {
+    "enabled": true,
+    "folder": "assets/backgrounds/",
+    "formats": [
+      "mp4",
+      "webm"
+    ],
+    "overlay": 0.55,
+    "blur": 0,
+    "skip": [
+      "home",
+      "about"
+    ],
+    "pages": {},
+    "respectReducedMotion": false,
+    "cardGlass": 0.22,
+    "cardBlur": 6
   }
 }

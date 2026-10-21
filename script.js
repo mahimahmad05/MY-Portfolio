@@ -78,12 +78,56 @@ function link(item) {
   return a;
 }
 
+
+// ---------- Page background video (just drop the file in assets/backgrounds/, see data.json "backgrounds") ----------
+function initPageBackground(cfg) {
+  if (!cfg || cfg.enabled === false) return;
+  const file = (location.pathname.split("/").pop() || "index.html").toLowerCase().replace(/\.html$/, "");
+  const key = file === "index" ? "home" : file;
+  const pages = cfg.pages || {};
+  if (!(key in pages) && (cfg.skip || ["home", "about"]).includes(key)) return;      // home + about keep their own look unless listed in "pages"
+  if (pages[key] === false) return;
+  const folder = cfg.folder || "assets/backgrounds/";
+  const exts = cfg.formats || ["mp4", "webm"];
+  const phone = matchMedia("(max-width: 700px)").matches;
+  const names = pages[key] ? [pages[key]] : [];
+  if (!names.length) {                                    // "news.mp4" / "news.webm" by default; on phones "news-mobile.mp4" is tried first (optional tall clip)
+    if (phone) exts.forEach((e) => names.push(folder + key + "-mobile." + e));
+    exts.forEach((e) => names.push(folder + key + "." + e));
+  }
+  const wrap = document.createElement("div"); wrap.className = "page-bg"; wrap.setAttribute("aria-hidden", "true");
+  const v = document.createElement("video");
+  v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = "auto"; v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+  const shade = document.createElement("div"); shade.className = "page-bg__shade";
+  shade.style.setProperty("--bg-shade", String(cfg.overlay != null ? cfg.overlay : 0.55));
+  if (cfg.cardGlass != null) document.body.style.setProperty("--card-glass", String(cfg.cardGlass));
+  if (cfg.cardBlur != null) document.body.style.setProperty("--card-blur", cfg.cardBlur + "px");
+  if (cfg.blur) v.style.filter = "blur(" + cfg.blur + "px)";
+  wrap.append(v, shade);
+  let i = 0;
+  const next = () => {                                    // try the next file name; no file at all -> nothing is added
+    if (i >= names.length) { wrap.remove(); document.body.classList.remove("has-bg"); return; }
+    v.src = names[i++];
+  };
+  v.addEventListener("error", next);
+  v.addEventListener("loadeddata", () => {
+    document.body.classList.add("has-bg"); wrap.classList.add("on");
+    // plays even if the computer has "reduce motion" switched on (many Windows PCs do); set "respectReducedMotion": true in data.json to obey it
+    if (cfg.respectReducedMotion && matchMedia("(prefers-reduced-motion: reduce)").matches) v.pause(); else v.play().catch(() => {});
+  });
+  const kick = () => { if (v.paused && wrap.classList.contains("on")) v.play().catch(() => {}); };
+  ["pointerdown", "keydown", "scroll", "touchstart"].forEach((ev) => addEventListener(ev, kick, { once: true, passive: true }));
+  document.body.prepend(wrap);
+  next();
+}
+
 function render(data) {
   const { person, navbar, hero, site } = data;
   const intro = data.intro || {};
 
   const pageTitle = document.body.dataset.title;
   document.title = pageTitle ? pageTitle + " | " + site.title : site.title;
+  initPageBackground(data.backgrounds);
 
   // Navbar
   const logo = $("logo");
@@ -427,3 +471,4 @@ fetch("data.json")
       "index.html double-click na kore VS Code er <b>Live Server</b> diye open koro.</p>"
     );
   });
+
