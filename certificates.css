@@ -1,8 +1,8 @@
 /* Certificates section — cream + dark navy like the rest of the site. Colours = variables in the first block. */
 .cert-sec, .cx-modal {
-  --bg: #0d0d0e; --bg-alt: #161513; --line: rgba(200,149,79,.28);
-  --ink: #ecd3ae; --ink-dim: #b3a48c; --ink-dimmer: #9a8d78;
-  --accent: #c8954f; --accent-dim: rgba(200,149,79,.09);
+  --bg: #050b1f; --bg-alt: #0a1a45; --line: rgba(70,130,255,.28);
+  --ink: #dbe8ff; --ink-dim: #9fb6e6; --ink-dimmer: #7f98cf;
+  --accent: #2f6bff; --accent-dim: rgba(70,130,255,.09);
   font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif; color: var(--ink);
 }
 .cert-sec[hidden] { display: none; }
@@ -49,8 +49,8 @@
 /* popups */
 .cx-modal { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: 30px; }
 .cx-modal.open { display: flex; }
-.cx-backdrop { position: absolute; inset: 0; background: rgba(200,149,79,.5); backdrop-filter: blur(4px); }
-.cx-box { position: relative; width: min(560px, 92vw); max-height: 85vh; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 60px -20px rgba(200,149,79,.5); }
+.cx-backdrop { position: absolute; inset: 0; background: rgba(70,130,255,.5); backdrop-filter: blur(4px); }
+.cx-box { position: relative; width: min(560px, 92vw); max-height: 85vh; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 60px -20px rgba(70,130,255,.5); }
 .cx-imgbox { width: auto; max-width: min(760px, 92vw); padding: 20px; overflow: auto; }
 .cx-imgbox img { display: none; max-width: 100%; max-height: 72vh; margin: 0 auto; border-radius: 8px; }
 .cx-fallback { display: none; font-size: 13px; color: var(--ink-dimmer); text-align: center; padding: 40px 30px; }

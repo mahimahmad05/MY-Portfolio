@@ -1,8 +1,8 @@
 /* News & Highlights page — cream + dark navy. Colours = variables in the first block. */
 .nw-sec {
-  --bg: #0d0d0e; --bg-alt: #161513; --line: rgba(200,149,79,.28);
-  --ink: #ecd3ae; --ink-dim: #b3a48c; --ink-dimmer: #9a8d78;
-  --accent: #c8954f; --accent-dim: rgba(200,149,79,.09);
+  --bg: #050b1f; --bg-alt: #0a1a45; --line: rgba(70,130,255,.28);
+  --ink: #dbe8ff; --ink-dim: #9fb6e6; --ink-dimmer: #7f98cf;
+  --accent: #2f6bff; --accent-dim: rgba(70,130,255,.09);
   font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif; color: var(--ink);
   padding: 90px clamp(20px, 5vw, 64px) 100px;
 }
@@ -41,7 +41,7 @@
 .hl-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--ink-dimmer); }
 .hl-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .7s ease; }
 .hl-img.active { opacity: 1; }
-.hl-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: rgba(22,21,19,.92); color: var(--ink-dim); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity .2s, color .2s, border-color .2s; }
+.hl-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: rgba(10,26,69,.92); color: var(--ink-dim); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity .2s, color .2s, border-color .2s; }
 .hl-arrow svg { width: 18px; height: 18px; }
 .hl-prev { left: 12px; } .hl-next { right: 12px; }
 .hl-frame:hover .hl-arrow { opacity: 1; }
@@ -49,6 +49,6 @@
 .hl-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .hl-dot { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg-alt); color: var(--ink-dim); font: 700 13px "Plus Jakarta Sans", sans-serif; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
 .hl-dot:hover { border-color: var(--accent); color: var(--accent); }
-.hl-dot.active { background: var(--accent); border-color: var(--accent); color: #15110a; }
+.hl-dot.active { background: var(--accent); border-color: var(--accent); color: #ffffff; }
 
 @media (max-width: 560px) { .nw-sec { padding-top: 70px; } .nl-row { flex-wrap: wrap; } .nl-date { margin-left: 24px; } .hl-arrow { opacity: 1; } }
