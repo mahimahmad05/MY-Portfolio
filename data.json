@@ -9,6 +9,7 @@
     "role": "Full Stack Developer",
     "subtitle": "Creative developer · AI & ML · Web technology",
     "video": "assets/intro.mp4",
+    "videoAlpha": "assets/intro.webm",
     "voiceIntro": "Hi, I'm Mahim Ahmad, a full stack developer focused on AI and machine learning. Welcome to my portfolio.",
     "avatar": "assets/profile.jpg"
   },

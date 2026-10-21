@@ -1,7 +1,7 @@
 /* Footer — cream + dark navy like the rest of the site. */
 .site-footer {
-  --bg: #f2efe0; --bg-alt: #fbfaf4; --line: rgba(21,21,31,.12);
-  --ink: #15151f; --ink-dim: #55544c; --ink-dimmer: #6b6a62; --accent: #1b1b3a;
+  --bg: #0d0d0e; --bg-alt: #161513; --line: rgba(200,149,79,.28);
+  --ink: #ecd3ae; --ink-dim: #b3a48c; --ink-dimmer: #9a8d78; --accent: #c8954f;
   position: relative; margin-top: 20px; border-top: 1px solid var(--line);
   background: var(--bg-alt); color: var(--ink);
   font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
@@ -35,7 +35,7 @@
 @keyframes heart-beat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.25); } }
 @media (prefers-reduced-motion: reduce) { .footer-heart { animation: none; } }
 
-.back-to-top { position: fixed; right: 26px; bottom: 92px; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 22px -8px rgba(27,27,58,.7); z-index: 60; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .25s ease, transform .25s ease, visibility .25s ease; }
+.back-to-top { position: fixed; right: 26px; bottom: 92px; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--accent); color: #15110a; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 22px -8px rgba(200,149,79,.7); z-index: 60; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .25s ease, transform .25s ease, visibility .25s ease; }
 .back-to-top.show { opacity: 1; visibility: visible; transform: none; }
 .back-to-top svg { width: 19px; height: 19px; }
 .back-to-top:hover { transform: translateY(-3px); }

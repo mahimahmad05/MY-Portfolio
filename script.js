@@ -235,7 +235,7 @@ function renderHome(data, chat, intro) {
       setTile(tiles[0], H[0]); setTile(tiles[1], H[1]); setTile(tiles[2], M[0]); setTile(tiles[3], M[1]);
       $("clockAmpm").textContent = h12 ? g("dayPeriod").toUpperCase() : "";
       $("clockSec").textContent = ck.seconds === false ? "" : ":" + g("second");
-      $("clockDate").textContent = dt.format(n).replace(/^(\w+)/, "$1,");
+      $("clockDate").textContent = dt.format(n).replace(/^(\w+),?\s*/, "$1, ");
     };
     tick(); $("heroClock").hidden = false;
     setInterval(tick, 1000);
@@ -256,7 +256,9 @@ function renderHome(data, chat, intro) {
 
   if (person.video) {
     hasVideo = true;
-    video.src = person.video;
+    // transparent WebM (alpha) where the browser supports it; Safari has no WebM alpha, so it gets the MP4 that is already flattened on the page colour
+    const isSafari = /^((?!chrome|chromium|android).)*safari/i.test(navigator.userAgent);
+    video.src = (person.videoAlpha && !isSafari && video.canPlayType('video/webm; codecs="vp9"')) ? person.videoAlpha : person.video;
     video.addEventListener("error", () => { hasVideo = false; video.hidden = true; });   // no video file -> hero shows no picture
     video.addEventListener("loadeddata", () => { video.hidden = false; });
     video.addEventListener("ended", () => {          // after the spoken intro, go back to a silent loop

@@ -1,16 +1,16 @@
 /* Skills section — matches the home page (cream + dark navy). Colours are the variables in the first block. */
 .skills-sec, .skill-modal {
-  --bg: #f2efe0;            /* same cream as the home page */
-  --bg-alt: #fbfaf4;        /* card colour (same as the navbar pill) */
-  --grid-line: rgba(21,21,31,.05);
-  --grid-line-strong: rgba(21,21,31,.12);
-  --ink: #15151f;
-  --ink-dim: #55544c;
-  --ink-dimmer: #6b6a62;
-  --accent: #1b1b3a;        /* same dark navy as the home buttons */
-  --accent2: #55557a;
+  --bg: #0d0d0e;            /* same cream as the home page */
+  --bg-alt: #161513;        /* card colour (same as the navbar pill) */
+  --grid-line: rgba(200,149,79,.05);
+  --grid-line-strong: rgba(200,149,79,.12);
+  --ink: #ecd3ae;
+  --ink-dim: #b3a48c;
+  --ink-dimmer: #9a8d78;
+  --accent: #c8954f;        /* same dark navy as the home buttons */
+  --accent2: #e0b97a;
   --accent3: #9a9ab8;
-  --accent-dim: rgba(27,27,58,.09);
+  --accent-dim: rgba(200,149,79,.09);
   font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   color: var(--ink);
 }
@@ -65,7 +65,7 @@
   border: 1px solid var(--grid-line-strong); background: transparent; color: var(--ink-dim); cursor: pointer; transition: all .2s ease;
 }
 .skf-btn:hover { border-color: transparent; color: var(--ink); }
-.skf-btn.active { background: var(--accent); color: #fff; border-color: transparent; font-weight: 600; box-shadow: 0 6px 18px -8px rgba(27,27,58,.55); }
+.skf-btn.active { background: var(--accent); color: #15110a; border-color: transparent; font-weight: 600; box-shadow: 0 6px 18px -8px rgba(200,149,79,.55); }
 
 /* ---- cards ---- */
 .skills-grid { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: stretch; }
@@ -117,7 +117,7 @@
 /* ---- detail popup ---- */
 .skill-modal { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: 30px; }
 .skill-modal.open { display: flex; }
-.skill-modal-backdrop { position: absolute; inset: 0; background: rgba(21,21,31,.45); backdrop-filter: blur(4px); }
+.skill-modal-backdrop { position: absolute; inset: 0; background: rgba(200,149,79,.45); backdrop-filter: blur(4px); }
 .skill-modal-box { position: relative; width: min(520px, 92vw); max-height: 85vh; background: var(--bg-alt); border: 1px solid var(--grid-line-strong); border-radius: 16px; }
 .skill-modal-scroll { max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 32px 34px; border-radius: inherit; scrollbar-width: thin; scrollbar-color: var(--grid-line-strong) transparent; }
 .skill-modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--ink-dim); font-size: 26px; line-height: 1; cursor: pointer; z-index: 3; }
@@ -145,7 +145,7 @@
 .skill-pop {
   position: absolute; z-index: 30; pointer-events: none;
   background: var(--bg-alt); border: 1px solid var(--accent); border-radius: 14px; overflow: hidden;
-  padding: 20px 22px 14px; box-shadow: 0 18px 40px -14px rgba(21,21,31,.35);
+  padding: 20px 22px 14px; box-shadow: 0 18px 40px -14px rgba(200,149,79,.35);
   animation: pop-in .16s ease-out;
 }
 @keyframes pop-in { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: none; } }

@@ -1,8 +1,8 @@
 /* Projects page — cream + dark navy. Colours = variables in the first block. */
 .proj-sec, .px-modal {
-  --bg: #f2efe0; --bg-alt: #fbfaf4; --line: rgba(21,21,31,.12);
-  --ink: #15151f; --ink-dim: #55544c; --ink-dimmer: #6b6a62;
-  --accent: #1b1b3a; --accent-dim: rgba(27,27,58,.09);
+  --bg: #0d0d0e; --bg-alt: #161513; --line: rgba(200,149,79,.28);
+  --ink: #ecd3ae; --ink-dim: #b3a48c; --ink-dimmer: #9a8d78;
+  --accent: #c8954f; --accent-dim: rgba(200,149,79,.09);
   font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif; color: var(--ink);
 }
 .proj-sec[hidden], .proj-gh[hidden] { display: none; }
@@ -59,8 +59,8 @@
 /* screenshot popup */
 .px-modal { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: 30px; }
 .px-modal.open { display: flex; }
-.px-backdrop { position: absolute; inset: 0; background: rgba(21,21,31,.5); backdrop-filter: blur(4px); }
-.px-box { position: relative; max-width: min(900px, 92vw); max-height: 88vh; overflow: auto; padding: 20px; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 60px -20px rgba(21,21,31,.5); }
+.px-backdrop { position: absolute; inset: 0; background: rgba(200,149,79,.5); backdrop-filter: blur(4px); }
+.px-box { position: relative; max-width: min(900px, 92vw); max-height: 88vh; overflow: auto; padding: 20px; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 60px -20px rgba(200,149,79,.5); }
 .px-box img { display: none; max-width: 100%; max-height: 74vh; margin: 0 auto; border-radius: 8px; }
 .px-fallback { display: none; font-size: 13px; color: var(--ink-dimmer); text-align: center; padding: 40px 30px; }
 .px-close { position: absolute; top: 8px; right: 14px; background: none; border: 0; color: var(--ink-dim); font-size: 26px; line-height: 1; cursor: pointer; z-index: 3; }

@@ -1,8 +1,8 @@
 /* Education page — cream + dark navy. Colours = variables in the first block. */
 .edu-sec, .ex-modal {
-  --bg: #f2efe0; --bg-alt: #fbfaf4; --line: rgba(21,21,31,.12);
-  --ink: #15151f; --ink-dim: #55544c; --ink-dimmer: #6b6a62;
-  --accent: #1b1b3a; --accent2: #55557a; --accent-dim: rgba(27,27,58,.09);
+  --bg: #0d0d0e; --bg-alt: #161513; --line: rgba(200,149,79,.28);
+  --ink: #ecd3ae; --ink-dim: #b3a48c; --ink-dimmer: #9a8d78;
+  --accent: #c8954f; --accent2: #e0b97a; --accent-dim: rgba(200,149,79,.09);
   font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif; color: var(--ink);
 }
 .edu-sec[hidden], .sub-sec[hidden] { display: none; }
@@ -70,8 +70,8 @@
 /* certificate image popup */
 .ex-modal { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: 30px; }
 .ex-modal.open { display: flex; }
-.ex-backdrop { position: absolute; inset: 0; background: rgba(21,21,31,.5); backdrop-filter: blur(4px); }
-.ex-box { position: relative; max-width: min(760px, 92vw); max-height: 88vh; overflow: auto; padding: 20px; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 60px -20px rgba(21,21,31,.5); }
+.ex-backdrop { position: absolute; inset: 0; background: rgba(200,149,79,.5); backdrop-filter: blur(4px); }
+.ex-box { position: relative; max-width: min(760px, 92vw); max-height: 88vh; overflow: auto; padding: 20px; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 60px -20px rgba(200,149,79,.5); }
 .ex-box img { display: none; max-width: 100%; max-height: 72vh; margin: 0 auto; border-radius: 8px; }
 .ex-fallback { display: none; font-size: 13px; color: var(--ink-dimmer); text-align: center; padding: 40px 30px; }
 .ex-close { position: absolute; top: 8px; right: 14px; background: none; border: 0; color: var(--ink-dim); font-size: 26px; line-height: 1; cursor: pointer; z-index: 3; }
