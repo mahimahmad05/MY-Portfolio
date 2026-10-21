@@ -122,6 +122,7 @@
     if (!a) return;
     e.preventDefault();
     $("navLinks").classList.remove("open");
-    $("about").scrollIntoView({ behavior: "smooth", block: "start" });
+    const go = () => $("about").scrollIntoView({ behavior: "auto", block: "start" });
+    window.pageLoaderFlash ? window.pageLoaderFlash(go) : go();
   });
 })();

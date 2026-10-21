@@ -39,6 +39,11 @@ function pageReady() {
   }, wait);
 }
 addEventListener("pageshow", (e) => { if (e.persisted && loader) { plSet(100); loader.classList.remove("on"); } });
+window.pageLoaderFlash = (mid) => {                      // loader covers the screen, runs mid(), then lifts (for same-page jumps)
+  if (!loader) { mid(); return; }
+  plSet(0); plRun(); loader.classList.add("on");
+  setTimeout(() => { mid(); cancelAnimationFrame(plRaf); plSet(100); setTimeout(() => loader.classList.remove("on"), 150); }, 420);
+};
 document.addEventListener("click", (e) => {
   const a = e.target.closest && e.target.closest("a[href]");
   if (!a || !loader || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
