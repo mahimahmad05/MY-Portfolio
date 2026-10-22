@@ -29,20 +29,19 @@
 @keyframes rot-ring { to { --ang: 360deg; } }
 .skills-sec .glow-border, .skill-modal .glow-border { position: relative; }
 .skills-sec .glow-border::before, .skill-modal .glow-border::before {
-  content: ""; position: absolute; inset: -2px; border-radius: inherit; z-index: 0; pointer-events: none;
+  /* only a 2px ring is painted (mask cuts out the middle), so it also works on see-through glass cards */
+  content: ""; position: absolute; inset: -1px; padding: 2px; border-radius: inherit; z-index: 3; pointer-events: none;
   background: conic-gradient(from var(--ang), transparent 0deg, transparent 140deg, var(--accent) 155deg, var(--accent2) 178deg, var(--accent3) 200deg, transparent 215deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
   animation: rot-ring 2.5s linear infinite paused;
   opacity: 0; transition: opacity .35s ease;
 }
-.skills-sec .glow-border::after, .skill-modal .glow-border::after {
-  content: ""; position: absolute; inset: 2px; border-radius: inherit; background: inherit; z-index: 1;
-}
+.skills-sec .glow-border::after, .skill-modal .glow-border::after { content: none; }
 .skills-sec .glow-border:hover::before, .skill-modal .glow-border.always-glow::before { opacity: 1; animation-play-state: running; }
 .skills-sec .glow-border > *, .skill-modal .glow-border > * { position: relative; z-index: 2; }
 .skills-sec .glow-border > .card-topbar { position: absolute; z-index: 3; }
 .skill-modal .glow-border > .skill-modal-close { position: absolute; z-index: 3; }
-.skf-btn.glow-border::after, .skc-detail-btn.glow-border::after { background: var(--bg-alt); }
-.skf-btn.active.glow-border::after { background: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .glow-border::before { animation: none; } }
 
 /* ---- section header ---- */
@@ -144,7 +143,7 @@
 /* ---- small popup on top of the hovered card ---- */
 .skill-pop {
   position: absolute; z-index: 30; pointer-events: none;
-  background: var(--bg-alt); border: 1px solid var(--accent); border-radius: 14px; overflow: hidden;
+  background: #0a1a45; border: 1px solid var(--accent); border-radius: 14px; overflow: hidden;      /* solid, so the card text underneath never shows through */
   padding: 20px 22px 14px; box-shadow: 0 18px 40px -14px rgba(70,130,255,.35);
   animation: pop-in .16s ease-out;
 }

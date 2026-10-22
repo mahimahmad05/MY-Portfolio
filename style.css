@@ -395,3 +395,8 @@ body.has-bg .gh-chart-card, body.has-bg .hl-frame, body.has-bg .nl-more, body.ha
   -webkit-backdrop-filter: blur(var(--card-blur)); backdrop-filter: blur(var(--card-blur));
 }
 body.has-bg .site-footer { background: rgba(8, 20, 58, calc(var(--card-glass) + .25)); }
+
+/* pop-ups, hover cards and modal boxes stay solid (they sit on top of other text, so they must not be see-through) */
+body.has-bg .skill-pop, body.has-bg .skill-modal-box, body.has-bg .ex-box, body.has-bg .cx-box, body.has-bg .px-box {
+  background: #0a1a45 !important; -webkit-backdrop-filter: none; backdrop-filter: none;
+}
