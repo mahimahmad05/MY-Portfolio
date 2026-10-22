@@ -13,6 +13,7 @@
     "voiceIntro": "Hi, I'm Mahim Ahmad, a full stack developer focused on AI and machine learning. Welcome to my portfolio.",
     "avatar": "assets/profile.jpg"
   },
+
   "navbar": [
     {
       "label": "About",
@@ -1144,7 +1145,7 @@
     },
     "photo": "assets/about-photo.jpg"
   },
-  
+
   "backgrounds": {
     "enabled": true,
     "folder": "assets/backgrounds/",
