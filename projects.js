@@ -27,7 +27,7 @@
     document.getElementById("projTitle").textContent = cfg.title || "Projects";
     document.getElementById("projHeadIcon").innerHTML = ICONS[cfg.icon] || ICONS.rocket;
     const grid = document.getElementById("projGrid");
-    (cfg.items || []).forEach((p) => grid.appendChild(card(p, cfg)));
+    (cfg.items || []).forEach((p, i) => grid.appendChild(card(p, cfg, i)));
     if (cfg.github && cfg.github.username) github(cfg.github);
   };
 
@@ -38,26 +38,47 @@
     return a;
   }
 
-  function card(p, cfg) {
-    const thumb = el("div", "proj-thumb");
+  function host(u) { try { return new URL(u).hostname; } catch (e) { return "localhost"; } }
+  function card(p, cfg, i) {
     const img = document.createElement("img");
     img.src = p.image || ""; img.alt = p.title; img.loading = "lazy";
+    const shot = el("div", "pc-shot", "", [img]);
     img.onerror = () => {
       img.remove();
       const ic = el("div", "proj-thumb-icon"); ic.innerHTML = ICONS.folder;
-      thumb.appendChild(el("div", "proj-thumb-fallback", "", [ic, document.createTextNode("Image not added yet")]));
+      shot.appendChild(el("div", "proj-thumb-fallback", "", [ic, document.createTextNode("Image not added yet")]));
     };
-    thumb.appendChild(img);
+    const bar = el("div", "pc-bar", "", [el("i"), el("i"), el("i"), el("span", "pc-url", p.live ? host(p.live) : "localhost:3000")]);
+    const win = el("div", "pc-window", "", [bar, shot, el("div", "pc-shine")]);
+    const visual = el("div", "pc-visual", "", [el("div", "pc-glow"), win, el("div", "pc-hint", "Click to enlarge")]);
 
     const btns = el("div", "proj-btns");
-    if (p.github) btns.appendChild(link(p.github, ICONS.github, cfg.githubLabel || "GitHub"));
     if (p.live) btns.appendChild(link(p.live, ICONS.rocket, cfg.liveLabel || "Live Site"));
+    if (p.github) btns.appendChild(link(p.github, ICONS.github, cfg.githubLabel || "GitHub"));
+    btns.querySelectorAll(".proj-btn").forEach((b, k) => k === 0 && b.classList.add("primary"));
 
-    const c = el("div", "proj-card", "", [
-      el("div", "card-topbar"), thumb,
-      el("div", "proj-info", "", [el("div", "proj-title", p.title), el("div", "proj-desc", p.description), btns]),
+    const tags = el("div", "pc-tags", "", (p.tags || []).map((t) => el("span", "pc-tag", t)));
+    const num = String(i + 1).padStart(2, "0");
+    const info = el("div", "pc-info", "", [
+      el("div", "pc-num", num),
+      el("div", "pc-kicker", "", [el("span", "pc-dot"), document.createTextNode("Project " + num)]),
+      el("div", "proj-title", p.title), el("div", "proj-desc", p.description), tags, btns,
     ]);
-    c.addEventListener("click", () => openImage(p.image));
+    const c = el("article", "proj-card" + (i % 2 ? " flip" : ""), "", [visual, info]);
+    c.style.setProperty("--d", "0s");
+    visual.addEventListener("click", () => openImage(p.image));
+    // 3D tilt that follows the mouse
+    visual.addEventListener("mousemove", (e) => {
+      const r = visual.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      win.style.transform = "perspective(900px) rotateY(" + (x * 12).toFixed(2) + "deg) rotateX(" + (-y * 10).toFixed(2) + "deg) scale(1.025)";
+      win.style.setProperty("--mx", (x + .5) * 100 + "%"); win.style.setProperty("--my", (y + .5) * 100 + "%");
+    });
+    visual.addEventListener("mouseleave", () => (win.style.transform = ""));
+    // reveal on scroll
+    if ("IntersectionObserver" in window) {
+      c.classList.add("pre");
+      new IntersectionObserver((en, ob) => en.forEach((x) => { if (x.isIntersecting) { c.classList.add("in"); ob.disconnect(); } }), { threshold: .18 }).observe(c);
+    }
     return c;
   }
 
