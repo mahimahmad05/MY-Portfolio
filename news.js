@@ -24,11 +24,30 @@
     document.getElementById("nwNum").textContent = cfg.number || "";
     document.getElementById("nwTitle").textContent = cfg.title || "News & Highlights";
     document.getElementById("nwHeadIcon").innerHTML = ICONS[cfg.icon] || ICONS.newspaper;
+    heroExtras(sec);
     sub("nwNews", cfg.news, ICONS.bell);
     sub("nwHigh", cfg.highlights, ICONS.image);
     news((cfg.news && cfg.news.items) || [], cfg);
     slideshow((cfg.highlights && cfg.highlights.items) || []);
   };
+
+  function heroExtras(sec) {
+    // soft orb that follows the mouse
+    if (matchMedia("(hover: hover)").matches) {
+      const o = el("div", "nw-orb"); document.body.appendChild(o);
+      let x = innerWidth / 2, y = innerHeight / 2, tx2 = x, ty = y;
+      addEventListener("mousemove", (e) => { tx2 = e.clientX; ty = e.clientY; }, { passive: true });
+      (function f() { x += (tx2 - x) * .08; y += (ty - y) * .08; o.style.transform = "translate(" + (x - 160) + "px," + (y - 160) + "px)"; requestAnimationFrame(f); })();
+    }
+  }
+
+  function confetti(btn) {
+    const r = btn.getBoundingClientRect(), cv = el("canvas", "nw-conf"); cv.width = innerWidth; cv.height = innerHeight; document.body.appendChild(cv);
+    const g = cv.getContext("2d"), cols = ["#5af0b8", "#7fb0ff", "#ffd479", "#c78bff", "#ff7a9c"];
+    const ps = Array.from({ length: 70 }, () => ({ x: r.left + r.width / 2, y: r.top + r.height / 2, vx: (Math.random() - .5) * 11, vy: -Math.random() * 11 - 3, s: Math.random() * 6 + 3, c: cols[Math.random() * cols.length | 0], a: Math.random() * 6, va: (Math.random() - .5) * .4 }));
+    let t = 0;
+    (function f() { g.clearRect(0, 0, cv.width, cv.height); ps.forEach((p) => { p.vy += .3; p.x += p.vx; p.y += p.vy; p.a += p.va; g.save(); g.translate(p.x, p.y); g.rotate(p.a); g.fillStyle = p.c; g.globalAlpha = Math.max(0, 1 - t / 70); g.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); g.restore(); }); if (++t < 70) requestAnimationFrame(f); else cv.remove(); })();
+  }
 
   function sub(id, c, fallback) {
     const box = document.getElementById(id);
@@ -39,6 +58,8 @@
   }
 
   const CHECK = S('<polyline points="20 6 9 17 4 12"/>'), CLOCK = S('<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>');
+  const ICO = [[/recycle/i, "♻️"], [/portfolio/i, "🎨"], [/srs|uml|document/i, "📐"], [/present/i, "🎤"], [/wsl|linux|system call|terminal/i, "🐧"], [/cpu|schedul|round robin/i, "⚙️"], [/react/i, "⚛️"], [/exam|routine|seat/i, "🗓️"], [/ai|ml|machine/i, "🤖"], [/github|git/i, "🐙"]];
+  const icon = (t) => { const m = ICO.find(([r]) => r.test(t)); return m ? m[1] : "📰"; };
   const status = (t) => (/^(working|exploring|practic|learning|building|studying|developing)/i.test(t) ? "doing" : "done");
 
   // ---- news: live ticker + stats donut + filter chips + scroll timeline ----
@@ -58,25 +79,27 @@
     const stats = el("div", "ns-row", "", [num(items.length, "Updates"), num(doing, "In progress", "y"), num(done, "Done", "g"), donut]);
     const filters = el("div", "nf");
     let filter = "all", expanded = false;
-    [["all", "All"], ["doing", "In progress"], ["done", "Done"]].forEach(([k, l]) => { const b = el("button", "nf-b" + (k === "all" ? " on" : ""), l); b.type = "button"; b.onclick = () => { filter = k; expanded = false; filters.querySelectorAll(".nf-b").forEach((x) => x.classList.toggle("on", x === b)); draw(); }; filters.appendChild(b); });
+    [["all", "All"], ["doing", "In progress"], ["done", "Done"]].forEach(([k, l]) => { const b = el("button", "nf-b" + (k === "all" ? " on" : ""), l); b.type = "button"; b.onclick = () => { if (k === "done") confetti(b); filter = k; expanded = false; filters.querySelectorAll(".nf-b").forEach((x) => x.classList.toggle("on", x === b)); draw(); }; filters.appendChild(b); });
     const head = wrap.parentNode;
     head.insertBefore(ticker, wrap); head.insertBefore(stats, wrap); head.insertBefore(filters, wrap);
 
-    wrap.classList.add("tl");
+    wrap.classList.add("tl", "straight");
     let fill = null;
     function item(it, i, latest) {
       const st = status(it.title);
       const badge = el("span", "tl-badge " + st); badge.innerHTML = (st === "doing" ? CLOCK : CHECK); badge.appendChild(document.createTextNode(st === "doing" ? "In progress" : "Done"));
       const top = el("div", "tl-top", "", [badge, el("span", "tl-date", it.date || "#" + String(items.indexOf(it) + 1).padStart(2, "0"))]);
-      const card = el("div", "tl-card" + (latest ? " latest" : ""), "", [top, el("div", "tl-title", it.title)]);
+      const tile = el("div", "tl-ico", icon(it.title)), body = el("div", "tl-body", "", [el("div", "tl-title", it.title)]);
+      const card = el("div", "tl-card" + (latest ? " latest" : ""), "", [top, el("div", "tl-main", "", [tile, body])]);
       if (latest) card.appendChild(el("span", "tl-ribbon", "Latest"));
-      if (it.description) card.appendChild(el("div", "tl-desc", it.description));
+      const desc = it.description ? el("div", "tl-desc", it.description) : null; if (desc) body.appendChild(desc);
+      if (st === "doing") card.appendChild(el("div", "tl-prog", "", [el("i")]));
       card.addEventListener("mousemove", (e) => { const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; card.style.setProperty("--sx", e.clientX - r.left + "px"); card.style.setProperty("--sy", e.clientY - r.top + "px"); card.style.transform = "perspective(800px) rotateY(" + (x * 5).toFixed(2) + "deg) rotateX(" + (-y * 5).toFixed(2) + "deg) translateY(-4px)"; });
       card.addEventListener("mouseleave", () => (card.style.transform = ""));
       const node = el("span", "tl-node " + st, "", [el("i")]);
       const row = el("div", "tl-item " + (i % 2 ? "r" : "l"), "", [node, card]);
       row.style.transitionDelay = "0s";
-      if ("IntersectionObserver" in window) { row.classList.add("pre"); new IntersectionObserver((en, ob) => en.forEach((x) => { if (x.isIntersecting) { row.classList.add("in"); ob.disconnect(); } }), { threshold: .15 }).observe(row); }
+      if ("IntersectionObserver" in window) { row.classList.add("pre"); new IntersectionObserver((en, ob) => en.forEach((x) => { if (x.isIntersecting) { row.classList.add("in"); ob.disconnect(); typeIt(desc, it.description); } }), { threshold: .15 }).observe(row); if (desc) desc.textContent = ""; }
       return row;
     }
     function prog() { if (!fill) return; const r = wrap.getBoundingClientRect(), p = Math.max(0, Math.min(1, (innerHeight * .6 - r.top) / r.height)); fill.style.height = p * 100 + "%"; }
@@ -84,7 +107,7 @@
     function draw() {
       wrap.innerHTML = "";
       const list = items.filter((it, i) => filter === "all" || ST[i] === filter);
-      fill = el("i", "tl-fill"); wrap.appendChild(el("div", "tl-track", "", [fill]));
+      fill = el("i", "tl-fill"); wrap.appendChild(el("div", "tl-track", "", [fill, el("i", "tl-comet")]));
       const shown = expanded ? list : list.slice(0, max);
       shown.forEach((it, i) => wrap.appendChild(item(it, i, filter === "all" && i === 0)));
       if (!list.length) wrap.appendChild(el("div", "tl-empty", "Nothing here yet."));
@@ -98,22 +121,47 @@
     }
     draw();
   }
+  function typeIt(node, text) { if (!node) return; let i = 0; const cur = el("i", "tl-cur"); node.textContent = ""; node.appendChild(cur); const t = setInterval(() => { i += 2; node.firstChild === cur ? node.insertBefore(document.createTextNode(text.slice(0, i)), cur) : (node.firstChild.nodeValue = text.slice(0, i)); if (i >= text.length) { clearInterval(t); setTimeout(() => cur.remove(), 600); } }, 16); }
   function cnt(n, to) { const t0 = performance.now(); (function f(t) { const k = Math.min(1, (t - t0) / 1200); n.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); })(t0); }
 
-  // ---- highlights = 3D coverflow: centre photo big, neighbours tilted behind; swipe / arrows / dots / autoplay ----
+  // ---- highlights: 3D coverflow with blurred ambient glow, mouse tilt, lightbox, swipe, autoplay ----
   function slideshow(photos) {
     const wrap = document.getElementById("hlWrap");
     if (!photos.length) return;
-    const stage = el("div", "cf-stage"), N = photos.length;
+    const stage = el("div", "cf-stage"), rig = el("div", "cf-rig"), amb = el("div", "cf-amb"), N = photos.length;
+    stage.appendChild(amb); stage.appendChild(rig);
+    let idx = 0, timer = null, moved = false;
     const cards = photos.map((src, i) => {
       const img = document.createElement("img"); img.alt = "Highlight " + (i + 1); img.loading = "lazy"; img.draggable = false;
       const ph = el("div", "cf-ph", "", [el("b", "", String(i + 1).padStart(2, "0")), el("span", "", "Photo not added yet")]);
-      const c = el("div", "cf-card", "", [ph, img, el("div", "cf-gloss")]);
-      img.onload = () => { ph.style.display = "none"; }; img.onerror = () => img.remove(); img.src = src;
+      const c = el("div", "cf-card", "", [ph, img, el("div", "cf-gloss"), el("div", "cf-tag", "Highlight " + String(i + 1).padStart(2, "0"))]);
+      img.onload = () => { ph.style.display = "none"; if (i === idx) layout(); }; img.onerror = () => img.remove(); img.src = src;
       c.addEventListener("click", () => { if (moved) return; if (i !== idx) { go(i); start(); } else lightbox(); });
-      stage.appendChild(c); return c;
+      rig.appendChild(c); return c;
     });
-    let idx = 0, timer = null, moved = false;
+    const counter = el("div", "cf-count", "", [el("b", "", "01"), el("span", "", " / " + String(N).padStart(2, "0"))]);
+    const bar = el("div", "cf-bar", "", [el("i")]);
+    const dots = photos.map((src, i) => {
+      const b = el("button", "cf-dot"), em = el("em", "", String(i + 1)), im = document.createElement("img"); im.alt = ""; im.draggable = false;
+      im.onload = () => (em.style.display = "none"); im.onerror = () => im.remove(); im.src = src;
+      b.type = "button"; b.setAttribute("aria-label", "Photo " + (i + 1)); b.append(im, em); b.onclick = () => { go(i); start(); }; return b;
+    });
+    function layout() {
+      cards.forEach((c, i) => {
+        let o = i - idx; if (o > N / 2) o -= N; if (o < -N / 2) o += N;
+        const a = Math.abs(o), vis = a <= 2;
+        c.style.transform = "translate(-50%,-50%) translateX(" + (o * 50) + "%) translateZ(" + (-a * 140) + "px) rotateY(" + (-o * 42) + "deg) scale(" + (a === 0 ? 1 : .86) + ")";
+        c.style.opacity = vis ? (a === 0 ? 1 : a === 1 ? .75 : .35) : 0; c.style.zIndex = 10 - a; c.style.pointerEvents = vis ? "auto" : "none";
+        c.classList.toggle("on", a === 0);
+      });
+      const im = cards[idx].querySelector("img"); amb.style.backgroundImage = im ? "url('" + im.src + "')" : "none";
+      counter.firstChild.textContent = String(idx + 1).padStart(2, "0");
+      dots.forEach((d, i) => d.classList.toggle("active", i === idx));
+      bar.firstChild.style.animation = "none"; void bar.offsetWidth; bar.firstChild.style.animation = timer ? "cf-bar 3.6s linear" : "none";
+    }
+    function go(n) { idx = (n + N) % N; layout(); }
+    function start() { stop(); if (N > 1) { timer = setInterval(() => go(idx + 1), 3600); layout(); } }
+    function stop() { if (timer) clearInterval(timer); timer = null; bar.firstChild.style.animation = "none"; }
     function lightbox() {
       stop();
       const lb = el("div", "lb"), im = document.createElement("img"), cap = el("div", "lb-cap");
@@ -127,32 +175,15 @@
       lb.append(x, pv, im, nx, cap); document.body.appendChild(lb); document.addEventListener("keydown", key); show();
       requestAnimationFrame(() => lb.classList.add("in"));
     }
-    const counter = el("div", "cf-count", "", [el("b", "", "01"), el("span", "", " / " + String(N).padStart(2, "0"))]);
-    const bar = el("div", "cf-bar", "", [el("i")]);
-    function layout() {
-      cards.forEach((c, i) => {
-        let o = i - idx; if (o > N / 2) o -= N; if (o < -N / 2) o += N;
-        const a = Math.abs(o), vis = a <= 2;
-        c.style.transform = "translate(-50%,-50%) translateX(" + (o * 50) + "%) translateZ(" + (-a * 140) + "px) rotateY(" + (-o * 42) + "deg) scale(" + (a === 0 ? 1 : .86) + ")";
-        c.style.opacity = vis ? (a === 0 ? 1 : a === 1 ? .75 : .35) : 0; c.style.zIndex = 10 - a; c.style.pointerEvents = vis ? "auto" : "none";
-        c.classList.toggle("on", a === 0);
-      });
-      counter.firstChild.textContent = String(idx + 1).padStart(2, "0");
-      dots.forEach((d, i) => d.classList.toggle("active", i === idx));
-      bar.firstChild.style.animation = "none"; void bar.offsetWidth; bar.firstChild.style.animation = timer ? "cf-bar 3.4s linear" : "none";
-    }
-    function go(n) { idx = (n + N) % N; layout(); }
-    function start() { stop(); if (N > 1) { timer = setInterval(() => go(idx + 1), 3400); layout(); } }
-    function stop() { if (timer) clearInterval(timer); timer = null; bar.firstChild.style.animation = "none"; }
     const prev = el("button", "cf-arrow cf-prev"); prev.type = "button"; prev.setAttribute("aria-label", "Previous"); prev.innerHTML = ICONS.prev;
     const next = el("button", "cf-arrow cf-next"); next.type = "button"; next.setAttribute("aria-label", "Next"); next.innerHTML = ICONS.next;
     prev.onclick = () => { go(idx - 1); start(); }; next.onclick = () => { go(idx + 1); start(); };
-    const dots = photos.map((_, i) => { const b = el("button", "cf-dot"); b.type = "button"; b.setAttribute("aria-label", "Photo " + (i + 1)); b.onclick = () => { go(i); start(); }; return b; });
-    // swipe / drag
     let sx = null;
     stage.addEventListener("pointerdown", (e) => { sx = e.clientX; moved = false; });
     addEventListener("pointerup", (e) => { if (sx == null) return; const d = e.clientX - sx; sx = null; if (Math.abs(d) > 40) { moved = true; go(idx + (d < 0 ? 1 : -1)); start(); setTimeout(() => (moved = false), 50); } });
-    stage.addEventListener("mouseenter", stop); stage.addEventListener("mouseleave", start);
+    stage.addEventListener("mousemove", (e) => { const r = stage.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; stage.style.setProperty("--mx", (x * 9).toFixed(2) + "deg"); stage.style.setProperty("--my", (y * -6).toFixed(2) + "deg"); });
+    stage.addEventListener("mouseenter", stop);
+    stage.addEventListener("mouseleave", () => { stage.style.setProperty("--mx", "0deg"); stage.style.setProperty("--my", "0deg"); start(); });
     wrap.appendChild(el("div", "cf-wrap", "", [stage, prev, next]));
     if (N > 1) { wrap.appendChild(el("div", "cf-foot", "", [counter, el("div", "cf-dots", "", dots)])); wrap.appendChild(bar); }
     layout(); start();
