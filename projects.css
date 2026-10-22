@@ -225,3 +225,145 @@
 @media (prefers-reduced-motion: reduce) { .gh-c, .gh-av-ring { animation: none; } }
 .gh-two { align-items: start; }
 .gh-av-wrap > .gh-i { position: relative; z-index: 2; width: 100%; height: 100%; border-radius: 50%; background: #0a1a45; border: 3px solid #0a1a45; } .gh-av-wrap > .gh-i svg { width: 48px; height: 48px; }
+
+
+/* ---------- GitHub v3: tabs, streaks, 3D skyline, terminal ---------- */
+.gh-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(47,107,255,.1); border: 1px solid var(--line); }
+.gh-tab { border: 0; background: none; color: var(--ink-dim); font: 700 12px "Plus Jakarta Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase; padding: 8px 16px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s; }
+.gh-tab.on { background: linear-gradient(135deg, #2f6bff, #5b93ff); color: #fff; box-shadow: 0 8px 20px -8px rgba(47,107,255,.9); }
+.gh-streaks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.gh-st { padding: 12px 14px; border-radius: 14px; background: rgba(47,107,255,.08); border: 1px solid rgba(70,130,255,.2); }
+.gh-st b { display: block; font-size: 24px; font-weight: 800; color: #fff; line-height: 1.1; } .gh-st span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-dimmer); }
+[hidden] { display: none !important; }
+
+.gh-sky { position: relative; }
+.gh-sky-stage { height: 400px; display: flex; align-items: center; justify-content: center; perspective: 1400px; overflow: hidden; }
+.gh-sky-grid { --rz: -38deg; --rx: 58deg; position: relative; transform-style: preserve-3d; transform: rotateX(var(--rx)) rotateZ(calc(var(--rz) + var(--sw))); transition: transform .25s ease-out; margin-top: 40px; animation: gh-sway 8s ease-in-out infinite alternate; }
+.gh-bar { position: absolute; width: var(--s); height: var(--s); transform-style: preserve-3d; }
+.gh-bar i { position: absolute; display: block; }
+.gh-bar .t { inset: 0; transform: translateZ(var(--h)); background: #1b2f63; }
+.gh-bar .f { left: 0; top: var(--s); width: var(--s); height: var(--h); transform-origin: top; transform: rotateX(90deg); background: #101d44; }
+.gh-bar .r { left: var(--s); top: 0; width: var(--h); height: var(--s); transform-origin: left; transform: rotateY(-90deg); background: #0b1534; }
+.gh-bar.l1 .t { background: #2d63d8; } .gh-bar.l1 .f { background: #1e45a3; } .gh-bar.l1 .r { background: #153680; }
+.gh-bar.l2 .t { background: #3f84ff; } .gh-bar.l2 .f { background: #2a62cc; } .gh-bar.l2 .r { background: #1f4ea6; }
+.gh-bar.l3 .t { background: #72a8ff; } .gh-bar.l3 .f { background: #4a82e0; } .gh-bar.l3 .r { background: #3568bd; }
+.gh-bar.l4 .t { background: #cfe3ff; box-shadow: 0 0 18px #9cc8ff; } .gh-bar.l4 .f { background: #8fbcff; } .gh-bar.l4 .r { background: #6a9ee8; }
+.gh-sky-grid.rise .gh-bar { animation: gh-rise .9s cubic-bezier(.2,.8,.2,1) backwards; animation-delay: var(--dl); }
+.gh-sky-grid.rise .gh-bar i { animation: none; }
+@keyframes gh-rise { from { transform: scaleZ(0); opacity: 0; } }
+.gh-sky-hint, .gh-sky-empty { text-align: center; font-size: 12px; color: var(--ink-dimmer); } .gh-sky-empty { padding: 40px 10px; }
+
+.gh-term { margin-top: 22px; border-radius: 18px; overflow: hidden; background: #040a1c; border: 1px solid var(--line); box-shadow: 0 30px 60px -30px rgba(0,0,0,.8); }
+.gh-term-bar { display: flex; align-items: center; gap: 7px; padding: 11px 16px; background: #0a1a45; border-bottom: 1px solid var(--line); }
+.gh-term-bar i { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; } .gh-term-bar i:nth-child(2) { background: #febc2e; } .gh-term-bar i:nth-child(3) { background: #28c840; }
+.gh-term-bar span { margin-left: 10px; font-size: 12px; color: var(--ink-dimmer); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+.gh-term-body { padding: 20px 22px; min-height: 210px; font: 13.5px/1.9 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #bcd5ff; }
+.gh-tl { white-space: pre-wrap; word-break: break-word; } .gh-tl.dim { color: var(--ink-dimmer); }
+.gh-p { color: #28c840; } .gh-ok { color: #28c840; } .gh-repo-n { color: #7fb0ff; font-weight: 700; } .gh-msg { color: #dbe8ff; }
+.gh-cur { display: inline-block; width: 8px; height: 1.1em; vertical-align: text-bottom; background: #7fb0ff; animation: gh-blink 1s steps(1) infinite; }
+@keyframes gh-blink { 50% { opacity: 0; } }
+@media (max-width: 900px) { .gh-streaks { grid-template-columns: repeat(2, 1fr); } }
+
+
+/* ---------- motion pack ---------- */
+@property --sw { syntax: '<angle>'; initial-value: 0deg; inherits: true; }
+@keyframes gh-sway { from { --sw: -7deg; } to { --sw: 7deg; } }
+.pj-fx { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.pj-fx canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .8; }
+.pj-fx i { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5; }
+.pj-fx .a1 { width: 46vw; height: 46vw; left: -12vw; top: -10vw; background: #1f56d6; animation: aur1 18s ease-in-out infinite alternate; }
+.pj-fx .a2 { width: 40vw; height: 40vw; right: -10vw; top: 28vh; background: #6d3bff; opacity: .32; animation: aur2 22s ease-in-out infinite alternate; }
+.pj-fx .a3 { width: 36vw; height: 36vw; left: 30vw; bottom: -18vw; background: #0fb8d8; opacity: .28; animation: aur1 26s ease-in-out infinite alternate-reverse; }
+@keyframes aur1 { to { transform: translate(14vw, 12vh) scale(1.2); } } @keyframes aur2 { to { transform: translate(-16vw, -10vh) scale(1.15); } }
+main, .nav { position: relative; z-index: 1; } .nav { z-index: 50; }
+.pj-progress { position: fixed; left: 0; top: 0; height: 3px; width: 100%; z-index: 400; transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, #2f6bff, #9cc4ff, #c78bff); box-shadow: 0 0 14px #5b93ff; pointer-events: none; }
+
+.sec-title .lt { display: inline-block; animation: lt-drop .8s cubic-bezier(.2,.9,.2,1.2) backwards; }
+@keyframes lt-drop { from { opacity: 0; transform: translateY(-40px) rotate(-12deg) scale(.6); filter: blur(6px); } }
+.sec-title:hover .lt { animation: lt-jump .5s ease; } .sec-title:hover .lt:nth-child(2n) { animation-delay: .06s; }
+@keyframes lt-jump { 40% { transform: translateY(-8px); color: #9cc4ff; } }
+
+.pc-panel::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 4; opacity: 0; transition: opacity .3s; background: radial-gradient(420px circle at var(--sx, 50%) var(--sy, 50%), hsl(var(--h, 218) 100% 70% / .13), transparent 60%); }
+.pc-panel:hover::after { opacity: 1; }
+.pc-visual, .pc-info { transition: translate .25s ease-out; }
+.pc-window::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.16) 50%, transparent 60%); transform: translateX(-120%); animation: pc-sweep 5.5s ease-in-out infinite; }
+@keyframes pc-sweep { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+.proj-btn { position: relative; overflow: hidden; }
+.proj-btn.primary::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent); animation: btn-shine 3.4s ease-in-out infinite; }
+@keyframes btn-shine { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+
+.rv { opacity: 0; transform: translateY(44px) scale(.97); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1); }
+.rv.rv-in { opacity: 1; transform: none; }
+.gh-tile.rv-in:hover { transform: translateY(-4px); } .gh-repo.rv-in:hover { transform: translateX(5px); }
+.gh-heat.wave .gh-c:not(.l0) { animation: gh-wave .9s ease backwards; animation-delay: calc(var(--c, 0) * 22ms); }
+@keyframes gh-wave { 40% { filter: brightness(2.2); transform: scale(1.35); } }
+.gh-av-wrap { animation: gh-float 5s ease-in-out infinite; } @keyframes gh-float { 50% { transform: translateY(-7px); } }
+@media (prefers-reduced-motion: reduce) { .pj-fx i, .pc-window::before, .proj-btn.primary::after, .gh-av-wrap, .gh-sky-grid { animation: none; } .rv { opacity: 1; transform: none; } }
+
+.gh-two { grid-template-columns: minmax(0, 1fr) !important; }
+.gh-hash { color: #e5c07b; } .gh-when { color: var(--ink-dimmer); font-size: 12px; }
+a.gh-repo-n { text-decoration: none; } a.gh-repo-n:hover { text-decoration: underline; }
+
+.gh-panel { --h: 218; }
+.gh-me .proj-btn.primary { background: linear-gradient(135deg, #2f6bff, #5b93ff); color: #fff; border-color: transparent; padding: 12px 24px; box-shadow: 0 10px 26px -8px rgba(47,107,255,.9); }
+.gh-me .proj-btn.primary span { color: #fff; }
+
+
+/* ---------- 3D skyline v2 ---------- */
+.gh-sky-stage { height: clamp(340px, 46vw, 500px); perspective: 1500px; background: radial-gradient(ellipse at 50% 70%, rgba(47,107,255,.22), transparent 62%); border-radius: 16px; cursor: grab; }
+.gh-sky-grid { --rz: -40deg; --rx: 60deg; --k: 1; margin-top: 70px; transform: rotateX(var(--rx)) rotateZ(calc(var(--rz) + var(--sw))) scale(var(--k)); }
+.gh-sky-base { position: absolute; left: -16px; top: -16px; right: -16px; bottom: -16px; transform: translateZ(-2px); border-radius: 10px;
+  background: linear-gradient(135deg, rgba(20,45,110,.95), rgba(8,18,50,.98)); border: 1.5px solid rgba(127,176,255,.55);
+  box-shadow: 0 0 0 6px rgba(47,107,255,.10), 0 0 70px rgba(47,107,255,.55), 0 40px 60px rgba(0,0,0,.6); }
+.gh-sky-base::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background-image: linear-gradient(rgba(127,176,255,.10) 1px, transparent 1px), linear-gradient(90deg, rgba(127,176,255,.10) 1px, transparent 1px); background-size: 17px 17px; background-position: 16px 16px; }
+.gh-bar .t { background: #22386f; } .gh-bar .f { background: #152552; } .gh-bar .r { background: #0e1a3d; }
+.gh-bar.l0 .t { background: #1a2d63; } .gh-bar.l0 .f, .gh-bar.l0 .r { background: #12214a; }
+.gh-bar.l1 .t { background: #3a74ee; } .gh-bar.l1 .f { background: #2656b8; } .gh-bar.l1 .r { background: #1b4190; }
+.gh-bar.l2 .t { background: #5b9aff; } .gh-bar.l2 .f { background: #3a72d6; } .gh-bar.l2 .r { background: #2a58ac; }
+.gh-bar.l3 .t { background: #8fc0ff; } .gh-bar.l3 .f { background: #5b93ee; } .gh-bar.l3 .r { background: #416fc4; }
+.gh-bar.l4 .t { background: #e4f0ff; box-shadow: 0 0 26px 4px rgba(160,205,255,.9); } .gh-bar.l4 .f { background: linear-gradient(#b4d4ff, #6fa3f5); } .gh-bar.l4 .r { background: linear-gradient(#86b4f6, #4a7fd8); }
+.gh-bar { transition: filter .15s; } .gh-bar:hover { filter: brightness(1.5) saturate(1.2); z-index: 5; }
+.gh-bar:hover .t { box-shadow: 0 0 22px 6px rgba(190,220,255,.95); }
+.gh-sky-tip { position: absolute; z-index: 9; pointer-events: none; transform: translate(-50%, -100%); padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; color: #fff; background: rgba(8,20,58,.95); border: 1px solid #5b93ff; box-shadow: 0 10px 24px rgba(0,0,0,.5); opacity: 0; transition: opacity .12s; }
+.gh-sky-tip.on { opacity: 1; }
+.gh-sky-hint { margin-top: 6px; }
+@media (hover: none) { .gh-sky-tip { display: none; } }
+
+
+/* ---------- 3D ring (replaces the skyline) ---------- */
+@property --spin { syntax: '<angle>'; initial-value: 0deg; inherits: true; }
+@keyframes gh-spin { to { --spin: 360deg; } }
+.gh-ring-stage { --tx: -26deg; --k: 1.15; position: relative; height: clamp(360px, 48vw, 520px); perspective: 1300px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 16px;
+  background: radial-gradient(ellipse at 50% 62%, rgba(47,107,255,.28), transparent 60%); }
+.gh-ring-cam { transform-style: preserve-3d; transform: translateY(70px) scale(var(--k)); }
+.gh-ring { position: relative; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(var(--tx)) rotateY(var(--spin)); animation: gh-spin 46s linear infinite; transition: transform .3s ease-out; }
+.gh-ring-stage:hover .gh-ring { animation-play-state: paused; }
+.gh-ring-floor { position: absolute; left: 0; top: 0; border-radius: 50%; transform: rotateX(90deg); background: radial-gradient(circle, rgba(8,18,50,.98) 30%, rgba(24,52,128,.95) 100%); border: 1.5px solid rgba(127,176,255,.6); box-shadow: 0 0 70px rgba(47,107,255,.55), inset 0 0 40px rgba(47,107,255,.35); }
+.gh-ring-floor::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 13px, rgba(127,176,255,.09) 13px 14px); }
+.gh-ring-hole { position: absolute; left: 0; top: 0; border-radius: 50%; transform: rotateX(90deg) translateZ(1px); background: radial-gradient(circle, rgba(79,140,255,.35), rgba(8,18,50,.9) 70%); border: 1px solid rgba(127,176,255,.35); }
+.rb { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; }
+.rbx { position: absolute; left: calc(var(--w) / -2); bottom: 0; width: var(--w); transform-style: preserve-3d; }
+.rf { position: absolute; display: block; background: #22386f; }
+.rf-f, .rf-b, .rf-l, .rf-r { top: 0; left: 0; width: var(--w); height: 100%; }
+.rf-f { transform: translateZ(calc(var(--w) / 2)); } .rf-b { transform: rotateY(180deg) translateZ(calc(var(--w) / 2)); }
+.rf-l { transform: rotateY(-90deg) translateZ(calc(var(--w) / 2)); } .rf-r { transform: rotateY(90deg) translateZ(calc(var(--w) / 2)); }
+.rf-t { left: 0; width: var(--w); height: var(--w); top: calc(var(--w) / -2); transform: rotateX(90deg); }
+.rb .rf-f, .rb .rf-b { filter: brightness(.7); } .rb .rf-l, .rb .rf-r { filter: brightness(.5); }
+.rb.l0 .rf { background: #1c316b; }
+.rb.l1 .rf { background: #3a74ee; } .rb.l2 .rf { background: #5b9aff; } .rb.l3 .rf { background: #8fc0ff; }
+.rb.l4 .rf { background: #e4f0ff; } .rb.l4 .rf-t { box-shadow: 0 0 26px 6px rgba(170,210,255,.95); } .rb.l4 .rf-f, .rb.l4 .rf-b { background: linear-gradient(#e4f0ff, #7fb0ff); }
+.rb:hover .rf { background: #fff; filter: none; }
+@media (prefers-reduced-motion: reduce) { .gh-ring { animation: none; } }
+.rb.l3 .rf, .rb.l4 .rf { background: #7fb0ff; } .rb.l4 .rf-t { background: #eaf4ff; }
+.rb.l4 .rf-f, .rb.l4 .rf-b, .rb.l4 .rf-l, .rb.l4 .rf-r { background: linear-gradient(#a9cdff, #3f7be8); }
+.rb.l3 .rf-t { background: #b5d5ff; }
+
+.gh-sky-base { background-image: linear-gradient(rgba(127,176,255,.10) 1px, transparent 1px), linear-gradient(90deg, rgba(127,176,255,.10) 1px, transparent 1px), linear-gradient(135deg, rgba(20,45,110,.95), rgba(8,18,50,.98)); border-radius: 14px; }
+.gh-sky-base::after { display: none; }
+.gh-sky-grid { margin-top: 50px; }
+
+.gh-sky-grid { margin-top: 90px; }
+.gh-sky-stage { height: clamp(380px, 50vw, 540px); }
+.gh-sky-grid { margin-top: 30px; }
+
+.gh-card-title { font-weight: 700; font-size: 15px; letter-spacing: .06em; text-transform: uppercase; }

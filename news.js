@@ -38,68 +38,92 @@
     box.querySelector(".sub-icon").innerHTML = ICONS[c.icon] || fallback;
   }
 
+  const CHECK = S('<polyline points="20 6 9 17 4 12"/>'), CLOCK = S('<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>');
+  const status = (t) => (/^(working|exploring|practic|learning|building|studying|developing)/i.test(t) ? "doing" : "done");
+
+  // ---- news = scroll timeline: glowing line fills as you scroll, cards slide in from alternate sides ----
   function news(items, cfg) {
     const wrap = document.getElementById("newsList");
     if (!items.length) return;
+    wrap.classList.add("tl");
+    const track = el("div", "tl-track", "", [el("i", "tl-fill")]);
+    wrap.appendChild(track);
     const max = cfg.visibleCount || 5;
-    function row(it) {
-      const col = el("div", "nl-col", "", [el("div", "nl-title", it.title)]);
-      if (it.description) col.appendChild(el("div", "nl-desc", it.description));
-      const r = el("div", "nl-row", "", [el("span", "nl-dot"), col]);
-      if (it.date) r.appendChild(el("span", "nl-date", it.date));
-      return r;
+    let n = 0;
+    function item(it) {
+      const st = status(it.title), i = n++;
+      const badge = el("span", "tl-badge " + st); badge.innerHTML = (st === "doing" ? CLOCK : CHECK); badge.appendChild(document.createTextNode(st === "doing" ? "In progress" : "Done"));
+      const card = el("div", "tl-card", "", [
+        el("div", "tl-top", "", [badge, el("span", "tl-date", it.date || "#" + String(i + 1).padStart(2, "0"))]),
+        el("div", "tl-title", it.title),
+      ]);
+      if (it.description) card.appendChild(el("div", "tl-desc", it.description));
+      card.addEventListener("mousemove", (e) => { const r = card.getBoundingClientRect(); card.style.setProperty("--sx", e.clientX - r.left + "px"); card.style.setProperty("--sy", e.clientY - r.top + "px"); });
+      const node = el("span", "tl-node " + st, "", [el("i")]);
+      const row = el("div", "tl-item " + (i % 2 ? "r" : "l"), "", [node, card]);
+      if ("IntersectionObserver" in window) { row.classList.add("pre"); new IntersectionObserver((en, ob) => en.forEach((x) => { if (x.isIntersecting) { row.classList.add("in"); ob.disconnect(); } }), { threshold: .2 }).observe(row); }
+      return row;
     }
-    items.slice(0, max).forEach((it) => wrap.appendChild(row(it)));
+    const rows = [];
+    items.slice(0, max).forEach((it) => { const r = item(it); rows.push(r); wrap.appendChild(r); });
+    const fill = track.firstChild;
+    function prog() { const r = wrap.getBoundingClientRect(), p = Math.max(0, Math.min(1, (innerHeight * .6 - r.top) / r.height)); fill.style.height = p * 100 + "%"; }
+    addEventListener("scroll", prog, { passive: true }); addEventListener("resize", prog); prog();
     if (items.length <= max) return;
     const label = el("span", "", cfg.moreLabel || "See More");
     const btn = el("button", "nl-more"); btn.type = "button"; btn.appendChild(label);
-    const more = el("div", "nl-more-row", "", [btn]);
-    wrap.appendChild(more);
-    let open = false;
+    const more = el("div", "nl-more-row", "", [btn]); wrap.appendChild(more);
+    let open = false, extra = [];
     btn.addEventListener("click", () => {
       open = !open;
-      if (open) { items.slice(max).forEach((it) => wrap.insertBefore(row(it), more)); label.textContent = cfg.lessLabel || "See Less"; }
-      else { wrap.querySelectorAll(".nl-row").forEach((r, i) => { if (i >= max) r.remove(); }); label.textContent = cfg.moreLabel || "See More"; more.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+      if (open) { n = max; extra = items.slice(max).map((it) => { const r = item(it); wrap.insertBefore(r, more); setTimeout(() => r.classList.add("in"), 30); return r; }); label.textContent = cfg.lessLabel || "See Less"; }
+      else { extra.forEach((r) => r.remove()); extra = []; label.textContent = cfg.moreLabel || "See More"; more.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+      prog();
     });
   }
 
+  // ---- highlights = 3D coverflow: centre photo big, neighbours tilted behind; swipe / arrows / dots / autoplay ----
   function slideshow(photos) {
     const wrap = document.getElementById("hlWrap");
     if (!photos.length) return;
-    const frame = el("div", "hl-frame");
-    const fb = el("div", "hl-fallback", "Highlight photos not added yet");
-    frame.appendChild(fb);
-    let broken = 0, idx = 0, timer = null;
-    const imgs = photos.map((src, i) => {
-      const img = document.createElement("img");
-      img.className = "hl-img" + (i === 0 ? " active" : ""); img.alt = "Highlight " + (i + 1); img.loading = "lazy";
-      img.onerror = () => { img.remove(); imgs[i] = null; if (++broken === photos.length) { dots.forEach((d) => d.remove()); stop(); prev.style.display = next.style.display = "none"; } };
-      img.onload = () => (fb.style.display = "none");
-      img.src = src; frame.appendChild(img); return img;
+    const stage = el("div", "cf-stage"), N = photos.length;
+    const cards = photos.map((src, i) => {
+      const img = document.createElement("img"); img.alt = "Highlight " + (i + 1); img.loading = "lazy"; img.draggable = false;
+      const ph = el("div", "cf-ph", "", [el("b", "", String(i + 1).padStart(2, "0")), el("span", "", "Photo not added yet")]);
+      const c = el("div", "cf-card", "", [ph, img, el("div", "cf-gloss")]);
+      img.onload = () => { ph.style.display = "none"; }; img.onerror = () => img.remove(); img.src = src;
+      c.addEventListener("click", () => { if (moved) return; if (i !== idx) { go(i); start(); } });
+      stage.appendChild(c); return c;
     });
-    const prev = el("button", "hl-arrow hl-prev"); prev.type = "button"; prev.setAttribute("aria-label", "Previous"); prev.innerHTML = ICONS.prev;
-    const next = el("button", "hl-arrow hl-next"); next.type = "button"; next.setAttribute("aria-label", "Next"); next.innerHTML = ICONS.next;
-    wrap.appendChild(frame);
-    const row = el("div", "hl-dots"); const dots = [];
-    function go(n) {
-      const live = imgs.map((x, i) => (x ? i : -1)).filter((i) => i >= 0);
-      if (!live.length) return;
-      if (!imgs[n]) n = live.find((i) => i > n) ?? live[0];
-      imgs[idx] && imgs[idx].classList.remove("active"); dots[idx] && dots[idx].classList.remove("active");
-      idx = n;
-      imgs[idx].classList.add("active"); dots[idx].classList.add("active");
+    let idx = 0, timer = null, moved = false;
+    const counter = el("div", "cf-count", "", [el("b", "", "01"), el("span", "", " / " + String(N).padStart(2, "0"))]);
+    const bar = el("div", "cf-bar", "", [el("i")]);
+    function layout() {
+      cards.forEach((c, i) => {
+        let o = i - idx; if (o > N / 2) o -= N; if (o < -N / 2) o += N;
+        const a = Math.abs(o), vis = a <= 2;
+        c.style.transform = "translate(-50%,-50%) translateX(" + (o * 50) + "%) translateZ(" + (-a * 140) + "px) rotateY(" + (-o * 42) + "deg) scale(" + (a === 0 ? 1 : .86) + ")";
+        c.style.opacity = vis ? (a === 0 ? 1 : a === 1 ? .75 : .35) : 0; c.style.zIndex = 10 - a; c.style.pointerEvents = vis ? "auto" : "none";
+        c.classList.toggle("on", a === 0);
+      });
+      counter.firstChild.textContent = String(idx + 1).padStart(2, "0");
+      dots.forEach((d, i) => d.classList.toggle("active", i === idx));
+      bar.firstChild.style.animation = "none"; void bar.offsetWidth; bar.firstChild.style.animation = timer ? "cf-bar 3.4s linear" : "none";
     }
-    const step = (d) => { const live = imgs.map((x, i) => (x ? i : -1)).filter((i) => i >= 0); if (!live.length) return; const p = live.indexOf(idx); go(live[(p + d + live.length) % live.length]); };
-    function start() { stop(); if (photos.length > 1) timer = setInterval(() => step(1), 2800); }
-    function stop() { if (timer) clearInterval(timer); timer = null; }
-    photos.forEach((_, i) => {
-      const b = el("button", "hl-dot" + (i === 0 ? " active" : ""), String(i + 1)); b.type = "button"; b.setAttribute("aria-label", "Photo " + (i + 1));
-      b.addEventListener("click", () => { go(i); start(); }); dots.push(b); row.appendChild(b);
-    });
-    prev.addEventListener("click", () => { step(-1); start(); });
-    next.addEventListener("click", () => { step(1); start(); });
-    if (photos.length > 1) { frame.appendChild(prev); frame.appendChild(next); wrap.appendChild(row); }
-    frame.addEventListener("mouseenter", stop); frame.addEventListener("mouseleave", start);
-    start();
+    function go(n) { idx = (n + N) % N; layout(); }
+    function start() { stop(); if (N > 1) { timer = setInterval(() => go(idx + 1), 3400); layout(); } }
+    function stop() { if (timer) clearInterval(timer); timer = null; bar.firstChild.style.animation = "none"; }
+    const prev = el("button", "cf-arrow cf-prev"); prev.type = "button"; prev.setAttribute("aria-label", "Previous"); prev.innerHTML = ICONS.prev;
+    const next = el("button", "cf-arrow cf-next"); next.type = "button"; next.setAttribute("aria-label", "Next"); next.innerHTML = ICONS.next;
+    prev.onclick = () => { go(idx - 1); start(); }; next.onclick = () => { go(idx + 1); start(); };
+    const dots = photos.map((_, i) => { const b = el("button", "cf-dot"); b.type = "button"; b.setAttribute("aria-label", "Photo " + (i + 1)); b.onclick = () => { go(i); start(); }; return b; });
+    // swipe / drag
+    let sx = null;
+    stage.addEventListener("pointerdown", (e) => { sx = e.clientX; moved = false; });
+    addEventListener("pointerup", (e) => { if (sx == null) return; const d = e.clientX - sx; sx = null; if (Math.abs(d) > 40) { moved = true; go(idx + (d < 0 ? 1 : -1)); start(); setTimeout(() => (moved = false), 50); } });
+    stage.addEventListener("mouseenter", stop); stage.addEventListener("mouseleave", start);
+    wrap.appendChild(el("div", "cf-wrap", "", [stage, prev, next]));
+    if (N > 1) { wrap.appendChild(el("div", "cf-foot", "", [counter, el("div", "cf-dots", "", dots)])); wrap.appendChild(bar); }
+    layout(); start();
   }
 })();

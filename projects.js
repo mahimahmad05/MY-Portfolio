@@ -159,6 +159,7 @@
     const t0 = performance.now(), dur = 1300;
     (function f(t) { const k = Math.min(1, (t - t0) / dur); n.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))).toLocaleString(); if (k < 1) requestAnimationFrame(f); })(t0);
   }
+  let UI = {};
   function github(g) {
     const u = g.username, box = document.getElementById("projGithub");
     box.hidden = false; box.innerHTML = "";
@@ -181,17 +182,26 @@
     const total = el("b", "gh-total", "—"), heat = el("div", "gh-heat"), foot = el("div", "gh-heat-foot");
     const legend = el("div", "gh-legend", "", [el("span", "", "Less"), ...[0, 1, 2, 3, 4].map((l) => el("i", "gh-c l" + l)), el("span", "", "More")]);
     foot.appendChild(el("span", "gh-note", "")); foot.appendChild(legend);
-    const hp = el("div", "gh-card", "", [el("div", "gh-card-head", "", [el("span", "", "Contribution graph"), el("span", "gh-card-r", "", [total, document.createTextNode(" in the last year")])]), el("div", "gh-heat-scroll", "", [heat]), foot]);
+    const sky = el("div", "gh-sky"); sky.hidden = true;
+    const scroll = el("div", "gh-heat-scroll", "", [heat]);
+    const tabH = el("button", "gh-tab on", "Heatmap"), tabS = el("button", "gh-tab", "3D Skyline");
+    tabH.type = tabS.type = "button";
+    const setTab = (s3d) => { tabH.classList.toggle("on", !s3d); tabS.classList.toggle("on", s3d); scroll.hidden = s3d; legend.hidden = s3d; sky.hidden = !s3d; if (s3d) sky.dispatchEvent(new Event("show")); };
+    tabH.onclick = () => setTab(false); tabS.onclick = () => setTab(true);
+    const streaks = el("div", "gh-streaks");
+    const hp = el("div", "gh-card", "", [el("div", "gh-card-head", "", [el("span", "gh-card-title", "Contribution graph"), el("span", "gh-card-r", "", [total, document.createTextNode(" in the last year")])]), streaks, scroll, foot]);
     box.appendChild(hp);
     const cell = (lvl, tip, col) => { const c = el("i", "gh-c l" + lvl); if (tip) c.title = tip; c.style.setProperty("--c", col); return c; };
     function drawEmpty() { for (let w = 0; w < 53; w++) for (let d = 0; d < 7; d++) heat.appendChild(cell(0, "", w)); foot.firstChild.textContent = "Live contribution data loads when online"; }
 
+    // terminal feed (latest pushes)
+    const termBody = el("div", "gh-term-body");
+    box.appendChild(el("div", "gh-term", "", [el("div", "gh-term-bar", "", [el("i"), el("i"), el("i"), el("span", "", u + " — recent activity")]), termBody]));
+    UI = { sky, streaks, termBody };
+
     // languages + latest repos
     const langBar = el("div", "gh-langbar"), langLeg = el("div", "gh-langleg"), repoList = el("div", "gh-repos");
-    box.appendChild(el("div", "gh-two", "", [
-      el("div", "gh-card", "", [el("div", "gh-card-head", "", [el("span", "", "Languages")]), langBar, langLeg]),
-      el("div", "gh-card", "", [el("div", "gh-card-head", "", [el("span", "", "Latest repositories")]), repoList]),
-    ]));
+    // (languages card removed – elements kept detached so the loader code still works)
 
     let started = false;
     const start = () => { if (started) return; started = true; load(u, nums, total, heat, cell, drawEmpty, langBar, langLeg, repoList); };
@@ -234,7 +244,86 @@
       const t = (contrib.total && (contrib.total.lastYear || Object.values(contrib.total)[0])) || list.reduce((a, d) => a + d.count, 0);
       countUp(total, t);
       const sc = heat.parentNode; sc.scrollLeft = sc.scrollWidth;
-    } else { drawEmpty(); total.textContent = "0"; }
+      streakStats(list);
+    } else { drawEmpty(); total.textContent = "0";  }
+    const ev = await get("https://api.github.com/users/" + u + "/events/public?per_page=30");
+    terminal(Array.isArray(ev) ? ev : []);
+  }
+
+  function streakStats(list) {
+    let best = 0, run = 0, longest = 0, bestDay = list[0];
+    list.forEach((d) => { if (d.count > 0) { run++; longest = Math.max(longest, run); } else run = 0; if (d.count > bestDay.count) bestDay = d; });
+    let cur = 0, i = list.length - 1; if (i >= 0 && list[i].count === 0) i--;
+    for (; i >= 0 && list[i].count > 0; i--) cur++;
+    const active = list.filter((d) => d.count > 0).length;
+    const chip = (n, l, suf) => { const b = el("b", "", "0"); countUp(b, n); return el("div", "gh-st", "", [b, el("span", "", l + (suf || ""))]); };
+    [chip(cur, "Current streak", " days"), chip(longest, "Longest streak", " days"), chip(bestDay.count, "Best day", " commits"), chip(active, "Active days")].forEach((c) => UI.streaks.appendChild(c));
+  }
+
+  // 3D skyline: towers standing on a glowing plate that is cut to fit the data (no long empty plate)
+  function skyline(list, pad) {
+    const narrow = innerWidth < 700, maxW = narrow ? 26 : 53, minW = narrow ? 12 : 14;
+    const lastCol = Math.floor((list.length - 1 + pad) / 7);
+    const fi = list.findIndex((d) => d.count > 0), fCol = fi < 0 ? lastCol : Math.floor((fi + pad) / 7);
+    const first = Math.max(0, lastCol - maxW + 1, Math.min(fCol - 2, lastCol - minW + 1));
+    const weeks = lastCol - first + 1, stageW = (UI.sky.clientWidth || 900);
+    const S = Math.max(14, Math.min(30, Math.floor(stageW * (narrow ? .5 : .4) / weeks)));
+    const max = Math.max(8, ...list.map((d) => d.count));
+    const W = weeks * S, D = 7 * S, m = Math.round(S * 1.1);
+    const grid = el("div", "gh-sky-grid"); grid.style.cssText = "width:" + W + "px;height:" + D + "px";
+    const base = el("div", "gh-sky-base"); base.style.cssText = "left:" + -m + "px;top:" + -m + "px;right:" + -m + "px;bottom:" + -m + "px;background-size:" + S + "px " + S + "px;background-position:" + m + "px " + m + "px";
+    grid.appendChild(base); base.style.setProperty("--g", S + "px");
+    let peak = list[0];
+    list.forEach((d, i) => {
+      const col = Math.floor((i + pad) / 7) - first, row = (i + pad) % 7; if (col < 0) return;
+      if (d.count > peak.count) peak = d;
+      const h = d.count ? 8 + Math.pow(d.count / max, .8) * S * 5 : 1.5;
+      const b = el("div", "gh-bar l" + d.level, "", [el("i", "t"), el("i", "f"), el("i", "r")]);
+      b.style.cssText = "left:" + col * S + "px;top:" + row * S + "px;--h:" + h.toFixed(1) + "px;--s:" + (S - 3) + "px;--dl:" + (col * 16) + "ms";
+      b.dataset.tip = d.count + " contribution" + (d.count === 1 ? "" : "s") + " · " + d.date;
+      grid.appendChild(b);
+    });
+    const stage = el("div", "gh-sky-stage", "", [grid]), tip = el("div", "gh-sky-tip");
+    UI.sky.appendChild(stage); UI.sky.appendChild(tip);
+    UI.sky.appendChild(el("div", "gh-sky-hint", "Each tower = one day · taller = more contributions · best day: " + peak.count + " on " + peak.date + " · move the mouse to rotate"));
+    const fit = () => { const k = Math.min(1.2, (stage.clientWidth || 900) / ((W + D) * 1.0 + 3 * m)); grid.style.setProperty("--k", k.toFixed(3)); };
+    addEventListener("resize", fit); UI.sky.addEventListener("show", () => { fit(); grid.classList.remove("rise"); void grid.offsetWidth; grid.classList.add("rise"); }); fit();
+    stage.addEventListener("mousemove", (e) => {
+      const r = stage.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      grid.style.setProperty("--rz", (-40 + x * 46) + "deg"); grid.style.setProperty("--rx", (60 - y * 18) + "deg");
+      const bar = e.target.closest && e.target.closest(".gh-bar"), sr = UI.sky.getBoundingClientRect();
+      if (bar) { tip.textContent = bar.dataset.tip; tip.style.left = e.clientX - sr.left + "px"; tip.style.top = e.clientY - sr.top - 14 + "px"; tip.classList.add("on"); } else tip.classList.remove("on");
+    });
+    stage.addEventListener("mouseleave", () => { grid.style.setProperty("--rz", "-40deg"); grid.style.setProperty("--rx", "60deg"); tip.classList.remove("on"); });
+  }
+
+  // terminal with typing effect
+  async function terminal(events) {
+    const ago = (t) => { const m = (Date.now() - new Date(t)) / 60000; return m < 60 ? Math.max(1, Math.round(m)) + "m ago" : m < 1440 ? Math.round(m / 60) + "h ago" : Math.round(m / 1440) + "d ago"; };
+    const lines = [], seen = new Set();
+    events.forEach((e) => {
+      const repo = (e.repo.name.split("/")[1] || e.repo.name), p = e.payload || {}; let msg = "";
+      if (e.type === "PushEvent" && p.commits && p.commits.length) msg = p.commits[p.commits.length - 1].message.split("\n")[0];
+      else if (e.type === "CreateEvent") msg = "created " + (p.ref_type || "repository") + (p.ref && p.ref !== repo ? " " + p.ref : "");
+      else if (e.type === "WatchEvent") msg = "starred ★";
+      else if (e.type === "ForkEvent") msg = "forked";
+      else return;
+      const k = repo + "|" + msg; if (seen.has(k)) return; seen.add(k);
+      lines.push({ repo, msg, hash: String(e.id).slice(-7), when: ago(e.created_at), url: "https://github.com/" + e.repo.name });
+    });
+    const body = UI.termBody, sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const type = async (node, text, ms) => { for (const ch of text) { node.textContent += ch; await sleep(ms); } };
+    const cur = el("span", "gh-cur");
+    const cmd = el("div", "gh-tl"); cmd.appendChild(el("span", "gh-p", "$ ")); const ct = el("span"); cmd.appendChild(ct); cmd.appendChild(cur); body.appendChild(cmd);
+    await type(ct, "git log --oneline --all -n 6", 28); cur.remove(); await sleep(250);
+    if (!lines.length) body.appendChild(el("div", "gh-tl dim", "no public activity yet — start pushing code!"));
+    for (const l of lines.slice(0, 6)) {
+      const row = el("div", "gh-tl"); row.appendChild(el("span", "gh-hash", l.hash + " "));
+      const a = el("a", "gh-repo-n", l.repo + " "); a.href = l.url; a.target = "_blank"; a.rel = "noopener"; row.appendChild(a);
+      const t = el("span", "gh-msg"); row.appendChild(t); body.appendChild(row);
+      await type(t, l.msg.slice(0, 70), 12); row.appendChild(el("span", "gh-when", "  · " + l.when)); await sleep(120);
+    }
+    const end = el("div", "gh-tl"); end.appendChild(el("span", "gh-p", "$ ")); end.appendChild(el("span", "gh-cur")); body.appendChild(end);
   }
 
   // ---- screenshot popup ----
