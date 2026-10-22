@@ -23,6 +23,37 @@
   const bar = () => el("div", "card-topbar");
   const lock = (on) => (document.body.style.overflow = on ? "hidden" : "");
 
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const nums = (s) => (String(s || "").match(/\d{4}/g) || []).map(Number);
+
+  // run fn once when node scrolls into view (adds .in)
+  const io = "IntersectionObserver" in window ? new IntersectionObserver((es) => es.forEach((x) => {
+    if (x.isIntersecting) { io.unobserve(x.target); x.target.classList.add("in"); (x.target._in || []).forEach((f) => f()); }
+  }), { threshold: 0.18 }) : null;
+  function onIn(n, fn) { (n._in = n._in || []).push(fn); if (io) io.observe(n); else { n.classList.add("in"); fn(); } return n; }
+
+  function count(node, to, dec, dur) {
+    if (reduce) { node.textContent = to.toFixed(dec); return; }
+    const t0 = performance.now();
+    (function f(t) { const k = Math.min(1, (t - t0) / (dur || 1200)), e = 1 - Math.pow(1 - k, 3); node.textContent = (to * e).toFixed(dec); if (k < 1) requestAnimationFrame(f); })(t0);
+  }
+  function tilt(card) {
+    if (reduce) return;
+    card.addEventListener("mousemove", (ev) => {
+      const r = card.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width, y = (ev.clientY - r.top) / r.height;
+      card.style.setProperty("--mx", x * 100 + "%"); card.style.setProperty("--my", y * 100 + "%");
+      card.style.setProperty("--ry", (x - .5) * 7 + "deg"); card.style.setProperty("--rx", (.5 - y) * 7 + "deg");
+    });
+    card.addEventListener("mouseleave", () => { card.style.setProperty("--ry", "0deg"); card.style.setProperty("--rx", "0deg"); });
+  }
+  function ring(size, label, sub) {
+    const num = el("b", "gr-num", "0.00");
+    const r = el("div", "gr " + size, "", [el("i", "gr-arc"), el("div", "gr-in", "", [num, el("span", "gr-lab", label)])]);
+    if (sub) r.appendChild(el("span", "gr-sub", sub));
+    return { r, num };
+  }
+  function setRing(r, pct) { r.style.setProperty("--ep", Math.max(0, Math.min(100, pct))); }
+
   window.renderEducation = function (cfg) {
     const root = document.getElementById("education");
     if (!root || !cfg) return;
@@ -31,12 +62,48 @@
     document.getElementById("eduTitle").textContent = cfg.title || "Education";
     document.getElementById("eduHeadIcon").innerHTML = ICONS[cfg.icon] || ICONS.gradcap;
 
+    const items = cfg.items || [];
+    hero(cfg, items);
+
     const list = document.getElementById("eduList");
-    (cfg.items || []).forEach((e) => list.appendChild(e.type === "university" ? uniCard(e, cfg) : card(e, cfg)));
+    items.forEach((e, i) => list.appendChild(stop(e, cfg, i)));
+    journeyScroll(list);
 
     sub("eduLang", cfg.languages, ICONS.globe, "langList", (l) => langCard(l));
-    sub("eduValues", cfg.values, ICONS.shield, "valuesList", (v) => valueCard(v));
+    sub("eduValues", cfg.values, ICONS.shield, "valuesList", (v, i) => valueCard(v, i));
   };
+
+  function hero(cfg, items) {
+    const box = document.getElementById("eduHero"); if (!box) return;
+    const yrs = items.flatMap((e) => nums(e.session)); const now = new Date().getFullYear();
+    const span = yrs.length ? Math.max(1, now - Math.min.apply(null, yrs)) : 0;
+    const perfect = items.filter((e) => e.type !== "university" && parseFloat(e.gpa) >= 5).length;
+    const tag = el("p", "eh-tag"); box.appendChild(tag);
+    const line = cfg.tagline || "From SSC to Software Engineering — one step at a time.";
+    if (reduce) tag.textContent = line; else { let i = 0; tag.classList.add("typing"); const t = setInterval(() => { tag.textContent = line.slice(0, ++i); if (i >= line.length) { clearInterval(t); tag.classList.remove("typing"); } }, 38); }
+    const tiles = [[items.length, "Institutions"], [span, "Years of learning"], [perfect, "Perfect 5.00 GPAs"]].filter((x) => x[0]);
+    const row = el("div", "eh-row");
+    tiles.forEach((x) => { const n = el("b", "", "0"); const t = el("div", "eh-tile", "", [n, el("span", "", x[1])]); row.appendChild(t); onIn(t, () => count(n, x[0], 0, 1100)); });
+    box.appendChild(row);
+  }
+
+  function journeyScroll(list) {
+    const fill = list.querySelector(".jr-fill");
+    function upd() { const r = list.getBoundingClientRect(); const p = (innerHeight * .65 - r.top) / r.height; fill.style.transform = "scaleY(" + Math.max(0, Math.min(1, p)) + ")"; }
+    addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd();
+  }
+
+  function stop(e, cfg, i) {
+    const uni = e.type === "university";
+    const y = nums(e.session);
+    const when = /ongoing|present|now/i.test(e.session || "") ? "NOW" : y.length ? (y[0] + (y[y.length - 1] !== y[0] ? " – " + y[y.length - 1] : "")) : "";
+    const node = el("div", "jr-node" + (uni ? " live" : ""), "", [el("i")]);
+    const lab = el("div", "jr-when", "", [el("span", "", when), el("em", "", e.level || "")]);
+    const c = uni ? uniCard(e, cfg) : card(e, cfg);
+    const it = el("div", "jr-item " + (i % 2 ? "r" : "l"), "", [c, node, lab]);
+    onIn(it, () => {});
+    return it;
+  }
 
   function sub(id, c, fallbackIcon, listId, make) {
     const box = document.getElementById(id);
@@ -45,7 +112,8 @@
     box.querySelector(".sub-title").textContent = c.title;
     box.querySelector(".sub-icon").innerHTML = ICONS[c.icon] || fallbackIcon;
     const wrap = document.getElementById(listId);
-    c.items.forEach((x) => wrap.appendChild(make(x)));
+    c.items.forEach((x, i) => wrap.appendChild(make(x, i)));
+    onIn(box.querySelector(".sub-head"), () => {});
   }
 
   function head(e) {
@@ -65,66 +133,75 @@
     const btn = el("button", "edu-cert-btn"); btn.type = "button";
     btn.innerHTML = ICONS.eye; btn.appendChild(el("span", "", cfg.viewLabel || "View Certificate"));
     btn.addEventListener("click", () => openImage(e.certificate));
-    const gpa = el("div", "edu-gpa", "", [el("span", "edu-gpa-num", e.gpa), el("span", "edu-gpa-label", "GPA")]);
-    return el("div", "edu-card", "", [
-      bar(),
-      el("div", "edu-top", "", [el("span", "edu-badge", e.level), gpa]),
+    const g = ring("sm", "GPA"); const val = parseFloat(e.gpa) || 0;
+    const c = el("div", "edu-card", "", [
+      el("i", "ec-glow"),
+      el("div", "edu-top", "", [el("span", "edu-badge", e.level), g.r]),
       head(e), el("div", "edu-session", e.session), btn,
     ]);
+    onIn(c, () => { setRing(g.r, val / 5 * 100); count(g.num, val, 2, 1400); });
+    tilt(c);
+    return c;
   }
 
   function uniCard(e, cfg) {
-    const num = el("span", "edu-gpa-num", "0.00");
-    const gpa = el("div", "edu-gpa", "", [num, el("span", "edu-gpa-label", "CGPA")]);
+    const g = ring("lg", "CGPA", "out of 4.00");
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem("semesterGPAs")); } catch (x) {}
-    const total = e.totalSemesters || 8, vals = [];
+    const total = e.totalSemesters || 8, vals = [], fills = [];
     for (let i = 0; i < total; i++) {
       if (saved && saved[i] != null) vals.push(saved[i]);
       else if (e.semesterGPAs && e.semesterGPAs[i] != null) vals.push(e.semesterGPAs[i]);
       else vals.push(null);
     }
-    function recalc() {
-      const f = vals.filter((v) => v !== null && v !== "" && !isNaN(v));
-      num.textContent = (f.length ? f.reduce((a, b) => a + Number(b), 0) / f.length : 0).toFixed(2);
-      try { localStorage.setItem("semesterGPAs", JSON.stringify(vals)); } catch (x) {}
+    let shown = false, cur = 0;
+    const avg = () => { const f = vals.filter((v) => v !== null && v !== "" && !isNaN(v)); return f.length ? f.reduce((a, b) => a + Number(b), 0) / f.length : 0; };
+    function paint() {
+      if (!shown) return;
+      const a = avg(); setRing(g.r, a / 4 * 100);
+      g.num.textContent = a.toFixed(2); cur = a;
+      vals.forEach((v, i) => fills[i].style.setProperty("--h", (v === null || isNaN(v) ? 0 : Math.min(4, v) / 4 * 100) + "%"));
     }
+    function save() { try { localStorage.setItem("semesterGPAs", JSON.stringify(vals)); } catch (x) {} }
     const grid = el("div", "sem-grid");
     for (let i = 0; i < total; i++) {
       const inp = document.createElement("input");
       inp.type = "number"; inp.min = "0"; inp.max = "4"; inp.step = "0.01"; inp.className = "sem-input"; inp.placeholder = "—";
       inp.setAttribute("aria-label", "Semester " + (i + 1) + " GPA");
       if (vals[i] !== null) inp.value = vals[i];
-      inp.addEventListener("input", () => { const v = inp.value.trim(); vals[i] = v === "" ? null : parseFloat(v); recalc(); });
-      grid.appendChild(el("div", "sem-cell", "", [el("label", "sem-label", "Sem " + (i + 1)), inp]));
+      inp.addEventListener("input", () => { const v = inp.value.trim(); vals[i] = v === "" ? null : parseFloat(v); save(); paint(); });
+      const fill = el("i", "sem-fill"); fills.push(fill);
+      grid.appendChild(el("div", "sem-cell", "", [el("div", "sem-bar", "", [fill]), inp, el("label", "sem-label", "S" + (i + 1))]));
     }
-    recalc();
-    return el("div", "edu-card", "", [
-      bar(),
-      el("div", "edu-top", "", [el("span", "edu-badge", e.level), gpa]),
-      head(e), el("div", "edu-session", e.session), grid,
+    const live = el("span", "edu-live", "Ongoing");
+    const body = el("div", "uni-body", "", [g.r, el("div", "uni-sem", "", [el("div", "uni-sem-title", "Semester-wise GPA"), grid])]);
+    const c = el("div", "edu-card uni", "", [
+      el("i", "ec-glow"),
+      el("div", "edu-top", "", [el("span", "edu-badge", e.level), live]),
+      head(e), el("div", "edu-session", e.session), body,
       el("p", "sem-hint", cfg.semesterHint || ""),
     ]);
-  }
-
-  function langCard(l) {
-    const fill = el("div", "lang-bar-fill");
-    const c = el("div", "lang-card", "", [
-      bar(),
-      el("div", "lang-top", "", [
-        el("span", "lang-flag", l.flag || ""),
-        el("div", "", "", [el("div", "lang-name", l.name), el("div", "lang-level", l.level)]),
-      ]),
-      el("div", "lang-bar", "", [fill]),
-      el("div", "lang-pct", (l.percent || 0) + "%"),
-    ]);
-    requestAnimationFrame(() => setTimeout(() => (fill.style.width = (l.percent || 0) + "%"), 150));
+    onIn(c, () => { shown = true; const a = avg(); paint(); g.num.textContent = "0.00"; count(g.num, a, 2, 1500); });
+    tilt(c);
     return c;
   }
 
-  function valueCard(v) {
+  function langCard(l) {
+    const p = l.percent || 0, num = el("b", "", "0");
+    const dial = el("div", "lg-dial", "", [el("i", "lg-arc"), el("div", "lg-in", "", [el("span", "lg-flag", l.flag || ""), el("span", "lg-pct", "", [num, document.createTextNode("%")])])]);
+    const c = el("div", "lang-card", "", [el("i", "ec-glow"), dial, el("div", "lg-txt", "", [el("div", "lang-name", l.name), el("div", "lang-level", l.level)])]);
+    onIn(c, () => { dial.style.setProperty("--ep", p); count(num, p, 0, 1500); });
+    tilt(c);
+    return c;
+  }
+
+  function valueCard(v, i) {
     const ic = el("div", "value-icon"); ic.innerHTML = ICONS[v.icon] || ICONS.spark;
-    return el("div", "value-card", "", [bar(), ic, el("div", "value-title", v.title), el("div", "value-desc", v.description)]);
+    const c = el("div", "value-card", "", [el("i", "ec-glow"), el("span", "value-idx", String((i || 0) + 1).padStart(2, "0")), el("div", "value-ic-wrap", "", [el("i", "value-orbit"), ic]), el("div", "value-title", v.title), el("div", "value-desc", v.description)]);
+    c.style.transitionDelay = (i % 3) * 90 + "ms";
+    onIn(c, () => {});
+    tilt(c);
+    return c;
   }
 
   // ---- certificate image popup ----
