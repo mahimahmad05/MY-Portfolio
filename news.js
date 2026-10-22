@@ -41,46 +41,64 @@
   const CHECK = S('<polyline points="20 6 9 17 4 12"/>'), CLOCK = S('<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>');
   const status = (t) => (/^(working|exploring|practic|learning|building|studying|developing)/i.test(t) ? "doing" : "done");
 
-  // ---- news = scroll timeline: glowing line fills as you scroll, cards slide in from alternate sides ----
+  // ---- news: live ticker + stats donut + filter chips + scroll timeline ----
   function news(items, cfg) {
     const wrap = document.getElementById("newsList");
     if (!items.length) return;
+    const max = cfg.visibleCount || 5, ST = items.map((it) => status(it.title));
+    const doing = ST.filter((x) => x === "doing").length, done = items.length - doing, pct = Math.round(done / items.length * 100);
+
+    // header block: LIVE ticker + stats
+    const tick = (r) => el("div", "tk-row", "", items.flatMap((it) => [el("span", "tk-w", it.title), el("span", "tk-s", "✦")]));
+    const ticker = el("div", "tk", "", [el("span", "tk-live", "", [el("i"), document.createTextNode("LIVE")]), el("div", "tk-mask", "", [el("div", "tk-track", "", [tick(), tick()])])]);
+    const num = (n, l, cls) => { const b = el("b", "", "0"); cnt(b, n); return el("div", "ns " + (cls || ""), "", [b, el("span", "", l)]); };
+    const donut = el("div", "ns-donut"); donut.style.setProperty("--p", "0");
+    donut.appendChild(el("b", "", pct + "%")); donut.appendChild(el("span", "", "completed"));
+    setTimeout(() => donut.style.setProperty("--p", pct), 300);
+    const stats = el("div", "ns-row", "", [num(items.length, "Updates"), num(doing, "In progress", "y"), num(done, "Done", "g"), donut]);
+    const filters = el("div", "nf");
+    let filter = "all", expanded = false;
+    [["all", "All"], ["doing", "In progress"], ["done", "Done"]].forEach(([k, l]) => { const b = el("button", "nf-b" + (k === "all" ? " on" : ""), l); b.type = "button"; b.onclick = () => { filter = k; expanded = false; filters.querySelectorAll(".nf-b").forEach((x) => x.classList.toggle("on", x === b)); draw(); }; filters.appendChild(b); });
+    const head = wrap.parentNode;
+    head.insertBefore(ticker, wrap); head.insertBefore(stats, wrap); head.insertBefore(filters, wrap);
+
     wrap.classList.add("tl");
-    const track = el("div", "tl-track", "", [el("i", "tl-fill")]);
-    wrap.appendChild(track);
-    const max = cfg.visibleCount || 5;
-    let n = 0;
-    function item(it) {
-      const st = status(it.title), i = n++;
+    let fill = null;
+    function item(it, i, latest) {
+      const st = status(it.title);
       const badge = el("span", "tl-badge " + st); badge.innerHTML = (st === "doing" ? CLOCK : CHECK); badge.appendChild(document.createTextNode(st === "doing" ? "In progress" : "Done"));
-      const card = el("div", "tl-card", "", [
-        el("div", "tl-top", "", [badge, el("span", "tl-date", it.date || "#" + String(i + 1).padStart(2, "0"))]),
-        el("div", "tl-title", it.title),
-      ]);
+      const top = el("div", "tl-top", "", [badge, el("span", "tl-date", it.date || "#" + String(items.indexOf(it) + 1).padStart(2, "0"))]);
+      const card = el("div", "tl-card" + (latest ? " latest" : ""), "", [top, el("div", "tl-title", it.title)]);
+      if (latest) card.appendChild(el("span", "tl-ribbon", "Latest"));
       if (it.description) card.appendChild(el("div", "tl-desc", it.description));
-      card.addEventListener("mousemove", (e) => { const r = card.getBoundingClientRect(); card.style.setProperty("--sx", e.clientX - r.left + "px"); card.style.setProperty("--sy", e.clientY - r.top + "px"); });
+      card.addEventListener("mousemove", (e) => { const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; card.style.setProperty("--sx", e.clientX - r.left + "px"); card.style.setProperty("--sy", e.clientY - r.top + "px"); card.style.transform = "perspective(800px) rotateY(" + (x * 5).toFixed(2) + "deg) rotateX(" + (-y * 5).toFixed(2) + "deg) translateY(-4px)"; });
+      card.addEventListener("mouseleave", () => (card.style.transform = ""));
       const node = el("span", "tl-node " + st, "", [el("i")]);
       const row = el("div", "tl-item " + (i % 2 ? "r" : "l"), "", [node, card]);
-      if ("IntersectionObserver" in window) { row.classList.add("pre"); new IntersectionObserver((en, ob) => en.forEach((x) => { if (x.isIntersecting) { row.classList.add("in"); ob.disconnect(); } }), { threshold: .2 }).observe(row); }
+      row.style.transitionDelay = "0s";
+      if ("IntersectionObserver" in window) { row.classList.add("pre"); new IntersectionObserver((en, ob) => en.forEach((x) => { if (x.isIntersecting) { row.classList.add("in"); ob.disconnect(); } }), { threshold: .15 }).observe(row); }
       return row;
     }
-    const rows = [];
-    items.slice(0, max).forEach((it) => { const r = item(it); rows.push(r); wrap.appendChild(r); });
-    const fill = track.firstChild;
-    function prog() { const r = wrap.getBoundingClientRect(), p = Math.max(0, Math.min(1, (innerHeight * .6 - r.top) / r.height)); fill.style.height = p * 100 + "%"; }
-    addEventListener("scroll", prog, { passive: true }); addEventListener("resize", prog); prog();
-    if (items.length <= max) return;
-    const label = el("span", "", cfg.moreLabel || "See More");
-    const btn = el("button", "nl-more"); btn.type = "button"; btn.appendChild(label);
-    const more = el("div", "nl-more-row", "", [btn]); wrap.appendChild(more);
-    let open = false, extra = [];
-    btn.addEventListener("click", () => {
-      open = !open;
-      if (open) { n = max; extra = items.slice(max).map((it) => { const r = item(it); wrap.insertBefore(r, more); setTimeout(() => r.classList.add("in"), 30); return r; }); label.textContent = cfg.lessLabel || "See Less"; }
-      else { extra.forEach((r) => r.remove()); extra = []; label.textContent = cfg.moreLabel || "See More"; more.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+    function prog() { if (!fill) return; const r = wrap.getBoundingClientRect(), p = Math.max(0, Math.min(1, (innerHeight * .6 - r.top) / r.height)); fill.style.height = p * 100 + "%"; }
+    addEventListener("scroll", prog, { passive: true }); addEventListener("resize", prog);
+    function draw() {
+      wrap.innerHTML = "";
+      const list = items.filter((it, i) => filter === "all" || ST[i] === filter);
+      fill = el("i", "tl-fill"); wrap.appendChild(el("div", "tl-track", "", [fill]));
+      const shown = expanded ? list : list.slice(0, max);
+      shown.forEach((it, i) => wrap.appendChild(item(it, i, filter === "all" && i === 0)));
+      if (!list.length) wrap.appendChild(el("div", "tl-empty", "Nothing here yet."));
+      if (list.length > max) {
+        const label = el("span", "", expanded ? (cfg.lessLabel || "See Less") : (cfg.moreLabel || "See More"));
+        const btn = el("button", "nl-more"); btn.type = "button"; btn.appendChild(label);
+        btn.onclick = () => { expanded = !expanded; draw(); if (!expanded) wrap.scrollIntoView({ behavior: "smooth", block: "start" }); };
+        wrap.appendChild(el("div", "nl-more-row", "", [btn]));
+      }
       prog();
-    });
+    }
+    draw();
   }
+  function cnt(n, to) { const t0 = performance.now(); (function f(t) { const k = Math.min(1, (t - t0) / 1200); n.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); })(t0); }
 
   // ---- highlights = 3D coverflow: centre photo big, neighbours tilted behind; swipe / arrows / dots / autoplay ----
   function slideshow(photos) {
@@ -92,10 +110,23 @@
       const ph = el("div", "cf-ph", "", [el("b", "", String(i + 1).padStart(2, "0")), el("span", "", "Photo not added yet")]);
       const c = el("div", "cf-card", "", [ph, img, el("div", "cf-gloss")]);
       img.onload = () => { ph.style.display = "none"; }; img.onerror = () => img.remove(); img.src = src;
-      c.addEventListener("click", () => { if (moved) return; if (i !== idx) { go(i); start(); } });
+      c.addEventListener("click", () => { if (moved) return; if (i !== idx) { go(i); start(); } else lightbox(); });
       stage.appendChild(c); return c;
     });
     let idx = 0, timer = null, moved = false;
+    function lightbox() {
+      stop();
+      const lb = el("div", "lb"), im = document.createElement("img"), cap = el("div", "lb-cap");
+      const show = () => { const c = cards[idx].querySelector("img"); im.style.display = c ? "block" : "none"; im.src = c ? c.src : ""; cap.textContent = String(idx + 1).padStart(2, "0") + " / " + String(N).padStart(2, "0") + (c ? "" : " · photo not added yet"); };
+      const close = () => { lb.classList.remove("in"); setTimeout(() => lb.remove(), 250); document.removeEventListener("keydown", key); start(); };
+      const step = (d) => { go(idx + d); show(); };
+      const key = (e) => { if (e.key === "Escape") close(); else if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1); };
+      const x = el("button", "lb-x", "×"), pv = el("button", "lb-a lb-p"), nx = el("button", "lb-a lb-n");
+      pv.innerHTML = ICONS.prev; nx.innerHTML = ICONS.next; x.onclick = close; pv.onclick = () => step(-1); nx.onclick = () => step(1);
+      lb.addEventListener("click", (e) => { if (e.target === lb) close(); });
+      lb.append(x, pv, im, nx, cap); document.body.appendChild(lb); document.addEventListener("keydown", key); show();
+      requestAnimationFrame(() => lb.classList.add("in"));
+    }
     const counter = el("div", "cf-count", "", [el("b", "", "01"), el("span", "", " / " + String(N).padStart(2, "0"))]);
     const bar = el("div", "cf-bar", "", [el("i")]);
     function layout() {
