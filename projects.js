@@ -28,6 +28,7 @@
     document.getElementById("projHeadIcon").innerHTML = ICONS[cfg.icon] || ICONS.rocket;
     const grid = document.getElementById("projGrid");
     (cfg.items || []).forEach((p, i) => grid.appendChild(card(p, cfg, i)));
+    stack(grid);
     if (cfg.github && cfg.github.username) github(cfg.github);
   };
 
@@ -64,8 +65,9 @@
       el("div", "pc-kicker", "", [el("span", "pc-dot"), document.createTextNode("Project " + num)]),
       el("div", "proj-title", p.title), el("div", "proj-desc", p.description), tags, btns,
     ]);
-    const c = el("article", "proj-card" + (i % 2 ? " flip" : ""), "", [visual, info]);
-    c.style.setProperty("--d", "0s");
+    const panel = el("div", "pc-panel", "", [el("i", "pc-ring"), visual, info]);
+    const c = el("article", "proj-card" + (i % 2 ? " flip" : ""), "", [panel]);
+    c.style.setProperty("--i", i);
     visual.addEventListener("click", () => openImage(p.image));
     // 3D tilt that follows the mouse
     visual.addEventListener("mousemove", (e) => {
@@ -73,13 +75,47 @@
       win.style.transform = "perspective(900px) rotateY(" + (x * 12).toFixed(2) + "deg) rotateX(" + (-y * 10).toFixed(2) + "deg) scale(1.025)";
       win.style.setProperty("--mx", (x + .5) * 100 + "%"); win.style.setProperty("--my", (y + .5) * 100 + "%");
     });
-    visual.addEventListener("mouseleave", () => (win.style.transform = ""));
+    visual.addEventListener("mouseenter", () => {
+      const d = img.offsetHeight - shot.offsetHeight;
+      if (d > 12) { img.style.transition = "transform " + Math.min(9, d / 90).toFixed(2) + "s linear"; img.style.transform = "translateY(-" + d + "px)"; }
+    });
+    visual.addEventListener("mouseleave", () => { win.style.transform = ""; img.style.transition = "transform .7s ease"; img.style.transform = ""; });
     // reveal on scroll
     if ("IntersectionObserver" in window) {
       c.classList.add("pre");
       new IntersectionObserver((en, ob) => en.forEach((x) => { if (x.isIntersecting) { c.classList.add("in"); ob.disconnect(); } }), { threshold: .18 }).observe(c);
     }
     return c;
+  }
+
+  // ---- stacked cards: each card sticks, the next one slides over it; side counter shows where you are ----
+  function stack(grid) {
+    const cards = [...grid.children]; if (!cards.length) return;
+    const rail = el("div", "pj-rail", "", [el("b", "pj-cur", "01"), el("span", "pj-line", "", [el("i")]), el("span", "pj-tot", String(cards.length).padStart(2, "0"))]);
+    document.body.appendChild(rail);
+    const cur = rail.querySelector(".pj-cur"), fill = rail.querySelector("i");
+    const wide = () => window.matchMedia("(min-width: 901px)").matches;
+    let tick = false;
+    function update() {
+      tick = false;
+      const on = wide(), gr = grid.getBoundingClientRect();
+      rail.classList.toggle("show", on && gr.top < innerHeight * .6 && gr.bottom > innerHeight * .4);
+      let active = 0;
+      cards.forEach((c, i) => {
+        const panel = c.firstChild, nx = cards[i + 1];
+        const top = 96 + i * 16;
+        if (c.getBoundingClientRect().top <= top + 40) active = i;
+        if (!on || !nx) { panel.style.transform = ""; panel.style.filter = ""; return; }
+        const h = c.offsetHeight, p = Math.max(0, Math.min(1, 1 - (nx.getBoundingClientRect().top - top) / h));
+        panel.style.transform = "scale(" + (1 - p * .07).toFixed(4) + ")";
+        panel.style.filter = "brightness(" + (1 - p * .5).toFixed(3) + ")";
+      });
+      cur.textContent = String(active + 1).padStart(2, "0");
+      fill.style.height = ((active + 1) / cards.length * 100) + "%";
+    }
+    const req = () => { if (!tick) { tick = true; requestAnimationFrame(update); } };
+    addEventListener("scroll", req, { passive: true }); addEventListener("resize", req); update();
+    cards.forEach((c, i) => c.style.setProperty("--top", 96 + i * 16 + "px"));
   }
 
   // ---- GitHub activity ----
