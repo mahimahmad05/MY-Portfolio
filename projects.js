@@ -36,10 +36,18 @@
     const a = el("a", "proj-btn"); a.href = href; a.target = "_blank"; a.rel = "noopener";
     a.innerHTML = icon; a.appendChild(el("span", "", label));
     a.addEventListener("click", (e) => e.stopPropagation());
+    a.addEventListener("mousemove", (e) => { const r = a.getBoundingClientRect(); a.style.translate = ((e.clientX - r.left - r.width / 2) * .22).toFixed(1) + "px " + ((e.clientY - r.top - r.height / 2) * .35).toFixed(1) + "px"; });
+    a.addEventListener("mouseleave", () => (a.style.translate = ""));
     return a;
   }
 
   function host(u) { try { return new URL(u).hostname; } catch (e) { return "localhost"; } }
+  const HUES = [218, 262, 188, 292, 160, 332];
+  function title(t) {
+    const h = el("div", "proj-title");
+    t.split(" ").forEach((w, k) => { const o = el("span", "tw"), n = el("span", "tn", w); n.style.transitionDelay = (0.15 + k * 0.08) + "s"; o.appendChild(n); h.appendChild(o); h.appendChild(document.createTextNode(" ")); });
+    return h;
+  }
   function card(p, cfg, i) {
     const img = document.createElement("img");
     img.src = p.image || ""; img.alt = p.title; img.loading = "lazy";
@@ -51,7 +59,8 @@
     };
     const bar = el("div", "pc-bar", "", [el("i"), el("i"), el("i"), el("span", "pc-url", p.live ? host(p.live) : "localhost:3000")]);
     const win = el("div", "pc-window", "", [bar, shot, el("div", "pc-shine")]);
-    const visual = el("div", "pc-visual", "", [el("div", "pc-glow"), win, el("div", "pc-hint", "Click to enlarge")]);
+    const floats = (p.tags || []).slice(0, 3).map((t, k) => el("span", "pc-float f" + k, t));
+    const visual = el("div", "pc-visual", "", [el("div", "pc-glow"), win, ...floats]);
 
     const btns = el("div", "proj-btns");
     if (p.live) btns.appendChild(link(p.live, ICONS.rocket, cfg.liveLabel || "Live Site"));
@@ -63,29 +72,55 @@
     const info = el("div", "pc-info", "", [
       el("div", "pc-num", num),
       el("div", "pc-kicker", "", [el("span", "pc-dot"), document.createTextNode("Project " + num)]),
-      el("div", "proj-title", p.title), el("div", "proj-desc", p.description), tags, btns,
+      title(p.title), el("div", "proj-desc", p.description), tags, btns,
     ]);
     const panel = el("div", "pc-panel", "", [el("i", "pc-ring"), visual, info]);
     const c = el("article", "proj-card" + (i % 2 ? " flip" : ""), "", [panel]);
-    c.style.setProperty("--i", i);
+    c.style.setProperty("--i", i); c.style.setProperty("--h", HUES[i % HUES.length]);
     visual.addEventListener("click", () => openImage(p.image));
+    visual.addEventListener("mouseenter", () => cursor(true, c));
+    visual.addEventListener("mouseleave", () => cursor(false));
     // 3D tilt that follows the mouse
     visual.addEventListener("mousemove", (e) => {
       const r = visual.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
       win.style.transform = "perspective(900px) rotateY(" + (x * 12).toFixed(2) + "deg) rotateX(" + (-y * 10).toFixed(2) + "deg) scale(1.025)";
+      floats.forEach((f, k) => (f.style.translate = (-x * (18 + k * 10)).toFixed(1) + "px " + (-y * (18 + k * 10)).toFixed(1) + "px"));
       win.style.setProperty("--mx", (x + .5) * 100 + "%"); win.style.setProperty("--my", (y + .5) * 100 + "%");
     });
     visual.addEventListener("mouseenter", () => {
       const d = img.offsetHeight - shot.offsetHeight;
       if (d > 12) { img.style.transition = "transform " + Math.min(9, d / 90).toFixed(2) + "s linear"; img.style.transform = "translateY(-" + d + "px)"; }
     });
-    visual.addEventListener("mouseleave", () => { win.style.transform = ""; img.style.transition = "transform .7s ease"; img.style.transform = ""; });
+    visual.addEventListener("mouseleave", () => { win.style.transform = ""; floats.forEach((f) => (f.style.translate = "")); img.style.transition = "transform .7s ease"; img.style.transform = ""; });
     // reveal on scroll
     if ("IntersectionObserver" in window) {
       c.classList.add("pre");
       new IntersectionObserver((en, ob) => en.forEach((x) => { if (x.isIntersecting) { c.classList.add("in"); ob.disconnect(); } }), { threshold: .18 }).observe(c);
     }
     return c;
+  }
+
+  // ---- round "VIEW" cursor that follows the mouse over a project window ----
+  let cur = null;
+  function cursor(on, card) {
+    if (!matchMedia("(hover: hover)").matches) return;
+    if (!cur) {
+      cur = el("div", "pj-cursor", "View"); document.body.appendChild(cur);
+      addEventListener("mousemove", (e) => { cur.style.left = e.clientX + "px"; cur.style.top = e.clientY + "px"; }, { passive: true });
+    }
+    if (card) cur.style.setProperty("--h", card.style.getPropertyValue("--h"));
+    cur.classList.toggle("on", on);
+  }
+  function marquee(items) {
+    const words = []; items.forEach((p) => { words.push(p.title); (p.tags || []).forEach((t) => words.push(t)); });
+    const uniq = [...new Set(words)]; if (!uniq.length) return null;
+    const row = () => el("div", "pjm-row", "", uniq.flatMap((w) => [el("span", "pjm-w", w), el("span", "pjm-s", "✦")]));
+    const live = items.filter((p) => p.live).length, gh = items.filter((p) => p.github).length;
+    const stat = (n, l) => el("div", "pjs", "", [el("b", "", String(n).padStart(2, "0")), el("span", "", l)]);
+    return el("div", "pj-top", "", [
+      el("div", "pj-stats", "", [stat(items.length, "Projects"), stat(live, "Live sites"), stat(gh, "Repositories")]),
+      el("div", "pj-marquee", "", [el("div", "pjm-track", "", [row(), row()])]),
+    ]);
   }
 
   // ---- stacked cards: each card sticks, the next one slides over it; side counter shows where you are ----
