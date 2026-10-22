@@ -1144,6 +1144,7 @@
     },
     "photo": "assets/about-photo.jpg"
   },
+  
   "backgrounds": {
     "enabled": true,
     "folder": "assets/backgrounds/",
