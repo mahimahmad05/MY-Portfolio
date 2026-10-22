@@ -153,45 +153,88 @@
     cards.forEach((c, i) => c.style.setProperty("--top", 96 + i * 16 + "px"));
   }
 
-  // ---- GitHub activity ----
-  function github(g) {
-    const box = document.getElementById("projGithub");
-    box.hidden = false;
-    document.getElementById("ghTitle").textContent = g.title || "GitHub Activity";
-    document.getElementById("ghIcon").innerHTML = ICONS.github;
-    document.getElementById("ghSub").textContent = g.subheading || "";
-    const defs = [["publicRepos", "Public Repos", "code"], ["followers", "Followers", "users"], ["totalStars", "Total Stars", "spark"], ["topLanguage", "Top Language", "code"]];
-    const nums = {}, grid = document.getElementById("ghStats");
-    defs.forEach(([k, label, ic]) => {
-      const i = el("div", "gh-stat-icon"); i.innerHTML = ICONS[ic];
-      const n = el("div", "gh-stat-num", "—"); nums[k] = n;
-      grid.appendChild(el("div", "gh-stat-card", "", [el("div", "card-topbar"), i, n, el("div", "gh-stat-label", label)]));
-    });
-    const btn = document.getElementById("ghProfileBtn");
-    btn.href = "https://github.com/" + g.username;
-    btn.innerHTML = ICONS.github; btn.appendChild(el("span", "", g.profileLabel || "View Full GitHub Profile"));
-    document.getElementById("ghNote").textContent = g.noteLabel || "";
-    const img = document.getElementById("ghChart");
-    img.onerror = () => (img.parentNode.style.display = "none");
-    img.onload = () => (img.style.display = "block");
-    img.src = "https://ghchart.rshah.org/1b1b3a/" + g.username;
-    stats(g.username, nums);
+  // ---- GitHub activity: profile card, count-up stats, real contribution heatmap, language bar, latest repos ----
+  function countUp(n, to) {
+    if (typeof to !== "number") { n.textContent = to; return; }
+    const t0 = performance.now(), dur = 1300;
+    (function f(t) { const k = Math.min(1, (t - t0) / dur); n.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))).toLocaleString(); if (k < 1) requestAnimationFrame(f); })(t0);
   }
-  async function stats(u, n) {
-    try {
-      const r = await fetch("https://api.github.com/users/" + u);
-      if (r.ok) { const j = await r.json(); n.publicRepos.textContent = j.public_repos ?? "—"; n.followers.textContent = j.followers ?? "—"; }
-      const rr = await fetch("https://api.github.com/users/" + u + "/repos?per_page=100");
-      if (rr.ok) {
-        const repos = await rr.json();
-        if (Array.isArray(repos)) {
-          let stars = 0; const lc = {};
-          repos.forEach((x) => { stars += x.stargazers_count || 0; if (x.language) lc[x.language] = (lc[x.language] || 0) + 1; });
-          n.totalStars.textContent = stars;
-          n.topLanguage.textContent = Object.keys(lc).sort((a, b) => lc[b] - lc[a])[0] || "—";
-        }
-      }
-    } catch (e) { /* offline: keep dashes */ }
+  function github(g) {
+    const u = g.username, box = document.getElementById("projGithub");
+    box.hidden = false; box.innerHTML = "";
+    const ic = (k) => { const i = el("span", "gh-i"); i.innerHTML = ICONS[k]; return i; };
+
+    box.appendChild(el("div", "gh-head", "", [ic("github"), el("span", "gh-title", g.title || "GitHub Activity")]));
+    box.appendChild(el("p", "gh-sub", g.subheading || ""));
+
+    // profile + stat tiles
+    const av = el("img", "gh-avatar"); av.alt = u; av.src = "https://github.com/" + u + ".png?size=200"; av.onerror = () => av.replaceWith(ic("github"));
+    const name = el("div", "gh-name", u), bio = el("div", "gh-bio", g.noteLabel || "");
+    const cta = el("a", "proj-btn primary"); cta.href = "https://github.com/" + u; cta.target = "_blank"; cta.rel = "noopener"; cta.innerHTML = ICONS.github; cta.appendChild(el("span", "", g.profileLabel || "View Full GitHub Profile"));
+    const me = el("div", "gh-me", "", [el("div", "gh-av-wrap", "", [el("i", "gh-av-ring"), av]), name, el("div", "gh-handle", "@" + u), bio, cta]);
+    const defs = [["publicRepos", "Public Repos", "code"], ["followers", "Followers", "users"], ["totalStars", "Total Stars", "spark"], ["topLanguage", "Top Language", "rocket"]];
+    const nums = {}, tiles = el("div", "gh-tiles");
+    defs.forEach(([k, label, i]) => { const n = el("div", "gh-num", "—"); nums[k] = n; tiles.appendChild(el("div", "gh-tile", "", [ic(i), n, el("div", "gh-lab", label)])); });
+    box.appendChild(el("div", "gh-panel", "", [el("i", "pc-ring"), me, tiles]));
+
+    // contribution heatmap
+    const total = el("b", "gh-total", "—"), heat = el("div", "gh-heat"), foot = el("div", "gh-heat-foot");
+    const legend = el("div", "gh-legend", "", [el("span", "", "Less"), ...[0, 1, 2, 3, 4].map((l) => el("i", "gh-c l" + l)), el("span", "", "More")]);
+    foot.appendChild(el("span", "gh-note", "")); foot.appendChild(legend);
+    const hp = el("div", "gh-card", "", [el("div", "gh-card-head", "", [el("span", "", "Contribution graph"), el("span", "gh-card-r", "", [total, document.createTextNode(" in the last year")])]), el("div", "gh-heat-scroll", "", [heat]), foot]);
+    box.appendChild(hp);
+    const cell = (lvl, tip, col) => { const c = el("i", "gh-c l" + lvl); if (tip) c.title = tip; c.style.setProperty("--c", col); return c; };
+    function drawEmpty() { for (let w = 0; w < 53; w++) for (let d = 0; d < 7; d++) heat.appendChild(cell(0, "", w)); foot.firstChild.textContent = "Live contribution data loads when online"; }
+
+    // languages + latest repos
+    const langBar = el("div", "gh-langbar"), langLeg = el("div", "gh-langleg"), repoList = el("div", "gh-repos");
+    box.appendChild(el("div", "gh-two", "", [
+      el("div", "gh-card", "", [el("div", "gh-card-head", "", [el("span", "", "Languages")]), langBar, langLeg]),
+      el("div", "gh-card", "", [el("div", "gh-card-head", "", [el("span", "", "Latest repositories")]), repoList]),
+    ]));
+
+    let started = false;
+    const start = () => { if (started) return; started = true; load(u, nums, total, heat, cell, drawEmpty, langBar, langLeg, repoList); };
+    if ("IntersectionObserver" in window) new IntersectionObserver((e, o) => e.some((x) => x.isIntersecting) && (o.disconnect(), start()), { threshold: .15 }).observe(box); else start();
+  }
+  async function load(u, nums, total, heat, cell, drawEmpty, langBar, langLeg, repoList) {
+    const get = async (url) => { try { const r = await fetch(url); return r.ok ? await r.json() : null; } catch (e) { return null; } };
+    const [user, repos, contrib] = await Promise.all([
+      get("https://api.github.com/users/" + u),
+      get("https://api.github.com/users/" + u + "/repos?per_page=100&sort=pushed"),
+      get("https://github-contributions-api.jogruber.de/v4/" + u + "?y=last"),
+    ]);
+    if (user) { countUp(nums.publicRepos, user.public_repos || 0); countUp(nums.followers, user.followers || 0); if (user.name) document.querySelector(".gh-name").textContent = user.name; if (user.bio) document.querySelector(".gh-me .gh-bio").textContent = user.bio; }
+    if (Array.isArray(repos)) {
+      let stars = 0; const lc = {};
+      repos.forEach((x) => { stars += x.stargazers_count || 0; if (x.language && !x.fork) lc[x.language] = (lc[x.language] || 0) + 1; });
+      countUp(nums.totalStars, stars);
+      const langs = Object.keys(lc).sort((a, b) => lc[b] - lc[a]), sum = langs.reduce((a, k) => a + lc[k], 0) || 1;
+      nums.topLanguage.textContent = langs[0] || "—";
+      langs.slice(0, 6).forEach((l, i) => {
+        const hue = [215, 265, 190, 292, 160, 332][i], pct = Math.round(lc[l] / sum * 100);
+        const seg = el("i", "gh-seg"); seg.style.cssText = "width:" + (lc[l] / sum * 100) + "%;background:hsl(" + hue + " 100% 62%);transition-delay:" + i * .1 + "s"; seg.title = l + " " + pct + "%"; langBar.appendChild(seg);
+        const dot = el("i", "gh-ldot"); dot.style.background = "hsl(" + hue + " 100% 62%)";
+        langLeg.appendChild(el("span", "gh-lg", "", [dot, document.createTextNode(l + " "), el("b", "", pct + "%")]));
+      });
+      requestAnimationFrame(() => langBar.classList.add("go"));
+      repos.filter((x) => !x.fork).slice(0, 4).forEach((x) => {
+        const a = el("a", "gh-repo"); a.href = x.html_url; a.target = "_blank"; a.rel = "noopener";
+        a.appendChild(el("div", "gh-repo-top", "", [el("b", "", x.name), el("span", "", "★ " + (x.stargazers_count || 0))]));
+        a.appendChild(el("div", "gh-repo-d", x.description || "No description"));
+        if (x.language) a.appendChild(el("div", "gh-repo-l", x.language));
+        repoList.appendChild(a);
+      });
+      if (!repoList.children.length) repoList.appendChild(el("div", "gh-repo-d", "No public repositories yet."));
+    }
+    if (contrib && Array.isArray(contrib.contributions) && contrib.contributions.length) {
+      const list = contrib.contributions, pad = new Date(list[0].date + "T00:00:00").getDay();
+      for (let i = 0; i < pad; i++) heat.appendChild(cell(0, "", 0));
+      list.forEach((d, i) => heat.appendChild(cell(d.level, d.count + " contribution" + (d.count === 1 ? "" : "s") + " · " + d.date, Math.floor((i + pad) / 7))));
+      const t = (contrib.total && (contrib.total.lastYear || Object.values(contrib.total)[0])) || list.reduce((a, d) => a + d.count, 0);
+      countUp(total, t);
+      const sc = heat.parentNode; sc.scrollLeft = sc.scrollWidth;
+    } else { drawEmpty(); total.textContent = "0"; }
   }
 
   // ---- screenshot popup ----
