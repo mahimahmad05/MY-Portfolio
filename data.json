@@ -831,7 +831,7 @@
         "title": "QurbaniHat",
         "description": "QurbaniHat is a livestock booking platform for Qurbani where users can browse verified cows, goats and sheep with breed, weight, age and location details, then book online and arrange delivery before Eid.",
         "image": "assets/projects/project-03.jpg",
-        "github": "https://github.com/Mahim-Ahmad/qurbanihat",
+        "github": "https://github.com/Mahim-Ahmad/Assignment-8",
         "live": "https://assignment-8-wheat.vercel.app",
         "tags": [
           "Next.js",
@@ -841,11 +841,11 @@
         ]
       },
       {
-        "title": "projects-4",
-        "description": "Assignment project focused on a job-listing style web app.",
+        "title": "Digitoo",
+        "description": "Short description of what Digitoo does.",
         "image": "assets/projects/project-04.jpg",
-        "github": "https://github.com/Mahim-Ahmad/Assignment_4",
-        "live": "https://assignment-4-job.netlify.app/",
+        "github": "https://github.com/Mahim-Ahmad/ASSIGNMENT-PRACTICE-6",
+        "live": "https://digitooweb.netlify.app/",
         "tags": [
           "HTML",
           "CSS",
@@ -853,11 +853,11 @@
         ]
       },
       {
-        "title": "projects-5",
-        "description": "A tracker app that pulls and displays GitHub issues.",
+        "title": "Book Vibe",
+        "description": "Book Vibe is a book discovery web app where users can browse books and manage their reading list.",
         "image": "assets/projects/project-05.jpg",
-        "github": "https://github.com/Mahim-Ahmad/Assignment_5_GitHub-Issues-Tracker",
-        "live": "https://assignment-5-github-issues-traker.netlify.app/",
+        "github": "https://github.com/Mahim-Ahmad/book-vibe",
+        "live": "https://earnest-narwhal-089e48.netlify.app/",
         "tags": [
           "HTML",
           "CSS",
@@ -865,8 +865,8 @@
         ]
       },
       {
-        "title": "projects-6",
-        "description": "Event management style web project.",
+        "title": "Eventrix",
+        "description": "Event management style C project.",
         "image": "assets/projects/project-06.jpg",
         "github": "https://github.com/Mahim-Ahmad/Eventrix",
         "live": "",
