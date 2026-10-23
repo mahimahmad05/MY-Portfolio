@@ -15,6 +15,25 @@
     v = v.replace(/-/g, "\u2011");
     return v.includes("@") ? v.replace("@", "\u200B@") : v;
   }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const BRAND = { github: "201,209,217", linkedin: "59,139,255", facebook: "24,119,242", twitter: "230,236,245", whatsapp: "37,211,102", beecrowd: "245,166,35" };
+  function copy(text, label) {
+    const done = () => toast(label + " copied");
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, done);
+    else { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); } catch (x) {} t.remove(); done(); }
+  }
+  function toast(msg) {
+    let t = document.getElementById("ctToast"); if (!t) { t = el("div", "ct-toast"); t.id = "ctToast"; document.body.appendChild(t); }
+    t.textContent = msg; t.classList.remove("on"); void t.offsetWidth; t.classList.add("on");
+  }
+  const io = "IntersectionObserver" in window ? new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { io.unobserve(x.target); x.target.classList.add("in"); } }), { threshold: 0.12 }) : null;
+  const reveal = (n) => { if (io) io.observe(n); else n.classList.add("in"); };
+  function spot(n) { n.addEventListener("mousemove", (ev) => { const r = n.getBoundingClientRect(); n.style.setProperty("--mx", (ev.clientX - r.left) + "px"); n.style.setProperty("--my", (ev.clientY - r.top) + "px"); }); }
+  function magnet(n) {
+    if (reduce || !matchMedia("(hover: hover)").matches) return;
+    n.addEventListener("mousemove", (ev) => { const r = n.getBoundingClientRect(); n.style.transform = "translate(" + ((ev.clientX - r.left - r.width / 2) * .22) + "px," + ((ev.clientY - r.top - r.height / 2) * .3) + "px)"; });
+    n.addEventListener("mouseleave", () => (n.style.transform = ""));
+  }
   const svg = (name, fallback) => ICONS[name] || ICONS[fallback] || "";
 
   window.renderContact = function (c) {
@@ -42,7 +61,13 @@
       if (it.href) { row.href = it.href; if (/^https?:/.test(it.href)) { row.target = "_blank"; row.rel = "noopener"; } }
       const ic = el("div", "cir-icon"); ic.innerHTML = svg(it.icon, "pin");
       row.appendChild(ic);
-      row.appendChild(el("div", "", "", [el("div", "cir-label", it.label), el("div", "cir-value", keep(it.value))]));
+      row.appendChild(el("div", "cir-txt", "", [el("div", "cir-label", it.label), el("div", "cir-value", keep(it.value))]));
+      if (it.icon === "mail" || it.icon === "phone") {
+        const cp = el("button", "cir-copy", "Copy"); cp.type = "button"; cp.title = "Copy " + it.label;
+        cp.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); copy(it.value, it.label); cp.textContent = "Copied ✓"; cp.classList.add("ok"); setTimeout(() => { cp.textContent = "Copy"; cp.classList.remove("ok"); }, 1600); });
+        row.appendChild(cp);
+      }
+      row.style.setProperty("--i", infoWrap.children.length);
       infoWrap.appendChild(row);
     });
 
@@ -52,10 +77,13 @@
       const a = el("a", "social-card glow-border");
       a.href = it.href; a.target = "_blank"; a.rel = "noopener";
       a.appendChild(el("div", "card-topbar"));
+      a.appendChild(el("i", "ct-glow"));
+      a.style.setProperty("--bc", BRAND[it.icon] || "127,176,255"); a.style.setProperty("--i", socialWrap.children.length);
       const ic = el("span", "social-card-icon"); ic.innerHTML = svg(it.icon, "globe");
       a.appendChild(ic);
       a.appendChild(el("div", "social-card-label", it.label));
       a.appendChild(el("div", "social-card-sub", it.sub || ""));
+      a.appendChild(el("span", "social-card-go", "↗"));
       socialWrap.appendChild(a);
     });
 
@@ -65,7 +93,10 @@
       e.preventDefault();
       const v = (id) => document.getElementById(id).value.trim();
       const body = "Name: " + v("cfName") + "\nEmail: " + v("cfEmail") + "\n\n" + v("cfMessage");
-      location.href = "mailto:" + (mail ? mail.value : "") + "?subject=" + encodeURIComponent(v("cfSubject") || "Portfolio Contact") + "&body=" + encodeURIComponent(body);
+      const url = "mailto:" + (mail ? mail.value : "") + "?subject=" + encodeURIComponent(v("cfSubject") || "Portfolio Contact") + "&body=" + encodeURIComponent(body);
+      const sb = document.querySelector(".cf-submit"); sb.classList.add("sent");
+      setTimeout(() => { location.href = url; }, reduce ? 0 : 1100);
+      setTimeout(() => sb.classList.remove("sent"), 3200);
     });
 
     // bottom call-to-action
@@ -77,7 +108,45 @@
       a.href = b.href;
       a.innerHTML = svg(b.icon);
       a.appendChild(el("span", "", b.label));
-      btns.appendChild(a);
+      btns.appendChild(a); magnet(a);
     });
+
+    extras(c);
   };
+
+  // ---- status pill, live Dhaka clock, reveals, spotlight, counters ----
+  function extras(c) {
+    const st = document.getElementById("ctStatus");
+    if (st) {
+      st.appendChild(el("span", "ct-dot"));
+      st.appendChild(el("span", "", c.statusText || "Open to internships, projects & collaboration"));
+    }
+    const tm = document.getElementById("ctTime");
+    if (tm) {
+      const tz = c.timezone || "Asia/Dhaka", city = (c.info || []).find((i) => i.icon === "pin");
+      const clock = el("div", "ct-clock");
+      clock.innerHTML = '<i class="ck-ring"></i>' + [...Array(12)].map((_, k) => '<b style="--k:' + k + '"></b>').join("") + '<i class="ck-h"></i><i class="ck-m"></i><i class="ck-s"></i><i class="ck-c"></i>';
+      const dig = el("div", "ct-dig"), tt = el("div", "ct-tt"), sub = el("div", "ct-sub", city ? city.value + " · local time" : "Local time");
+      dig.appendChild(tt); dig.appendChild(sub);
+      tm.appendChild(clock); tm.appendChild(dig);
+      const fmt = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+      const [h, m, s] = [clock.querySelector(".ck-h"), clock.querySelector(".ck-m"), clock.querySelector(".ck-s")];
+      function tick() {
+        const p = {}; fmt.formatToParts(new Date()).forEach((x) => (p[x.type] = +x.value));
+        const hh = p.hour % 24, mm = p.minute, ss = p.second;
+        h.style.transform = "rotate(" + ((hh % 12) * 30 + mm * .5) + "deg)"; m.style.transform = "rotate(" + (mm * 6 + ss * .1) + "deg)"; s.style.transform = "rotate(" + ss * 6 + "deg)";
+        const h12 = hh % 12 || 12; tt.textContent = String(h12).padStart(2, "0") + ":" + String(mm).padStart(2, "0") + ":" + String(ss).padStart(2, "0") + " " + (hh >= 12 ? "PM" : "AM");
+      }
+      tick(); setInterval(tick, 1000);
+    }
+    document.querySelectorAll(".contact-card, .contact-cta, .ct-status").forEach((n) => { reveal(n); if (n.classList.contains("contact-card")) spot(n); });
+    document.querySelectorAll(".social-card").forEach((n) => { reveal(n); spot(n); });
+    document.querySelectorAll(".contact-info-row").forEach(reveal);
+    const ta = document.getElementById("cfMessage");
+    if (ta) {
+      const cn = el("div", "cf-count", "0 / 500"); ta.maxLength = 500; ta.parentNode.insertBefore(cn, ta.nextSibling);
+      ta.addEventListener("input", () => { cn.textContent = ta.value.length + " / 500"; cn.classList.toggle("hot", ta.value.length > 450); });
+    }
+    const sb = document.querySelector(".cf-submit"); if (sb) { sb.insertAdjacentHTML("beforeend", '<i class="cf-plane"></i>'); magnet(sb); }
+  }
 })();
