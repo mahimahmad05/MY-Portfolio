@@ -714,6 +714,7 @@
           4,
           4,
           3.71,
+          4,
           4
         ],
         "logo": "assets/diu-logo.jpg",
@@ -723,7 +724,7 @@
         "level": "HSC",
         "institution": "Afajuddin Memorial College",
         "session": "2022 – 2023",
-        "gpa": "5.00",
+        "gpa": "4.50",
         "logo": "assets/afajuddin-logo.jpg",
         "certificate": "assets/certificates/hsc.jpg"
       },
@@ -731,7 +732,7 @@
         "level": "SSC",
         "institution": "Afajuddin Memorial High School",
         "session": "2020 – 2021",
-        "gpa": "5.00",
+        "gpa": "4.50",
         "logo": "assets/afajuddin-logo.jpg",
         "certificate": "assets/certificates/ssc.jpg"
       }
@@ -744,13 +745,13 @@
           "name": "Bangla",
           "flag": "🇧🇩",
           "level": "Native",
-          "percent": 100
+          "percent": 95
         },
         {
           "name": "English",
           "flag": "🇬🇧",
           "level": "Professional Working Proficiency",
-          "percent": 85
+          "percent": 75
         }
       ]
     },
@@ -799,39 +800,44 @@
     "liveLabel": "Live Site",
     "items": [
       {
-        "title": "projects-1",
-        "description": "Frontend assignment project built and deployed as a live web app.",
+        "title": "LegalEase",
+        "description": "LegalEase is a comprehensive legal tech web platform that connects clients with legal professionals and simplifies case management.",
         "image": "assets/projects/project-01.jpg",
-        "github": "https://github.com/Mahim-Ahmad/ASSIGNMENT-PRACTICE-6",
-        "live": "https://digitooweb.netlify.app/",
+        "github": "https://github.com/Mahim-Ahmad/legalease-client",
+        "live": " https://legalease-client-lake.vercel.app",
         "tags": [
-          "HTML",
-          "CSS",
-          "JavaScript"
+          "React",
+          "Node.js",
+          "Express.js",
+          "MongoDB",
+          "JWT"
         ]
       },
       {
-        "title": "projects-2",
-        "description": "A book-focused web application with a clean browsing experience.",
+        "title": "MediQueue",
+        "description": "MediQueue is a tutor booking web platform where students can browse verified tutors by subject, book learning sessions, and manage their schedule, while tutors can list their profiles and availability.",
         "image": "assets/projects/project-02.jpg",
-        "github": "https://github.com/Mahim-Ahmad/book-vibe",
-        "live": "https://earnest-narwhal-089e48.netlify.app/",
+        "github": "https://github.com/Mahim-Ahmad/mediqueue-client",
+        "live": "https://mediqueue-client-dusky.vercel.app/",
         "tags": [
-          "HTML",
-          "CSS",
-          "JavaScript"
+          "React",
+          "Node.js",
+          "Express.js",
+          "MongoDB",
+          "JWT"
         ]
       },
       {
-        "title": "projects-3",
-        "description": "Front-end practice assignment deployed via GitHub Pages.",
+        "title": "QurbaniHat",
+        "description": "QurbaniHat is a livestock booking platform for Qurbani where users can browse verified cows, goats and sheep with breed, weight, age and location details, then book online and arrange delivery before Eid.",
         "image": "assets/projects/project-03.jpg",
-        "github": "https://github.com/Mahim-Ahmad/Assignment-2",
-        "live": "https://mahim-ahmad.github.io/Assignment-2/",
+        "github": "https://github.com/Mahim-Ahmad/qurbanihat",
+        "live": "https://assignment-8-wheat.vercel.app",
         "tags": [
-          "HTML",
-          "CSS",
-          "JavaScript"
+          "Next.js",
+          "React",
+          "Tailwind CSS",
+          "Authentication"
         ]
       },
       {
@@ -865,9 +871,7 @@
         "github": "https://github.com/Mahim-Ahmad/Eventrix",
         "live": "",
         "tags": [
-          "HTML",
-          "CSS",
-          "JavaScript"
+          "C"
         ]
       }
     ],
@@ -901,21 +905,6 @@
           "description": "Designing and building this personal portfolio site from the ground up."
         },
         {
-          "title": "Completed RecycleHub SRS & UML Documentation",
-          "date": "",
-          "description": "Finished the SRS with 38 functional requirements, Level 0/1 DFDs, and sequence diagrams for the SE231 System Analysis and Design project."
-        },
-        {
-          "title": "Presented RecycleHub to Course Instructor",
-          "date": "",
-          "description": "Delivered a 14-slide presentation covering the project proposal, use case diagrams, and stakeholder analysis."
-        },
-        {
-          "title": "Set Up WSL2 for OS Lab Work",
-          "date": "",
-          "description": "Configured WSL2 with Ubuntu on Windows to run the OS and System Programming lab environment."
-        },
-        {
           "title": "Practicing Linux & System Calls",
           "date": "",
           "description": "Working through basic Linux terminal commands and getting introduced to the fork() system call."
@@ -929,11 +918,6 @@
           "title": "Exploring React for UI Development",
           "date": "",
           "description": "Started learning React to build cleaner, component-based interfaces for future projects."
-        },
-        {
-          "title": "Organized Section 43J Exam Routine",
-          "date": "",
-          "description": "Created an exam routine and seat plan graphic to help classmates in Section 43J stay organized."
         }
       ]
     },
