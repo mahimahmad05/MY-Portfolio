@@ -8,7 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=20261022">
-  <link rel="stylesheet" href="certificates.css?v=20261022">
+  <link rel="stylesheet" href="projects.css?v=20261042">
+  <link rel="stylesheet" href="certificates.css?v=20261101">
 </head>
 <body data-title="Certificates">
 
@@ -32,12 +33,28 @@
           <span class="sec-head-icon" id="certHeadIcon"></span>
           <span class="sec-line"></span>
         </div>
-        <div class="cert-carousel"><div class="cert-track" id="certTrack"></div></div>
-        <div class="cert-nav" id="certNav">
-          <button class="cert-nav-btn" id="certPrev" type="button" aria-label="Previous"></button>
-          <div class="cert-dots" id="certDots"></div>
-          <button class="cert-nav-btn" id="certNext" type="button" aria-label="Next"></button>
+        <div class="cz-filter" id="czFilter"></div>
+        <div class="cz-stage" id="czStage">
+          <div class="cz-floor"></div>
+          <div class="cz-ring" id="czRing"></div>
         </div>
+        <div class="cz-info" id="czInfo">
+          <div class="cz-count"><b id="czNow">01</b><span id="czTotal">/ 01</span></div>
+          <div class="cz-meta">
+            <h3 class="cz-title" id="czTitle"></h3>
+            <p class="cz-issuer" id="czIssuer"></p>
+            <div class="cz-actions">
+              <button class="cz-btn primary" id="czView" type="button"></button>
+              <button class="cz-btn" id="czDetail" type="button"></button>
+            </div>
+          </div>
+        </div>
+        <div class="cz-ctrl">
+          <button class="cz-arrow" id="czPrev" type="button" aria-label="Previous"></button>
+          
+          <button class="cz-arrow" id="czNext" type="button" aria-label="Next"></button>
+        </div>
+        <p class="cz-hint">Drag or swipe to spin · click a card to bring it to the front</p>
       </div>
     </section>
   </main>
@@ -77,7 +94,8 @@
     </form>
   </aside>
 
-  <script src="certificates.js?v=20261022"></script>
+  <script src="projects-fx.js?v=20261033"></script>
+  <script src="certificates.js?v=20261111"></script>
   <script src="script.js?v=20261022"></script>
 </body>
 </html>
