@@ -28,6 +28,63 @@
     return img;
   }
 
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const io = "IntersectionObserver" in window ? new IntersectionObserver((es) => es.forEach((x) => {
+    if (x.isIntersecting) { io.unobserve(x.target); x.target.classList.add("in"); (x.target._in || []).forEach((f) => f()); }
+  }), { threshold: 0.15 }) : null;
+  function onIn(n, fn) { if (fn) (n._in = n._in || []).push(fn); if (io) io.observe(n); else { n.classList.add("in"); if (fn) fn(); } return n; }
+  function count(node, to, dur) {
+    if (reduce) { node.textContent = to; return; }
+    const t0 = performance.now();
+    (function f(t) { const k = Math.min(1, (t - t0) / (dur || 1200)); node.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); })(t0);
+  }
+  function spot(card) {
+    card.addEventListener("mousemove", (ev) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", ((ev.clientX - r.left) / r.width * 100) + "%");
+      card.style.setProperty("--my", ((ev.clientY - r.top) / r.height * 100) + "%");
+    });
+  }
+  function tilt(card) {
+    if (reduce || !canHover) return;
+    card.addEventListener("mousemove", (ev) => {
+      const r = card.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width, y = (ev.clientY - r.top) / r.height;
+      card.style.setProperty("--ry", (x - .5) * 10 + "deg"); card.style.setProperty("--rx", (.5 - y) * 10 + "deg");
+    });
+    card.addEventListener("mouseleave", () => { card.style.setProperty("--ry", "0deg"); card.style.setProperty("--rx", "0deg"); });
+  }
+
+  // ---- orbit hero: logos circling a glowing core ----
+  function orbit(cfg) {
+    const box = document.getElementById("skillsOrbit"); if (!box) return;
+    const by = (id) => ((cfg.categories.find((c) => c.id === id) || {}).items || []).filter((i) => i.logo);
+    const all = cfg.categories.flatMap((c) => c.items || []);
+    let rings = [by("programming-languages"), by("web-development").concat(by("ai-ml")), by("tools-platforms")].filter((r) => r.length);
+    if (!rings.length) { const w = all.filter((i) => i.logo); if (!w.length) return; rings = [w]; }
+    box.appendChild(el("i", "or-halo"));
+    const core = el("div", "or-core"); const n = el("b", "", "0");
+    core.appendChild(n); core.appendChild(el("span", "", "Skills"));
+    box.appendChild(core);
+    onIn(box, () => count(n, all.length, 1600));
+    const radii = [92, 160, 228], durs = [26, 38, 52];
+    rings.forEach((items, ri) => {
+      const ring = el("div", "or-ring"); ring.style.setProperty("--r", "calc(" + radii[ri] + "px * var(--u))"); ring.style.setProperty("--d", durs[ri] + "s");
+      if (ri % 2) ring.classList.add("rev");
+      ring.appendChild(el("i", "or-path"));
+      items.forEach((it, i) => {
+        const a = 360 / items.length * i;
+        const chip = el("div", "or-chip"); chip.title = it.name;
+        const img = logo(it.logo, "or-img"); img.loading = "eager";
+        img.onerror = () => { img.remove(); chip.textContent = it.name.slice(0, 2); };
+        chip.appendChild(img); chip.appendChild(el("span", "or-name", it.name));
+        const un = el("div", "or-un", "", [chip]); un.style.setProperty("--a", a + "deg");
+        const wrap = el("div", "or-it", "", [un]); wrap.style.setProperty("--a", a + "deg");
+        ring.appendChild(wrap);
+      });
+      box.appendChild(ring);
+    });
+  }
+
   window.renderSkills = function (cfg) {
     const sec = document.getElementById("skills");
     if (!sec || !cfg || !(cfg.categories || []).length) { if (sec) sec.hidden = true; return; }
@@ -38,6 +95,7 @@
     document.getElementById("skillsHeadIcon").innerHTML = ICONS[cfg.icon] || ICONS.tools;
     document.getElementById("skillsIntro").textContent = cfg.intro || "";
     renderServices(cfg.services);
+    orbit(cfg);
 
     const filterWrap = document.getElementById("skillsFilter");
     const grid = document.getElementById("skillsGrid");
@@ -51,8 +109,11 @@
       b.addEventListener("click", () => {
         filterWrap.querySelectorAll(".skf-btn").forEach((x) => x.classList.remove("active"));
         b.classList.add("active");
+        let k = 0;
         grid.querySelectorAll(".skill-card").forEach((c) => {
-          c.style.display = f.id === "all" || c.dataset.category === f.id ? "" : "none";
+          const on = f.id === "all" || c.dataset.category === f.id;
+          c.style.display = on ? "" : "none";
+          if (on) { c.classList.remove("refl"); void c.offsetWidth; c.style.setProperty("--i", k++ % 6); c.classList.add("refl"); }
         });
       });
       filterWrap.appendChild(b);
@@ -62,16 +123,28 @@
       const card = el("div", "skill-card glow-border");
       card.dataset.category = cat.id;
       card.appendChild(el("div", "card-topbar"));
+      card.appendChild(el("i", "sk-glow"));
+      card.style.setProperty("--i", cat.__i = (grid.children.length % 3));
 
       const icon = el("div", "skc-icon"); icon.innerHTML = ICONS[cat.icon] || ICONS.code;
-      card.appendChild(el("div", "skc-head", "", [
+      const head = el("div", "skc-head", "", [
         icon,
-        el("div", "", "", [el("div", "skc-title", cat.title), el("div", "skc-desc", cat.description)]),
-      ]));
+        el("div", "skc-txt", "", [el("div", "skc-title", cat.title), el("div", "skc-desc", cat.description)]),
+      ]);
+      const pc = cat.items.map((x) => x.percent).filter((x) => x != null);
+      if (pc.length) {
+        const avg = Math.round(pc.reduce((a, b) => a + b, 0) / pc.length), an = el("b", "", "0");
+        const av = el("div", "skc-avg", "", [el("i"), el("span", "", "", [an, document.createTextNode("%")])]);
+        av.title = "Average level";
+        head.appendChild(av);
+        onIn(card, () => { av.style.setProperty("--ep", avg); count(an, avg, 1400); });
+      } else onIn(card);
+      card.appendChild(head);
+      spot(card);
 
       const pills = el("div", "skc-pills");
-      cat.items.forEach((it) => {
-        const p = el("div", "skc-pill");
+      cat.items.forEach((it, pi) => {
+        const p = el("div", "skc-pill"); p.style.setProperty("--p", pi);
         p.appendChild(it.logo ? logo(it.logo, "skc-pill-logo") : el("span", "skc-pill-icon"));
         p.appendChild(el("span", "", it.name));
         pills.appendChild(p);
@@ -100,14 +173,19 @@
     if (!box || !sv || !(sv.items || []).length) { if (box) box.hidden = true; return; }
     box.hidden = false;
     document.getElementById("servicesTitle").textContent = sv.title || "Services";
+    onIn(box.querySelector(".sub-sec-head"));
     document.getElementById("servicesHeadIcon").innerHTML = ICONS[sv.icon] || ICONS.tools;
     const wrap = document.getElementById("servicesList");
     wrap.textContent = "";
     sv.items.forEach((it) => {
       const icon = el("div", "service-icon"); icon.innerHTML = ICONS[it.icon] || ICONS.spark;
-      wrap.appendChild(el("div", "service-card glow-border", "", [
-        el("div", "card-topbar"), icon, el("div", "service-title", it.title), el("div", "service-desc", it.description),
-      ]));
+      icon.appendChild(el("i", "service-orbit"));
+      const sc = el("div", "service-card glow-border", "", [
+        el("div", "card-topbar"), el("i", "sk-glow"), icon, el("div", "service-title", it.title), el("div", "service-desc", it.description),
+      ]);
+      sc.style.setProperty("--i", wrap.children.length);
+      onIn(sc); spot(sc); tilt(sc);
+      wrap.appendChild(sc);
     });
   }
 

@@ -157,3 +157,64 @@
 .skill-pop .skr-top { margin-bottom: 5px; }
 .skill-pop .skr-logo { width: 16px; height: 16px; }
 .skill-pop .skr-tag { display: none; }
+
+
+/* ================= motion pack ================= */
+@property --ep { syntax: "<number>"; inherits: true; initial-value: 0; }
+.skills-sec .sec-title { background: none; }
+
+/* orbit hero */
+.or { --u: 1; position: relative; height: 520px; margin: -6px auto 6px; max-width: 640px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+.or-halo { position: absolute; left: 50%; top: 50%; width: 330px; height: 330px; margin: -165px 0 0 -165px; border-radius: 50%; background: radial-gradient(circle, rgba(60,120,255,.4), transparent 68%); filter: blur(18px); animation: orBreath 4s ease-in-out infinite; }
+@keyframes orBreath { 50% { transform: scale(1.18); opacity: .7; } }
+.or-core { position: relative; z-index: 3; width: 112px; height: 112px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05;
+  background: radial-gradient(circle at 30% 25%, #4f86ff, #1b46c4 70%); box-shadow: 0 0 0 6px rgba(80,140,255,.18), 0 0 44px 6px rgba(60,120,255,.6), inset 0 0 22px rgba(255,255,255,.18); }
+.or-core::after { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 1.5px solid rgba(127,176,255,.5); animation: orPing 2.6s ease-out infinite; }
+@keyframes orPing { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.5); opacity: 0; } }
+.or-core b { font-size: 34px; font-weight: 800; color: #fff; }
+.or-core span { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #cfe0ff; }
+.or-ring { position: absolute; left: 50%; top: 50%; width: 0; height: 0; animation: orSpin var(--d) linear infinite; }
+.or-ring.rev { animation-direction: reverse; }
+.or-path { position: absolute; width: calc(var(--r) * 2); height: calc(var(--r) * 2); left: calc(var(--r) * -1); top: calc(var(--r) * -1); border-radius: 50%; border: 1px dashed rgba(127,176,255,.28); }
+@keyframes orSpin { to { transform: rotate(360deg); } }
+.or-it { position: absolute; left: 0; top: 0; transform: rotate(var(--a)) translateX(var(--r)); }
+.or-un { transform: rotate(calc(var(--a) * -1)); }
+.or-chip { position: relative; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 14px; background: rgba(10,26,69,.85); border: 1px solid rgba(127,176,255,.4); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--accent2);
+  box-shadow: 0 8px 20px -8px rgba(47,107,255,.8); animation: orSpin var(--d, 30s) linear infinite reverse; transition: box-shadow .25s, border-color .25s; }
+.or-ring.rev .or-chip { animation-direction: normal; }
+.or-img { width: 26px; height: 26px; object-fit: contain; }
+.or-name { position: absolute; top: 54px; left: 50%; transform: translateX(-50%) scale(.8); opacity: 0; pointer-events: none; white-space: nowrap; font-size: 11px; font-weight: 600; color: #fff; background: #0a1a45; border: 1px solid var(--accent); padding: 3px 9px; border-radius: 999px; transition: .2s; }
+.or-chip:hover { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(127,176,255,.25), 0 10px 26px -6px rgba(47,107,255,1); z-index: 5; }
+.or-chip:hover .or-name { opacity: 1; transform: translateX(-50%) scale(1); }
+.or:hover .or-ring, .or:hover .or-chip { animation-play-state: paused; }
+.or { opacity: 0; transform: scale(.85); transition: opacity 1s, transform 1.2s cubic-bezier(.16,1,.3,1); }
+.or.in { opacity: 1; transform: none; }
+
+/* cards */
+.skill-card, .service-card { opacity: 0; transform: translateY(44px) scale(.96); }
+.skill-card.in, .service-card.in { opacity: 1; transform: none; transition: opacity .8s calc(var(--i, 0) * 110ms), transform .8s cubic-bezier(.16,1,.3,1) calc(var(--i, 0) * 110ms), border-color .2s; }
+.skill-card.refl { animation: skRefl .55s cubic-bezier(.16,1,.3,1) calc(var(--i, 0) * 70ms) backwards; }
+@keyframes skRefl { from { opacity: 0; transform: translateY(26px) scale(.94); } }
+.service-card.in { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: opacity .8s calc(var(--i, 0) * 110ms), transform .2s ease-out, border-color .2s; }
+.skills-sec .glow-border > .sk-glow { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .3s; background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(110,170,255,.2), transparent 60%); }
+.skill-card:hover > .sk-glow, .service-card:hover > .sk-glow { opacity: 1; }
+.skill-card:hover { box-shadow: 0 18px 44px -20px rgba(47,107,255,.8); }
+.skc-txt { flex: 1; min-width: 0; }
+.skc-avg { position: relative; width: 50px; height: 50px; flex-shrink: 0; margin-left: auto; }
+.skc-avg i { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--accent2), var(--accent) calc(var(--ep) * 1%), rgba(70,130,255,.16) 0); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); transition: --ep 1.5s cubic-bezier(.16,1,.3,1); filter: drop-shadow(0 0 5px rgba(80,150,255,.6)); }
+.skc-avg span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
+.skc-avg b { font-weight: 800; }
+.skc-pill { opacity: 0; transform: scale(.7) translateY(8px); transition: transform .2s, background .2s, border-color .2s, box-shadow .2s; }
+.skill-card.in .skc-pill { animation: pillIn .5s cubic-bezier(.34,1.56,.64,1) calc(.3s + var(--p, 0) * 45ms) forwards; }
+@keyframes pillIn { to { opacity: 1; transform: none; } }
+.skill-card.in .skc-pill:hover { transform: translateY(-3px) scale(1.06); background: rgba(47,107,255,.35); border-color: var(--accent2); box-shadow: 0 8px 16px -8px rgba(47,107,255,1); }
+.skc-icon { transition: transform .3s; } .skill-card:hover .skc-icon { transform: rotate(-8deg) scale(1.12); box-shadow: 0 0 18px rgba(80,150,255,.5); }
+.service-icon { position: relative; }
+.service-orbit { position: absolute; inset: -7px; border-radius: 50%; border: 1.5px dashed rgba(127,176,255,.5); animation: orSpin 10s linear infinite; }
+.service-orbit::after { content: ""; position: absolute; top: -4px; left: 50%; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; background: var(--accent2); box-shadow: 0 0 10px var(--accent2); }
+.sub-sec-head { opacity: 0; transform: translateY(14px); transition: .7s cubic-bezier(.16,1,.3,1); } .sub-sec-head.in { opacity: 1; transform: none; }
+.skf-btn.active { box-shadow: 0 8px 22px -6px rgba(47,107,255,.9); }
+.skf-btn { transition: all .25s ease, transform .2s; } .skf-btn:hover { transform: translateY(-2px); }
+@media (max-width: 640px) { .or { --u: .66; height: 380px; } .or-halo { width: 240px; height: 240px; margin: -120px 0 0 -120px; } .or-core { width: 88px; height: 88px; } .or-core b { font-size: 27px; } .or-chip { width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 11px; } .or-img { width: 21px; height: 21px; } .skc-avg { width: 42px; height: 42px; } }
+@media (prefers-reduced-motion: reduce) { .or-ring, .or-chip, .or-halo, .or-core::after, .service-orbit { animation: none; } .skill-card, .service-card, .skc-pill, .or { opacity: 1; transform: none; } }
+.skills-sec { overflow-x: clip; } @media (max-width:640px){ .or-name{display:none} }
