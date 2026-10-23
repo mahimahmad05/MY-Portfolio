@@ -63,7 +63,6 @@
     document.getElementById("eduHeadIcon").innerHTML = ICONS[cfg.icon] || ICONS.gradcap;
 
     const items = cfg.items || [];
-    hero(cfg, items);
 
     const list = document.getElementById("eduList");
     items.forEach((e, i) => list.appendChild(stop(e, cfg, i)));

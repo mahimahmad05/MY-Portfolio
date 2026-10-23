@@ -7,7 +7,7 @@
 }
 .edu-sec[hidden], .sub-sec[hidden] { display: none; }
 .edu-sec { padding: 90px clamp(20px, 5vw, 64px) 100px; }
-.edu-wrap { max-width: 1100px; margin: 0 auto; }
+.edu-wrap { max-width: 1260px; margin: 0 auto; }
 
 .edu-sec .sec-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; text-align: center; gap: 14px; row-gap: 16px; margin-bottom: 34px; }
 .edu-sec .sec-head-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; }
@@ -28,7 +28,7 @@
 .sub-title { font-weight: 800; font-size: clamp(20px, 2.6vw, 26px); text-transform: uppercase; letter-spacing: .04em; background: linear-gradient(90deg,#fff,var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* ---- hero strip ---- */
-.edu-hero { text-align: center; margin: -8px 0 46px; }
+.edu-hero { display: none; }
 .eh-tag { min-height: 1.6em; font-size: clamp(14px, 1.8vw, 17px); color: var(--ink-dim); }
 .eh-tag.typing::after { content: ""; display: inline-block; width: 2px; height: 1.1em; margin-left: 3px; vertical-align: -3px; background: var(--accent2); animation: ehBlink .7s steps(1) infinite; }
 @keyframes ehBlink { 50% { opacity: 0; } }
@@ -42,7 +42,12 @@
 .jr { position: relative; display: flex; flex-direction: column; gap: 34px; padding: 6px 0; }
 .jr-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; margin-left: -1.5px; border-radius: 3px; background: rgba(70,130,255,.18); }
 .jr-fill { position: absolute; inset: 0; border-radius: 3px; transform-origin: top; transform: scaleY(0); background: linear-gradient(180deg, var(--accent2), var(--accent)); box-shadow: 0 0 14px 2px rgba(80,150,255,.7); }
-.jr-item { position: relative; display: grid; grid-template-columns: 1fr 64px 1fr; align-items: center; }
+.jr-item { position: relative; display: grid; grid-template-columns: 1.75fr 56px 1fr; align-items: center; }
+.jr-item.r { grid-template-columns: 1fr 56px 1.75fr; }
+.edu-card { padding: 30px 36px; }
+.edu-inst { font-size: 21px; }
+.gr.lg { width: 170px; height: 170px; }
+.sem-bar { height: 66px; }
 .jr-item .edu-card { grid-row: 1; }
 .jr-item.l .edu-card { grid-column: 1; transform: translateX(-60px) rotateY(10deg); }
 .jr-item.r .edu-card { grid-column: 3; transform: translateX(60px) rotateY(-10deg); }
