@@ -85,6 +85,46 @@
     });
   }
 
+  // ---- radar: average level of every category, click an axis to filter ----
+  function radar(cfg) {
+    const hero = document.getElementById("skHero"); if (!hero) return;
+    const cats = cfg.categories.map((c) => {
+      const p = (c.items || []).map((x) => x.percent).filter((x) => x != null);
+      return { id: c.id, title: c.title, v: p.length ? Math.round(p.reduce((a, b) => a + b, 0) / p.length) : 0 };
+    }).filter((c) => c.v > 0);
+    if (cats.length < 3) return;
+    const N = cats.length, C = 200, R = 118, pt = (i, k) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N; return [C + Math.cos(a) * R * k, C + Math.sin(a) * R * k]; };
+    const poly = (k) => cats.map((_, i) => pt(i, k).map((x) => x.toFixed(1)).join(",")).join(" ");
+    let s = '<svg viewBox="0 0 400 400"><defs><linearGradient id="rdG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fb0ff" stop-opacity=".55"/><stop offset="1" stop-color="#2f6bff" stop-opacity=".25"/></linearGradient></defs>';
+    [.25, .5, .75, 1].forEach((k) => (s += '<polygon class="rd-grid" points="' + poly(k) + '"/>'));
+    cats.forEach((_, i) => { const p = pt(i, 1); s += '<line class="rd-ax" x1="' + C + '" y1="' + C + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '"/>'; });
+    s += '<g class="rd-shape"><polygon class="rd-fill" points="' + cats.map((c, i) => pt(i, c.v / 100).map((x) => x.toFixed(1)).join(",")).join(" ") + '"/>';
+    cats.forEach((c, i) => { const p = pt(i, c.v / 100); s += '<circle class="rd-dot" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="4.5" style="--i:' + i + '"/>'; });
+    s += "</g></svg>";
+    const card = el("div", "rd glow-border");
+    card.appendChild(el("div", "rd-title", "", [el("span", "", "Skill radar"), el("em", "", "click a label to filter")]));
+    const stage = el("div", "rd-stage"); stage.innerHTML = s;
+    cats.forEach((c, i) => {
+      const p = pt(i, 1.0), a = -Math.PI / 2 + i * 2 * Math.PI / N;
+      const lx = C + Math.cos(a) * (R + 36), ly = C + Math.sin(a) * (R + 30);
+      const b = el("button", "rd-lab"); b.type = "button";
+      b.style.left = lx / 4 + "%"; b.style.top = ly / 4 + "%";
+      const nb = el("b", "", "0");
+      b.appendChild(el("span", "", c.title)); b.appendChild(el("i", "", "", [nb, document.createTextNode("%")]));
+      b.addEventListener("click", () => {
+        const btns = [...document.querySelectorAll(".skf-btn")];
+        const idx = cfg.categories.findIndex((x) => x.id === c.id) + 1;
+        if (btns[idx]) { btns[idx].click(); document.getElementById("skillsFilter").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" }); }
+      });
+      b.addEventListener("mouseenter", () => stage.classList.add("hov" + i));
+      b.addEventListener("mouseleave", () => stage.classList.remove("hov" + i));
+      stage.appendChild(b);
+      onIn(card, () => count(nb, c.v, 1500));
+    });
+    card.appendChild(stage);
+    hero.appendChild(card);
+  }
+
   window.renderSkills = function (cfg) {
     const sec = document.getElementById("skills");
     if (!sec || !cfg || !(cfg.categories || []).length) { if (sec) sec.hidden = true; return; }
@@ -96,6 +136,7 @@
     document.getElementById("skillsIntro").textContent = cfg.intro || "";
     renderServices(cfg.services);
     orbit(cfg);
+    radar(cfg);
 
     const filterWrap = document.getElementById("skillsFilter");
     const grid = document.getElementById("skillsGrid");
@@ -122,6 +163,7 @@
     cfg.categories.forEach((cat) => {
       const card = el("div", "skill-card glow-border");
       card.dataset.category = cat.id;
+      if ((cat.items || []).length >= 10) card.classList.add("wide");
       card.appendChild(el("div", "card-topbar"));
       card.appendChild(el("i", "sk-glow"));
       card.style.setProperty("--i", cat.__i = (grid.children.length % 3));
