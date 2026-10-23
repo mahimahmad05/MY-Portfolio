@@ -186,29 +186,48 @@ function renderPageNav(navbar) {
   if (file === "index.html") file = "about.html";
   const i = navbar.findIndex((n) => n.link.toLowerCase() === file);
   if (i === -1) return;
+  const N = navbar.length, last = i === N - 1;
   const box = document.createElement("nav");
-  box.className = "page-nav"; box.setAttribute("aria-label", "Page navigation");
-  const make = (item, dir) => {
-    const a = document.createElement("a");
-    a.className = "page-nav__btn page-nav__" + dir; a.href = item.link;
-    const ic = document.createElement("span"); ic.className = "page-nav__icon"; ic.appendChild(iconEl("arrow"));
-    const tx = document.createElement("span"); tx.className = "page-nav__text";
-    const lb = document.createElement("span"); lb.className = "page-nav__label"; lb.textContent = dir === "prev" ? "Previous" : "Next";
-    const tt = document.createElement("span"); tt.className = "page-nav__title"; tt.textContent = (item.emoji ? item.emoji + " " : "") + item.label;
-    tx.append(lb, tt);
-    if (dir === "prev") a.append(ic, tx); else a.append(tx, ic);
+  box.className = "pn"; box.setAttribute("aria-label", "Page navigation");
+  const E = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
+
+  const card = (item, dir, label) => {
+    const a = E("a", "pn-card pn-" + dir); a.href = item.link;
+    a.append(E("i", "pn-shine"));
+    const em = E("span", "pn-emoji", item.emoji || "✨");
+    const tx = E("span", "pn-text"); tx.append(E("span", "pn-label", label), E("span", "pn-title", item.label));
+    const ar = E("span", "pn-arrow"); ar.appendChild(iconEl("arrow"));
+    if (dir === "prev") a.append(ar, tx, em); else a.append(em, tx, ar);
+    a.addEventListener("mousemove", (e) => { const r = a.getBoundingClientRect(); a.style.setProperty("--mx", (e.clientX - r.left) + "px"); a.style.setProperty("--my", (e.clientY - r.top) + "px"); });
     return a;
   };
-  if (i > 0) box.appendChild(make(navbar[i - 1], "prev"));
-  if (navbar[i].fun) {                       // little message with an emoji in the middle
-    const f = document.createElement("span"); f.className = "page-nav__fun";
-    const em = document.createElement("span"); em.className = "page-nav__emoji"; em.setAttribute("aria-hidden", "true"); em.textContent = navbar[i].emoji || "✨";
-    f.append(em, document.createTextNode(" " + navbar[i].fun));
-    box.appendChild(f);
-  }
-  if (i < navbar.length - 1) box.appendChild(make(navbar[i + 1], "next"));
-  if (!box.children.length) return;
+  // previous (empty slot on the first page keeps the layout balanced)
+  if (i > 0) box.appendChild(card(navbar[i - 1], "prev", "Previous")); else box.appendChild(E("span", "pn-gap"));
+
+  // middle: progress through all pages
+  const mid = E("div", "pn-mid");
+  const track = E("div", "pn-track");
+  const fill = E("i", "pn-fill"); fill.style.setProperty("--p", (i / (N - 1) * 100) + "%");
+  track.appendChild(fill);
+  navbar.forEach((n, k) => {
+    const d = E("a", "pn-dot" + (k < i ? " done" : k === i ? " now" : "")); d.href = n.link; d.setAttribute("aria-label", n.label);
+    d.style.setProperty("--l", (k / (N - 1) * 100) + "%");
+    d.appendChild(E("span", "pn-tip", (n.emoji ? n.emoji + " " : "") + n.label));
+    track.appendChild(d);
+  });
+  mid.appendChild(track);
+  const info = E("div", "pn-info");
+  info.append(E("b", "pn-count", String(i + 1).padStart(2, "0")), E("span", "pn-of", "/ " + String(N).padStart(2, "0")));
+  if (navbar[i].fun) { const f = E("span", "pn-fun"); f.append(E("span", "pn-fe", navbar[i].emoji || "✨"), document.createTextNode(" " + navbar[i].fun)); info.appendChild(f); }
+  mid.appendChild(info);
+  box.appendChild(mid);
+
+  // next (on the last page it loops back to the start)
+  if (!last) box.appendChild(card(navbar[i + 1], "next", "Next"));
+  else { const first = Object.assign({}, navbar[0], { emoji: "🔁" }); box.appendChild(card(first, "next", "Start over")); }
   main.appendChild(box);
+  if ("IntersectionObserver" in window) new IntersectionObserver((es, o) => es.forEach((x) => { if (x.isIntersecting) { box.classList.add("in"); o.disconnect(); } }), { threshold: .3 }).observe(box);
+  else box.classList.add("in");
 }
 
 // Floating chat button for every page except the home page (home has it in the hero)
