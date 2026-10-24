@@ -7,7 +7,7 @@
 }
 .edu-sec[hidden], .sub-sec[hidden] { display: none; }
 .edu-sec { padding: 90px clamp(20px, 5vw, 64px) 100px; }
-.edu-wrap { max-width: 1260px; margin: 0 auto; }
+.edu-wrap { max-width: 1100px; margin: 0 auto; }
 
 .edu-sec .sec-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; text-align: center; gap: 14px; row-gap: 16px; margin-bottom: 34px; }
 .edu-sec .sec-head-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; }
@@ -165,3 +165,12 @@
 }
 @media (max-width: 560px) { .value-grid { grid-template-columns: 1fr; } .edu-sec { padding-top: 70px; } .edu-card { padding: 20px 16px; } .edu-inst { font-size: 16px; } .eh-tile { min-width: 0; flex: 1 1 40%; padding: 12px; } .lang-card { padding: 22px 18px; } }
 @media (prefers-reduced-motion: reduce) { .value-orbit, .lg-flag, .jr-node.live i, .edu-live::before { animation: none; } }
+
+/* equal timeline columns so the line, dots and cards stay centred */
+.jr-item, .jr-item.l, .jr-item.r { grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr); }
+.edu-card.uni { container-type: inline-size; }
+@container (max-width: 600px) {
+  .uni-body { flex-direction: column; align-items: stretch; }
+  .uni-body .gr { align-self: center; margin-bottom: 18px; }
+}
+@media (max-width: 760px) { .jr-item, .jr-item.l, .jr-item.r { grid-template-columns: 30px minmax(0, 1fr); } }
