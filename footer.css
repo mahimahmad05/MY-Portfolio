@@ -110,3 +110,29 @@
 .footer-contact-value { overflow: visible; text-overflow: clip; }
 @media (max-width: 860px) { .footer-top { grid-template-columns: 1fr; gap: 34px; } }
 @media (max-width: 480px) { .footer-links { grid-template-columns: max-content; justify-items: start; } }
+
+/* v3: no blur filters / layers that can glitch over background video */
+.footer-glow i { filter: none; animation: none; }
+.footer-glow .g1 { background: radial-gradient(circle, rgba(47,107,255,.28), transparent 68%); }
+.footer-glow .g2 { background: radial-gradient(circle, rgba(140,90,255,.2), transparent 68%); }
+.site-footer.in .ft-rv { transform: none; will-change: auto; }
+.footer-links li, .footer-links li a { background: none !important; box-shadow: none !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.footer-links { gap: 12px 34px; }
+.footer-contact { gap: 12px; }
+
+/* v3: no GPU-heavy blur (it caused blocky patches), contact list centred under its title */
+body.has-bg .site-footer, .site-footer { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+body.has-bg .site-footer { background: linear-gradient(180deg, #0a1a45 0%, #07112e 100%) !important; }
+.footer-glow i { filter: none !important; }
+.footer-glow .g1 { background: radial-gradient(circle, rgba(47,107,255,.32), transparent 68%); }
+.footer-glow .g2 { background: radial-gradient(circle, rgba(140,90,255,.2), transparent 68%); }
+.footer-links, .footer-contact { justify-content: center; }
+.footer-links li, .footer-links li a { background: none !important; }
+.footer-top { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 64px; }
+@media (max-width: 860px) {
+  .footer-top { grid-template-columns: 1fr; gap: 36px; text-align: center; }
+  .footer-links { grid-template-columns: repeat(2, max-content); justify-content: center; justify-items: start; }
+  .footer-contact { grid-template-columns: max-content; justify-content: center; justify-items: start; }
+}
+@media (max-width: 480px) { .footer-links { grid-template-columns: repeat(2, max-content); gap: 14px 22px; } }
+@media (max-width: 860px) { .footer-links.footer-contact { grid-template-columns: max-content; } }

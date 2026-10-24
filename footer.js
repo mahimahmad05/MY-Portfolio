@@ -26,11 +26,7 @@
     const f = data.footer || {}, c = data.contact || {}, person = data.person || {};
 
     // brand + social
-    const av = el("div", "footer-avatar");
-    if (person.avatar) { const im = document.createElement("img"); im.src = person.avatar; im.alt = ""; im.onerror = () => im.remove(); av.appendChild(im); }
-    av.appendChild(el("i", "footer-avatar-ring"));
     const brand = el("div", "footer-brand", "", [
-      av,
       el("div", "footer-brand-name", person.name || ""),
       el("p", "footer-brand-tagline", f.tagline || ""),
     ]);
