@@ -17,7 +17,7 @@ function plLayout() {
   let minX = 1e9, maxX = 0;
   for (let y = 0; y < off.height; y += gap) for (let x = 0; x < off.width; x += gap) if (d[(y * off.width + x) * 4 + 3] > 140) { t.push([x, y + cy - off.height / 2]); if (x < minX) minX = x; if (x > maxX) maxX = x; }
   const old = plP;
-  plP = t.map(([tx, ty], i) => { const o = old[i % (old.length || 1)]; return { tx, ty, x: o ? o.x : plW / 2, y: o ? o.y : plH / 2, vx: 0, vy: 0, ox: 0, oy: 0, dl: Math.random() * 110, u: (tx - minX) / Math.max(1, maxX - minX), s: (fs > 150 ? 2 : 1.5) + Math.random() * 0.4, ph: Math.random() * 6.28 }; });
+  plP = t.map(([tx, ty], i) => { const o = old[i % (old.length || 1)]; return { tx, ty, x: o ? o.x : plW / 2, y: o ? o.y : plH / 2, vx: 0, vy: 0, ox: 0, oy: 0, dl: Math.random() * 70, u: (tx - minX) / Math.max(1, maxX - minX), s: (fs > 150 ? 2 : 1.5) + Math.random() * 0.4, ph: Math.random() * 6.28 }; });
   if (!old.length) plScatter();
   if (plFoot) plFoot.style.top = cy + fs * 0.62 + "px";
 }
@@ -30,7 +30,7 @@ function plFrame(now) {
   requestAnimationFrame(plFrame);
   if (!plCx || !loader.classList.contains("on")) return;
   const dt = Math.min(3, (now - plLast) / 16.7 || 1); plLast = now;
-  const c = plCx, t = now / 1000, charge = plPct / 100, age = now - plT0, ease = 1 - Math.pow(1 - 0.22, dt);
+  const c = plCx, t = now / 1000, charge = plPct / 100, age = now - plT0, ease = 1 - Math.pow(1 - 0.28, dt);
   c.setTransform(plDpr, 0, 0, plDpr, 0, 0); c.clearRect(0, 0, plW, plH);
   if (!plBurst) {                                                  // faint solid word under the particles (same font/position) so the word always reads clearly
     c.font = "800 " + plFs + 'px Inter, "Segoe UI", system-ui, sans-serif'; c.textAlign = "center"; c.textBaseline = "middle";
@@ -52,7 +52,7 @@ function plFrame(now) {
       p.ox *= 0.88; p.oy *= 0.88;                                 // pushed particles always spring back to their exact spot
     }
     const on = p.u <= charge, near = Math.abs(p.u - beam) < 0.05;
-    const al = plBurst ? Math.max(0, 0.9 * (1 - (now - plBT) / 300)) : on ? 1 : 0.42 + 0.1 * Math.sin(t * 3 + p.ph);
+    const al = plBurst ? Math.max(0, 0.9 * (1 - (now - plBT) / 230)) : on ? 1 : 0.42 + 0.1 * Math.sin(t * 3 + p.ph);
     c.fillStyle = near ? "rgba(255,255,255," + al + ")" : on ? "rgba(160,205,255," + al + ")" : "rgba(70,120,255," + al + ")";
     c.fillRect(p.x + p.ox, p.y + p.oy, p.s, p.s);
   }
@@ -71,8 +71,8 @@ function buildLoader() {
   plStatusTx = plStatus.querySelector("span"); plStatusTx.textContent = PL_STEPS[0][1];
   plFoot.append(bar, plPctEl, plStatus);
   loader.append(plCv, plFoot);
-  let cont = false; try { cont = Date.now() - Number(sessionStorage.getItem("plNav") || 0) < 6000; sessionStorage.removeItem("plNav"); } catch (e) {}
-  plLayout(); if (cont) plP.forEach((p) => { p.x = p.tx; p.y = p.ty; p.dl = 0; });
+  let cont = false, carry = 0; try { const v = (sessionStorage.getItem("plNav") || "0:0").split(":"); cont = Date.now() - Number(v[0]) < 6000; carry = Number(v[1]) || 0; sessionStorage.removeItem("plNav"); } catch (e) {}
+  plLayout(); if (cont) plP.forEach((p) => { p.x = p.tx; p.y = p.ty; p.dl = 0; }); if (cont && carry) plSet(carry);   // keep the % where the old page left it
   addEventListener("resize", plLayout);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(plLayout);
   loader.addEventListener("pointermove", (e) => { plMouse.x = e.clientX; plMouse.y = e.clientY; });
@@ -83,7 +83,7 @@ const PL_STEPS = [[0, "booting up…"], [25, "loading skills…"], [50, "compili
 let plStatus = null, plStatusTx = null, plStep = 0;
 function plSet(p) {
   if (p === 0 && plPct > 0) plScatter();
-  if (p >= 100 && plPct < 100) setTimeout(() => { if (plPct >= 100) { plBurst = 1; plBT = performance.now(); } }, 110);
+  if (p >= 100 && plPct < 100) setTimeout(() => { if (plPct >= 100) { plBurst = 1; plBT = performance.now(); } }, 70);
   plPct = p;
   if (plFill) plFill.style.width = p + "%";
   if (plPctEl) plPctEl.textContent = Math.round(p);
@@ -92,22 +92,22 @@ function plSet(p) {
 function plRun() {                                   // eases toward 90% while the page is loading
   cancelAnimationFrame(plRaf);
   const t0 = performance.now();
-  (function f(now) { const p = 90 * (1 - Math.exp(-(now - t0) / 120)); if (p > plPct) plSet(p); plRaf = requestAnimationFrame(f); })(t0);
+  (function f(now) { const p = 90 * (1 - Math.exp(-(now - t0) / 90)); if (p > plPct) plSet(p); plRaf = requestAnimationFrame(f); })(t0);
 }
 buildLoader(); plRun();
 function pageReady() {
   if (!loader) return;
-  const wait = Math.max(0, 650 - (Date.now() - loadStart));      // show the loader at least a moment
+  const wait = Math.max(0, 420 - (Date.now() - loadStart));      // show the loader at least a moment
   setTimeout(() => {
     cancelAnimationFrame(plRaf); plSet(100);
-    setTimeout(() => loader.classList.remove("on"), 330);
+    setTimeout(() => loader.classList.remove("on"), 240);
   }, wait);
 }
 addEventListener("pageshow", (e) => { if (e.persisted && loader) { plSet(100); loader.classList.remove("on"); } });
 window.pageLoaderFlash = (mid) => {                      // loader covers the screen, runs mid(), then lifts (for same-page jumps)
   if (!loader) { mid(); return; }
   plSet(0); plRun(); loader.classList.add("on");
-  setTimeout(() => { mid(); cancelAnimationFrame(plRaf); plSet(100); setTimeout(() => loader.classList.remove("on"), 330); }, 650);
+  setTimeout(() => { mid(); cancelAnimationFrame(plRaf); plSet(100); setTimeout(() => loader.classList.remove("on"), 240); }, 450);
 };
 document.addEventListener("click", (e) => {
   const a = e.target.closest && e.target.closest("a[href]");
@@ -117,8 +117,7 @@ document.addEventListener("click", (e) => {
   if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash)) return;
   if (u.pathname === location.pathname && !u.hash) { e.preventDefault(); return; }   // already on this page
   e.preventDefault();
-  try { sessionStorage.setItem("plNav", String(Date.now() + 420)); } catch (e) {}
   plSet(0); plRun(); loader.classList.add("on");
-  setTimeout(() => (location.href = u.href), 420);
+  setTimeout(() => { try { sessionStorage.setItem("plNav", Date.now() + ":" + Math.round(plPct)); } catch (e) {} location.href = u.href; }, 300);
 });
 
