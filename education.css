@@ -174,3 +174,8 @@
   .uni-body .gr { align-self: center; margin-bottom: 18px; }
 }
 @media (max-width: 760px) { .jr-item, .jr-item.l, .jr-item.r { grid-template-columns: 30px minmax(0, 1fr); } }
+
+/* languages: same width / edges as the values grid below */
+.lang-grid { max-width: none; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.lang-card { min-width: 0; }
+@media (max-width: 640px) { .lang-grid { grid-template-columns: minmax(0, 1fr); } }

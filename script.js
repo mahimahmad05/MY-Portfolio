@@ -11,19 +11,38 @@ function buildLoader() {
   if (!loader || loader.dataset.ready) return;
   loader.dataset.ready = "1";
   const word = (loader.querySelector(".pageload__name") || {}).textContent || "MAHIM";
+  const NS = "http://www.w3.org/2000/svg";
   loader.textContent = "";
-  const name = document.createElement("div"); name.className = "pageload__name"; name.setAttribute("aria-hidden", "true");
-  [...word].forEach((ch, i) => { const s = document.createElement("span"); s.textContent = ch; s.style.animationDelay = i * 0.09 + "s"; name.appendChild(s); });
-  const dot = document.createElement("span"); dot.className = "pl-dot"; dot.textContent = "."; dot.style.animationDelay = [...word].length * 0.09 + "s"; name.appendChild(dot);
-  const hi = document.createElement("div"); hi.className = "pageload__hi";
-  const words = ["👋", "💻", "🚀", "✨", "🔥", "🎯"]; let wi = 0;
-  const hs = document.createElement("span"); hs.textContent = words[0]; hi.appendChild(hs);
-  setInterval(() => { if (!loader.classList.contains("on")) return; wi = (wi + 1) % words.length; hs.style.animation = "none"; void hs.offsetWidth; hs.style.animation = ""; hs.textContent = words[wi]; }, 180);
-  const bar = document.createElement("div"); bar.className = "pageload__bar"; plFill = document.createElement("i"); bar.appendChild(plFill);
-  plPctEl = document.createElement("div"); plPctEl.className = "pageload__pct"; plPctEl.textContent = "0";
-  loader.append(hi, name, bar, plPctEl);
+  const stage = document.createElement("div"); stage.className = "pl-stage"; stage.setAttribute("aria-hidden", "true");
+  // progress ring
+  const svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 120 120"); svg.setAttribute("class", "pl-ring");
+  svg.innerHTML = '<defs><linearGradient id="plg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fb0ff"/><stop offset="1" stop-color="#2f6bff"/></linearGradient></defs>' +
+    '<circle class="pl-track" cx="60" cy="60" r="54"/><circle class="pl-arc" cx="60" cy="60" r="54" pathLength="100"/>';
+  stage.appendChild(svg);
+  // 3 tilted orbits, each with a glowing satellite
+  [0, 60, 120].forEach((r, i) => {
+    const o = document.createElement("div"); o.className = "pl-orbit"; o.style.setProperty("--r", r + "deg");
+    const sp = document.createElement("div"); sp.className = "pl-spin"; sp.style.animationDuration = 2.2 + i * 0.7 + "s";
+    const st = document.createElement("i"); st.className = "pl-sat"; sp.appendChild(st); o.appendChild(sp); stage.appendChild(o);
+  });
+  const core = document.createElement("div"); core.className = "pl-core"; core.innerHTML = "<b>" + word.charAt(0) + "</b>";
+  plPctEl = document.createElement("span"); plPctEl.className = "pl-pct"; plPctEl.textContent = "0";
+  core.appendChild(plPctEl); stage.appendChild(core);
+  plFill = svg.querySelector(".pl-arc");
+  const name = document.createElement("div"); name.className = "pl-name"; name.setAttribute("aria-hidden", "true");
+  [...word].forEach((ch, i) => { const s = document.createElement("span"); s.textContent = ch; s.style.animationDelay = i * 0.12 + "s"; name.appendChild(s); });
+  plStatus = document.createElement("div"); plStatus.className = "pl-status"; plStatus.innerHTML = "<em>&gt;</em> <span></span><u></u>";
+  plStatusTx = plStatus.querySelector("span"); plStatusTx.textContent = PL_STEPS[0][1];
+  loader.append(stage, name, plStatus);
 }
-function plSet(p) { plPct = p; if (plFill) plFill.style.width = p + "%"; if (plPctEl) plPctEl.textContent = Math.round(p); }
+const PL_STEPS = [[0, "booting up…"], [25, "loading skills…"], [50, "compiling projects…"], [75, "polishing pixels…"], [96, "ready ✓"]];
+let plStatus = null, plStatusTx = null, plStep = 0;
+function plSet(p) {
+  plPct = p;
+  if (plFill) plFill.style.strokeDashoffset = 100 - p;
+  if (plPctEl) plPctEl.textContent = Math.round(p);
+  if (plStatusTx) { let k = 0; PL_STEPS.forEach((s, i) => { if (p >= s[0]) k = i; }); if (p === 0) k = 0; if (k !== plStep) { plStep = k; plStatusTx.textContent = PL_STEPS[k][1]; } }
+}
 function plRun() {                                   // eases toward 90% while the page is loading
   cancelAnimationFrame(plRaf);
   const t0 = performance.now();
@@ -68,6 +87,41 @@ function iconEl(name) {
   svg.setAttribute("aria-hidden", "true");
   svg.innerHTML = ICONS[name] || "";
   return svg;
+}
+
+// Fancy navbar: sliding glow pill, spotlight, emoji on the active page, role reveal on the logo, glass on scroll
+function enhanceNav(navbar, person) {
+  const nav = document.getElementById("navLinks"), head = document.querySelector(".nav"), logo = document.getElementById("logo");
+  if (!nav || !head) return;
+  const links = [...nav.querySelectorAll("a")];
+  links.forEach((a, k) => {
+    const em = (navbar[k] || {}).emoji;
+    if (em) { const e = document.createElement("span"); e.className = "nav__emoji"; e.textContent = em; e.setAttribute("aria-hidden", "true"); a.prepend(e); }
+    a.style.setProperty("--k", k);
+  });
+  const glider = document.createElement("i"); glider.className = "nav__glider"; nav.prepend(glider);
+  const cur = () => nav.querySelector("a.active");
+  function moveTo(a, instant) {
+    if (!a || getComputedStyle(glider).display === "none") return;
+    if (instant) glider.style.transition = "none";
+    glider.style.width = a.offsetWidth + "px"; glider.style.height = a.offsetHeight + "px";
+    glider.style.transform = "translate(" + a.offsetLeft + "px," + a.offsetTop + "px)"; glider.classList.add("on");
+    if (instant) { void glider.offsetWidth; glider.style.transition = ""; }
+  }
+  const home = () => { const active = cur(); if (active) moveTo(active, false); else glider.classList.remove("on"); };
+  links.forEach((a) => { a.addEventListener("mouseenter", () => moveTo(a)); a.addEventListener("focus", () => moveTo(a)); });
+  nav.addEventListener("mouseleave", home);
+  nav.addEventListener("mousemove", (e) => { const r = nav.getBoundingClientRect(); nav.style.setProperty("--mx", (e.clientX - r.left) + "px"); });
+  const place = () => { const active = cur(); if (active) moveTo(active, true); else glider.classList.remove("on"); };
+  place(); addEventListener("resize", place); if (document.fonts && document.fonts.ready) document.fonts.ready.then(place); setTimeout(place, 600);
+  // pages that change the active link while scrolling (home -> About section): follow it
+  new MutationObserver((ms) => { if (ms.some((m) => m.target.tagName === "A") && !nav.matches(":hover")) { home(); setTimeout(home, 480); } }).observe(nav, { attributes: true, attributeFilter: ["class"], subtree: true, attributeOldValue: true });
+
+  if (logo && person && person.role) { const r = document.createElement("span"); r.className = "nav__role"; r.textContent = person.role; logo.appendChild(r); }
+
+  const sc = () => head.classList.toggle("nav--scrolled", scrollY > 24);
+  addEventListener("scroll", sc, { passive: true }); sc();
+  head.classList.add("nav--in");
 }
 
 function link(item) {
@@ -150,7 +204,10 @@ function render(data) {
     if (item.link.toLowerCase() === here) a.classList.add("active");   // current page = grey pill
     nav.appendChild(a);
   });
-  $("navToggle").addEventListener("click", () => nav.classList.toggle("open"));
+  const tg = $("navToggle");
+  tg.innerHTML = "<i></i><i></i><i></i>"; tg.classList.add("nav__burger");
+  tg.addEventListener("click", () => { nav.classList.toggle("open"); tg.classList.toggle("open", nav.classList.contains("open")); });
+  enhanceNav(navbar, person);
 
   if (window.renderSkills) renderSkills(data.skills);
   if (window.renderContact) renderContact(data.contact);
