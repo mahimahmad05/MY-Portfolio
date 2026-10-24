@@ -470,3 +470,14 @@ body.has-bg .skill-pop, body.has-bg .skill-modal-box, body.has-bg .ex-box, body.
 .pn-arrow { width: 32px; height: 32px; } .pn-arrow svg { width: 15px; height: 15px; }
 .pn-label { font-size: 8.5px; } .pn-title { font-size: 14px; }
 @media (max-width: 860px) { .pn-card { padding: 8px 10px; } .pn-emoji { width: 34px; height: 34px; font-size: 17px; } .pn-arrow { width: 30px; height: 30px; } .pn-title { font-size: 13px; } }
+
+/* more space on both sides of the prev/next bar */
+.pn { max-width: 940px; width: calc(100% - 2 * clamp(28px, 9vw, 140px)); }
+@media (max-width: 560px) { .pn { width: calc(100% - 40px); } }
+
+/* navbar lines up with the page content column (logo = left edge of content, menu = right edge) */
+.nav { padding-left: max(clamp(20px, 5vw, 64px), calc((100vw - 1100px) / 2)); padding-right: max(clamp(20px, 5vw, 64px), calc((100vw - 1100px) / 2)); }
+@media (max-width: 980px) { .nav__links { left: clamp(20px, 5vw, 64px); right: clamp(20px, 5vw, 64px); } }
+/* the home page has a full-width hero, so its navbar keeps the wider side padding */
+body:has(.hero) .nav { padding-left: clamp(20px, 5vw, 64px); padding-right: clamp(20px, 5vw, 64px); }
+body[data-title="About"] .nav { padding-left: clamp(20px, 5vw, 64px); padding-right: clamp(20px, 5vw, 64px); }

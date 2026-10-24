@@ -275,7 +275,7 @@
 .pj-fx .a2 { width: 40vw; height: 40vw; right: -10vw; top: 28vh; background: #6d3bff; opacity: .32; animation: aur2 22s ease-in-out infinite alternate; }
 .pj-fx .a3 { width: 36vw; height: 36vw; left: 30vw; bottom: -18vw; background: #0fb8d8; opacity: .28; animation: aur1 26s ease-in-out infinite alternate-reverse; }
 @keyframes aur1 { to { transform: translate(14vw, 12vh) scale(1.2); } } @keyframes aur2 { to { transform: translate(-16vw, -10vh) scale(1.15); } }
-main, .nav { position: relative; z-index: 1; } .nav { z-index: 50; }
+main { position: relative; z-index: 1; } .nav { position: fixed; z-index: 50; }
 .pj-progress { position: fixed; left: 0; top: 0; height: 3px; width: 100%; z-index: 400; transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, #2f6bff, #9cc4ff, #c78bff); box-shadow: 0 0 14px #5b93ff; pointer-events: none; }
 
 .sec-title .lt { display: inline-block; animation: lt-drop .8s cubic-bezier(.2,.9,.2,1.2) backwards; }
