@@ -43,7 +43,10 @@
     marquee(cfg.tech || []);
     card(cfg.card);
     visual(cfg, person || {});
+    network(document.querySelector("#about .ab-hero"));
+    wordScroll();
     reveal();
+    scrollCue();
     spy();
   };
 
@@ -84,6 +87,7 @@
     stage.append(el("i", "ab-glow"), orbit, card);
     (cfg.floats || ["AI / ML", "Full Stack", "DevOps"]).slice(0, 3).forEach((t, i) => stage.appendChild(el("div", "ab-float f" + (i + 1), t)));
     vis.appendChild(stage); wrap.appendChild(vis);
+    codeWin(stage, cfg);
     // 3D tilt following the mouse
     if (matchMedia("(hover: hover)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
       const hero = document.querySelector("#about .ab-hero");
@@ -122,10 +126,111 @@
     new IntersectionObserver((es, o) => es.forEach((e) => { if (e.isIntersecting) { o.disconnect(); run(); } }), { threshold: 0.35 }).observe(box);
   }
 
+
+  // ---- neural-network canvas behind the hero: drifting nodes, links, travelling pulses, reacts to the mouse ----
+  function network(hero) {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || hero.querySelector(".ab-net")) return;
+    const cv = el("canvas", "ab-net"); cv.setAttribute("aria-hidden", "true"); hero.insertBefore(cv, hero.firstChild);
+    const c = cv.getContext("2d"); let W = 0, H = 0, N = [], dpr = 1, mouse = { x: -999, y: -999 }, pulses = [], vis = true;
+    function size() {
+      dpr = Math.min(devicePixelRatio || 1, 1.5); W = hero.clientWidth; H = hero.clientHeight;
+      cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + "px"; cv.style.height = H + "px";
+      const n = Math.max(24, Math.min(80, Math.round((W * H) / 20000)));
+      N = Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35, r: 1.2 + Math.random() * 1.6 }));
+    }
+    size(); addEventListener("resize", size);
+    hero.addEventListener("pointermove", (e) => { const r = hero.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
+    hero.addEventListener("pointerleave", () => (mouse.x = mouse.y = -999));
+    new IntersectionObserver((es) => (vis = es[0].isIntersecting)).observe(hero);
+    const L = 150;
+    (function frame() {
+      requestAnimationFrame(frame);
+      if (!vis) return;
+      c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+      for (const p of N) {
+        p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > W) p.vx *= -1; if (p.y < 0 || p.y > H) p.vy *= -1;
+        const dx = p.x - mouse.x, dy = p.y - mouse.y, d = dx * dx + dy * dy;
+        if (d < 14000) { const f = (1 - d / 14000) * .6, l = Math.sqrt(d) + .01; p.x += (dx / l) * f * 2; p.y += (dy / l) * f * 2; }
+      }
+      for (let i = 0; i < N.length; i++) {
+        const a = N[i];
+        for (let j = i + 1; j < N.length; j++) {
+          const b = N[j], dx = a.x - b.x, dy = a.y - b.y, d = dx * dx + dy * dy;
+          if (d < L * L) { const al = (1 - Math.sqrt(d) / L) * .38; c.strokeStyle = "rgba(110,160,255," + al + ")"; c.lineWidth = 1; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
+            if (pulses.length < 14 && Math.random() < 0.0009) pulses.push({ a, b, t: 0 }); }
+        }
+        const dm = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+        if (dm < 190) { c.strokeStyle = "rgba(160,205,255," + (1 - dm / 190) * .7 + ")"; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(mouse.x, mouse.y); c.stroke(); }
+        c.fillStyle = dm < 190 ? "#cfe2ff" : "rgba(127,176,255,.75)"; c.beginPath(); c.arc(a.x, a.y, a.r * (dm < 190 ? 1.6 : 1), 0, 6.283); c.fill();
+      }
+      pulses = pulses.filter((p) => (p.t += 0.018) < 1);
+      for (const p of pulses) { const x = p.a.x + (p.b.x - p.a.x) * p.t, y = p.a.y + (p.b.y - p.a.y) * p.t; c.fillStyle = "#fff"; c.shadowColor = "#5b8dff"; c.shadowBlur = 12; c.beginPath(); c.arc(x, y, 2.4, 0, 6.283); c.fill(); c.shadowBlur = 0; }
+    })();
+  }
+
+  // ---- floating code window, types itself out ----
+  function codeWin(stage, cfg) {
+    const role = (cfg.roles || ["Developer"])[1] || (cfg.roles || ["Developer"])[0], focus = (cfg.floats || ["AI/ML", "DevOps"]).filter((x) => !/stack/i.test(x)).slice(0, 2);
+    const lines = [
+      [["k", "const "], ["v", "mahim"], ["p", " = {"]],
+      [["p", "  role: "], ["s", '"' + role + '"'], ["p", ","]],
+      [["p", "  focus: ["], ["s", focus.map((f) => '"' + f + '"').join(", ")], ["p", "],"]],
+      [["p", "  coffee: "], ["n", "Infinity"], ["p", ","]],
+      [["p", "  status: "], ["s", '"building…"']],
+      [["p", "};"]],
+    ];
+    const win = el("div", "ab-code"), body = el("div", "ab-code-body");
+    win.appendChild(el("div", "ab-code-head", "", [el("i"), el("i"), el("i"), el("span", "", "about.js")])); win.appendChild(body); stage.appendChild(win);
+    const flat = []; lines.forEach((ln, li) => ln.forEach(([cls, tx]) => flat.push([li, cls, tx])));
+    let li = -1, row = null, span = null, k = 0, ci = 0;
+    function step() {
+      if (k >= flat.length) { body.appendChild(el("span", "ab-caret")); return; }
+      const [l, cls, tx] = flat[k];
+      if (l !== li) { li = l; row = el("div", "ab-cl"); body.appendChild(row); }
+      if (ci === 0) { span = el("span", "c-" + cls); row.appendChild(span); }
+      span.textContent = tx.slice(0, ++ci);
+      if (ci >= tx.length) { ci = 0; k++; }
+      setTimeout(step, 24);
+    }
+    setTimeout(step, 1400);
+  }
+
+  // ---- paragraphs light up word by word as you scroll ----
+  function wordScroll() {
+    const ps = [...document.querySelectorAll("#about .ab-paras p")];
+    if (!ps.length) return;
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const items = ps.map((p) => {
+      const words = p.textContent.split(/\s+/).filter(Boolean); p.textContent = "";
+      const sp = words.map((w) => { const s = el("span", "w", w); p.appendChild(s); p.appendChild(document.createTextNode(" ")); return s; });
+      return { p, sp };
+    });
+    if (calm) { items.forEach((it) => it.sp.forEach((s) => s.classList.add("lit"))); return; }
+    let tick = false;
+    function upd() {
+      tick = false;
+      items.forEach((it) => {
+        const r = it.p.getBoundingClientRect();
+        const pr = Math.min(1, Math.max(0, (innerHeight * 0.9 - r.top) / (r.height + innerHeight * 0.3)));
+        const n = Math.round(pr * it.sp.length * 1.08);
+        it.sp.forEach((s, i) => s.classList.toggle("lit", i < n));
+      });
+    }
+    addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(upd); } }, { passive: true }); addEventListener("resize", upd); upd();
+  }
+
+  function scrollCue() {
+    const hero = document.querySelector("#about .ab-hero");
+    if (!hero || hero.querySelector(".ab-scroll")) return;
+    const cue = el("button", "ab-scroll", "", [el("i", "", "", [el("b")]), el("span", "", "scroll")]); cue.type = "button"; cue.setAttribute("aria-label", "Scroll down");
+    cue.addEventListener("click", () => { const m = $("abMarquee") || $("about"); m.scrollIntoView({ behavior: "smooth", block: "start" }); });
+    hero.appendChild(cue);
+  }
+
   // ---- scroll reveal + card spotlight ----
   function reveal() {
     const sec = $("about");
-    const targets = [...sec.querySelectorAll(".ab-heading, .ab-paras p, .ab-term, .ab-stat")];
+    const targets = [...sec.querySelectorAll(".ab-heading, .ab-term, .ab-stat")];
     targets.forEach((n, i) => { n.classList.add("ab-rv"); n.style.setProperty("--d", (i % 4) * 90 + "ms"); });
     const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.15 });
     targets.forEach((n) => io.observe(n));
@@ -154,20 +259,23 @@
       img.onerror = () => img.remove();
       return el("div", "ab-tech", "", [img, el("span", "", t.name)]);
     };
-    items.forEach((t) => track.appendChild(make(t)));
-    items.forEach((t) => { const x = make(t); x.setAttribute("aria-hidden", "true"); track.appendChild(x); });
+    const fill = (tr, list) => { list.forEach((t) => tr.appendChild(make(t))); list.forEach((t) => { const x = make(t); x.setAttribute("aria-hidden", "true"); tr.appendChild(x); }); };
+    fill(track, items);
+    const track2 = el("div", "ab-track ab-track2"); fill(track2, items.slice().reverse()); wrap.appendChild(track2);
 
-    // Scroll with JS (not CSS) so it keeps moving even if the computer has "reduce animations" turned on.
-    let pos = 0, last = performance.now(), paused = false;
+    // Scroll with JS (not CSS) so it keeps moving even if the computer has "reduce animations" turned on. Row 2 runs the other way.
+    let pos = 0, pos2 = -1, last = performance.now(), paused = false;
     wrap.addEventListener("mouseenter", () => (paused = true));
     wrap.addEventListener("mouseleave", () => (paused = false));
     (function frame(now) {
       const dt = Math.min(now - last, 100); last = now;
       const half = track.scrollWidth / 2;
       if (!paused && half > 0) {
-        pos += (half / 32) * (dt / 1000);          // one full loop every 32 seconds
-        if (pos >= half) pos -= half;
+        if (pos2 < 0) pos2 = half;
+        pos += (half / 32) * (dt / 1000); if (pos >= half) pos -= half;
+        pos2 -= (half / 38) * (dt / 1000); if (pos2 <= 0) pos2 += half;
         track.style.transform = "translate3d(" + -pos + "px,0,0)";
+        track2.style.transform = "translate3d(" + -pos2 + "px,0,0)";
       }
       requestAnimationFrame(frame);
     })(last);
