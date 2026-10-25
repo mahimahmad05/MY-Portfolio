@@ -143,7 +143,7 @@ function render(data) {
   if (window.renderEducation) renderEducation(data.education);
   if (window.renderProjects) renderProjects(data.projects);
   if (window.renderNews) renderNews(data.news);
-  if (window.renderAbout) renderAbout(data.about);
+  if (window.renderAbout) renderAbout(data.about, data.person);
   renderPageNav(navbar);
   if (window.renderFooter) renderFooter(data);
 

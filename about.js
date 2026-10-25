@@ -18,7 +18,7 @@
   }
   const $ = (id) => document.getElementById(id);
 
-  window.renderAbout = function (cfg) {
+  window.renderAbout = function (cfg, person) {
     const sec = $("about");
     if (!sec || !cfg) return;
     sec.hidden = false;
@@ -26,7 +26,7 @@
     if (bg && cfg.photo) { bg.onload = () => $("about").classList.add("has-photo"); bg.onerror = () => bg.remove(); bg.src = cfg.photo; }
     $("abEyeIcon").innerHTML = ICONS.spark; $("abTwIcon").innerHTML = ICONS.code;
     $("abEyebrow").textContent = cfg.eyebrow || "";
-    $("abName").textContent = cfg.name || "";
+    nameFx($("abName"), cfg.name || "");
     typewriter($("abType"), cfg.roles || []);
 
     const tag = $("abTagline");
@@ -42,8 +42,98 @@
 
     marquee(cfg.tech || []);
     card(cfg.card);
+    visual(cfg, person || {});
+    reveal();
     spy();
   };
+
+
+  // ---- big name: letters rise one by one, then a light sweep runs across ----
+  function nameFx(h, text) {
+    h.setAttribute("aria-label", text); h.textContent = "";
+    [...text].forEach((ch, i) => { const s = el("span", "ab-ch", ch); s.style.setProperty("--i", i); s.setAttribute("aria-hidden", "true"); h.appendChild(s); });
+  }
+
+  // ---- right side of the hero: tilting "developer ID" card, orbiting tech logos, floating tags ----
+  function visual(cfg, person) {
+    const wrap = document.querySelector("#about .ab-hero .ab-wrap");
+    if (!wrap || wrap.querySelector(".ab-visual")) return;
+    const info = {}; ((cfg.card || {}).info || []).forEach((i) => (info[i.label.toLowerCase()] = i.value));
+    const vis = el("div", "ab-visual"); vis.setAttribute("aria-hidden", "true");
+    const stage = el("div", "ab-stage");
+    // orbit with tech logos
+    const orbit = el("div", "ab-orbit");
+    (cfg.tech || []).slice(0, 8).forEach((t, i, arr) => {
+      const a = (360 / arr.length) * i, chip = el("div", "ab-chip");
+      chip.style.setProperty("--a", a + "deg");
+      const img = document.createElement("img"); img.src = t.logo; img.alt = ""; img.onerror = () => (chip.style.display = "none");
+      chip.appendChild(el("i", "", "", [img])); orbit.appendChild(chip);
+    });
+    // the card
+    const card = el("div", "ab-id");
+    const photo = el("div", "ab-id-photo");
+    const img = document.createElement("img"); img.src = person.avatar || "assets/profile.jpg"; img.alt = ""; img.onerror = () => img.remove(); photo.appendChild(img);
+    photo.appendChild(el("span", "ab-id-live", "Open to work"));
+    const meta = el("div", "ab-id-meta", "", [
+      el("strong", "", person.name || cfg.name),
+      el("span", "", person.role || ""),
+      el("em", "", [info.program, info.batch ? "Batch " + info.batch : ""].filter(Boolean).join(" · ")),
+    ]);
+    const bar = el("div", "ab-id-bar"); bar.appendChild(el("span", "", "DIU · SE"));
+    card.append(el("div", "ab-id-top", "", [el("span", "", "DEVELOPER ID"), el("b", "", "")]), photo, meta, bar, el("div", "ab-id-shine"));
+    stage.append(el("i", "ab-glow"), orbit, card);
+    (cfg.floats || ["AI / ML", "Full Stack", "DevOps"]).slice(0, 3).forEach((t, i) => stage.appendChild(el("div", "ab-float f" + (i + 1), t)));
+    vis.appendChild(stage); wrap.appendChild(vis);
+    // 3D tilt following the mouse
+    if (matchMedia("(hover: hover)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const hero = document.querySelector("#about .ab-hero");
+      hero.addEventListener("pointermove", (e) => {
+        const r = stage.getBoundingClientRect(), x = (e.clientX - (r.left + r.width / 2)) / (innerWidth / 2), y = (e.clientY - (r.top + r.height / 2)) / (innerHeight / 2);
+        stage.style.setProperty("--rx", (-y * 9).toFixed(2) + "deg"); stage.style.setProperty("--ry", (x * 12).toFixed(2) + "deg");
+        card.style.setProperty("--gx", (50 + x * 40) + "%"); card.style.setProperty("--gy", (50 + y * 40) + "%");
+      });
+      hero.addEventListener("pointerleave", () => { stage.style.setProperty("--rx", "0deg"); stage.style.setProperty("--ry", "0deg"); });
+    }
+  }
+
+  // ---- "whoami" terminal: the info lines type themselves in when scrolled into view ----
+  function terminal(box, items) {
+    if (!box) return;
+    box.classList.add("ab-term"); box.textContent = "";
+    const head = el("div", "ab-term-head", "", [el("i"), el("i"), el("i"), el("span", "", "mahim@portfolio ~ % whoami")]);
+    const body = el("div", "ab-term-body"), rows = [];
+    items.forEach((it) => {
+      const v = el("span", "v", ""); v.dataset.t = it.value;
+      body.appendChild(el("div", "ab-tl", "", [el("span", "k", it.label.toLowerCase()), el("span", "s", " → "), v]));
+      rows.push(v);
+    });
+    const cur = el("div", "ab-tl ab-tl-end", "", [el("span", "k", "$"), el("span", "ab-caret")]);
+    body.appendChild(cur); box.append(head, body);
+    const quick = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function run() {
+      let r = 0;
+      (function next() {
+        if (r >= rows.length) return;
+        const v = rows[r], t = v.dataset.t; let c = 0; v.parentNode.classList.add("on");
+        (function type() { c += quick ? t.length : 1; v.textContent = t.slice(0, c); if (c < t.length) setTimeout(type, 16); else { r++; setTimeout(next, 90); } })();
+      })();
+    }
+    rows.forEach((v) => (v.textContent = "\u00a0"));
+    new IntersectionObserver((es, o) => es.forEach((e) => { if (e.isIntersecting) { o.disconnect(); run(); } }), { threshold: 0.35 }).observe(box);
+  }
+
+  // ---- scroll reveal + card spotlight ----
+  function reveal() {
+    const sec = $("about");
+    const targets = [...sec.querySelectorAll(".ab-heading, .ab-paras p, .ab-term, .ab-stat")];
+    targets.forEach((n, i) => { n.classList.add("ab-rv"); n.style.setProperty("--d", (i % 4) * 90 + "ms"); });
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.15 });
+    targets.forEach((n) => io.observe(n));
+    const hero = sec.querySelector(".ab-hero");
+    if (hero) new IntersectionObserver((es, o) => es.forEach((e) => { if (e.isIntersecting) { hero.classList.add("go"); o.disconnect(); } }), { threshold: 0.2 }).observe(hero);
+    const card = sec.querySelector(".ab-card");
+    if (card) card.addEventListener("pointermove", (e) => { const r = card.getBoundingClientRect(); card.style.setProperty("--mx", e.clientX - r.left + "px"); card.style.setProperty("--my", e.clientY - r.top + "px"); });
+  }
 
   function typewriter(target, roles) {
     if (!target || !roles.length) return;
@@ -87,12 +177,14 @@
     if (!c) return;
     $("abHeading").textContent = c.heading || "";
     const ps = $("abParas"); (c.paragraphs || []).forEach((p) => ps.appendChild(el("p", "", p)));
-    const info = $("abInfo");
-    (c.info || []).forEach((i) => info.appendChild(el("div", "ab-info-item", "", [el("div", "ab-info-label", i.label), el("div", "ab-info-value", i.value)])));
+    terminal($("abInfo"), c.info || []);
     const st = $("abStats"), nums = [];
     (c.stats || []).forEach((s) => {
       const n = el("div", "ab-stat-num", "0"); n.dataset.target = s.num; n.dataset.suffix = s.suffix || ""; nums.push(n);
-      st.appendChild(el("div", "ab-stat", "", [n, el("div", "ab-stat-label", s.label)]));
+      const mx = Math.max.apply(null, (c.stats || []).map((x) => x.num || 1));
+      const tile = el("div", "ab-stat", "", [el("div", "ab-ring", "", [n]), el("div", "ab-stat-label", s.label)]);
+      tile.style.setProperty("--tp", Math.max(0.18, (s.num || 0) / mx));
+      st.appendChild(tile);
     });
     const io = new IntersectionObserver((es) => {
       es.forEach((e) => { if (e.isIntersecting) { nums.forEach(count); io.disconnect(); } });

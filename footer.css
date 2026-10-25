@@ -35,7 +35,7 @@
 @keyframes heart-beat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.25); } }
 @media (prefers-reduced-motion: reduce) { .footer-heart { animation: none; } }
 
-.back-to-top { position: fixed; right: 26px; bottom: 92px; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--accent); color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 22px -8px rgba(70,130,255,.7); z-index: 60; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .25s ease, transform .25s ease, visibility .25s ease; }
+.back-to-top { position: fixed; right: calc(clamp(20px, 5vw, 64px) - 2px); bottom: 92px; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--accent); color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 22px -8px rgba(70,130,255,.7); z-index: 60; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .25s ease, transform .25s ease, visibility .25s ease; }
 .back-to-top.show { opacity: 1; visibility: visible; transform: none; }
 .back-to-top svg { width: 19px; height: 19px; }
 .back-to-top:hover { transform: translateY(-3px); }
