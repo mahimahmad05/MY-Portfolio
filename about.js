@@ -43,10 +43,7 @@
     marquee(cfg.tech || []);
     card(cfg.card);
     visual(cfg, person || {});
-    network(document.querySelector("#about .ab-hero"));
-    wordScroll();
     reveal();
-    scrollCue();
     spy();
   };
 
@@ -72,7 +69,8 @@
       const img = document.createElement("img"); img.src = t.logo; img.alt = ""; img.onerror = () => (chip.style.display = "none");
       chip.appendChild(el("i", "", "", [img])); orbit.appendChild(chip);
     });
-    // the card
+    // the developer ID card
+    const deck = el("div", "ab-deck single");
     const card = el("div", "ab-id");
     const photo = el("div", "ab-id-photo");
     const img = document.createElement("img"); img.src = person.avatar || "assets/profile.jpg"; img.alt = ""; img.onerror = () => img.remove(); photo.appendChild(img);
@@ -84,10 +82,10 @@
     ]);
     const bar = el("div", "ab-id-bar"); bar.appendChild(el("span", "", "DIU · SE"));
     card.append(el("div", "ab-id-top", "", [el("span", "", "DEVELOPER ID"), el("b", "", "")]), photo, meta, bar, el("div", "ab-id-shine"));
-    stage.append(el("i", "ab-glow"), orbit, card);
+    deck.appendChild(card);
+    stage.append(el("i", "ab-glow"), orbit, deck);
     (cfg.floats || ["AI / ML", "Full Stack", "DevOps"]).slice(0, 3).forEach((t, i) => stage.appendChild(el("div", "ab-float f" + (i + 1), t)));
     vis.appendChild(stage); wrap.appendChild(vis);
-    codeWin(stage, cfg);
     // 3D tilt following the mouse
     if (matchMedia("(hover: hover)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
       const hero = document.querySelector("#about .ab-hero");
@@ -230,7 +228,7 @@
   // ---- scroll reveal + card spotlight ----
   function reveal() {
     const sec = $("about");
-    const targets = [...sec.querySelectorAll(".ab-heading, .ab-term, .ab-stat")];
+    const targets = [...sec.querySelectorAll(".ab-heading, .ab-paras p, .ab-term, .ab-stat")];
     targets.forEach((n, i) => { n.classList.add("ab-rv"); n.style.setProperty("--d", (i % 4) * 90 + "ms"); });
     const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.15 });
     targets.forEach((n) => io.observe(n));
@@ -261,21 +259,17 @@
     };
     const fill = (tr, list) => { list.forEach((t) => tr.appendChild(make(t))); list.forEach((t) => { const x = make(t); x.setAttribute("aria-hidden", "true"); tr.appendChild(x); }); };
     fill(track, items);
-    const track2 = el("div", "ab-track ab-track2"); fill(track2, items.slice().reverse()); wrap.appendChild(track2);
 
     // Scroll with JS (not CSS) so it keeps moving even if the computer has "reduce animations" turned on. Row 2 runs the other way.
-    let pos = 0, pos2 = -1, last = performance.now(), paused = false;
+    let pos = 0, last = performance.now(), paused = false;
     wrap.addEventListener("mouseenter", () => (paused = true));
     wrap.addEventListener("mouseleave", () => (paused = false));
     (function frame(now) {
       const dt = Math.min(now - last, 100); last = now;
       const half = track.scrollWidth / 2;
       if (!paused && half > 0) {
-        if (pos2 < 0) pos2 = half;
         pos += (half / 32) * (dt / 1000); if (pos >= half) pos -= half;
-        pos2 -= (half / 38) * (dt / 1000); if (pos2 <= 0) pos2 += half;
         track.style.transform = "translate3d(" + -pos + "px,0,0)";
-        track2.style.transform = "translate3d(" + -pos2 + "px,0,0)";
       }
       requestAnimationFrame(frame);
     })(last);
