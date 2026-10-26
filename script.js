@@ -118,7 +118,9 @@ function buildModeToggle(cfg) {
     try { localStorage.setItem("bgMode", b.dataset.mode); } catch (er) {}
     sync(); initPageBackground(cfg);
   });
-  sync(); document.body.appendChild(box);
+  sync();
+  const lg = document.querySelector(".nav > .nav__logo");
+  if (lg) lg.after(box); else document.body.appendChild(box);        // sits in the header, between the profile pill and the menu
 }
 
 function render(data) {
