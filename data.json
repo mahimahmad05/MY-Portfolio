@@ -543,6 +543,8 @@
     "tagline": "Software Engineering student building with AI as a development partner — one diagram, one commit at a time.",
     "quickLinksTitle": "Quick Links",
     "contactTitle": "Get In Touch",
+    "copyright": "© 2026 MAHIM AHMAD — SOFTWARE ENGINEERING PORTFOLIO",
+    "credit": "Designed & Built with ♥ using HTML, CSS & JS",
     "linkIcons": {
       "About": "users",
       "News & Highlights": "spark",
@@ -1140,7 +1142,84 @@
         }
       ]
     },
-    "photo": "assets/about-photo.jpg"
+    "photo": "assets/about-photo.jpg",
+    "photos": [
+      {
+        "src": "assets/profile.jpg",
+        "caption": "Open to work"
+      },
+      {
+        "src": "assets/gallery/photo-1.jpg",
+        "caption": ""
+      },
+      {
+        "src": "assets/gallery/photo-2.jpg",
+        "caption": ""
+      },
+      {
+        "src": "assets/gallery/photo-3.jpg",
+        "caption": ""
+      },
+      {
+        "src": "assets/gallery/photo-4.jpg",
+        "caption": ""
+      },
+      {
+        "src": "assets/gallery/photo-5.jpg",
+        "caption": ""
+      },
+      {
+        "src": "assets/gallery/photo-6.jpg",
+        "caption": ""
+      },
+      {
+        "src": "assets/gallery/photo-7.jpg",
+        "caption": ""
+      },
+      {
+        "src": "assets/gallery/photo-8.jpg",
+        "caption": ""
+      }
+    ],
+    "gallery": {
+      "eyebrow": "Gallery",
+      "title": "Moments",
+      "subtitle": "A few frames from my journey — hover a photo to open it, click to view full screen.",
+      "items": [
+        {
+          "src": "assets/gallery/1.jpg",
+          "caption": "Campus days"
+        },
+        {
+          "src": "assets/gallery/2.jpg",
+          "caption": "Hackathon night"
+        },
+        {
+          "src": "assets/gallery/3.jpg",
+          "caption": "With the team"
+        },
+        {
+          "src": "assets/gallery/4.jpg",
+          "caption": "Project demo"
+        },
+        {
+          "src": "assets/gallery/5.jpg",
+          "caption": "Late-night coding"
+        },
+        {
+          "src": "assets/gallery/6.jpg",
+          "caption": "Certificate day"
+        },
+        {
+          "src": "assets/gallery/7.jpg",
+          "caption": "Tech meetup"
+        },
+        {
+          "src": "assets/gallery/8.jpg",
+          "caption": "Behind the scenes"
+        }
+      ]
+    }
   },
   "backgrounds": {
     "enabled": true,

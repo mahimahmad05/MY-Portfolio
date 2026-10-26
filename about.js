@@ -43,6 +43,7 @@
     marquee(cfg.tech || []);
     card(cfg.card);
     visual(cfg, person || {});
+    gallery(cfg.gallery);
     reveal();
     spy();
   };
@@ -59,7 +60,7 @@
     const wrap = document.querySelector("#about .ab-hero .ab-wrap");
     if (!wrap || wrap.querySelector(".ab-visual")) return;
     const info = {}; ((cfg.card || {}).info || []).forEach((i) => (info[i.label.toLowerCase()] = i.value));
-    const vis = el("div", "ab-visual"); vis.setAttribute("aria-hidden", "true");
+    const vis = el("div", "ab-visual");
     const stage = el("div", "ab-stage");
     // orbit with tech logos
     const orbit = el("div", "ab-orbit");
@@ -69,21 +70,67 @@
       const img = document.createElement("img"); img.src = t.logo; img.alt = ""; img.onerror = () => (chip.style.display = "none");
       chip.appendChild(el("i", "", "", [img])); orbit.appendChild(chip);
     });
-    // the developer ID card
-    const deck = el("div", "ab-deck single");
-    const card = el("div", "ab-id");
-    const photo = el("div", "ab-id-photo");
-    const img = document.createElement("img"); img.src = person.avatar || "assets/profile.jpg"; img.alt = ""; img.onerror = () => img.remove(); photo.appendChild(img);
-    photo.appendChild(el("span", "ab-id-live", "Open to work"));
-    const meta = el("div", "ab-id-meta", "", [
-      el("strong", "", person.name || cfg.name),
-      el("span", "", person.role || ""),
-      el("em", "", [info.program, info.batch ? "Batch " + info.batch : ""].filter(Boolean).join(" · ")),
-    ]);
-    const bar = el("div", "ab-id-bar"); bar.appendChild(el("span", "", "DIU · SE"));
-    card.append(el("div", "ab-id-top", "", [el("span", "", "DEVELOPER ID"), el("b", "", "")]), photo, meta, bar, el("div", "ab-id-shine"));
-    deck.appendChild(card);
-    stage.append(el("i", "ab-glow"), orbit, deck);
+    // photo deck: many photos stacked as ID cards. Hover / click / drag / arrows / timer move to the next one. Photos: data.json -> about.photos
+    const list = (cfg.photos && cfg.photos.length ? cfg.photos : [person.avatar || "assets/profile.jpg"]).map((p) => (typeof p === "string" ? { src: p } : p));
+    const deck = el("div", "ab-deck");
+    let cards = [];
+    function mk(it, idx) {
+      const card = el("div", "ab-id");
+      const photo = el("div", "ab-id-photo");
+      const img = document.createElement("img"); img.src = it.src; img.alt = ""; img.draggable = false; if (it.pos) img.style.objectPosition = it.pos;
+      img.onerror = () => { const i = cards.indexOf(card); if (i > -1 && cards.length > 1) { cards.splice(i, 1); card.remove(); place(); } else img.remove(); };
+      photo.appendChild(img);
+      photo.appendChild(el("span", "ab-id-live", it.caption || (idx === 0 ? "Open to work" : "")));
+      if (!photo.lastChild.textContent) photo.lastChild.remove();
+      const meta = el("div", "ab-id-meta", "", [
+        el("strong", "", person.name || cfg.name),
+        el("span", "", person.role || ""),
+        el("em", "", [info.program, info.batch ? "Batch " + info.batch : ""].filter(Boolean).join(" · ")),
+      ]);
+      const bar = el("div", "ab-id-bar"); bar.appendChild(el("span", "", "DIU · SE"));
+      card.append(el("div", "ab-id-top", "", [el("span", "", "DEVELOPER ID"), el("b", "", "")]), photo, meta, bar, el("div", "ab-id-shine"));
+      return card;
+    }
+    cards = list.map(mk); cards.forEach((c) => deck.appendChild(c));
+    const ctrl = el("div", "ab-ctrl"), prevB = el("button", "", "‹"), nextB = el("button", "", "›"), cnt = el("span", "ab-cnt"), prog = el("i", "ab-prog");
+    prevB.type = nextB.type = "button"; prevB.setAttribute("aria-label", "Previous photo"); nextB.setAttribute("aria-label", "Next photo");
+    ctrl.append(prevB, el("div", "ab-cnt-wrap", "", [cnt, el("div", "ab-prog-bar", "", [prog])]), nextB);
+    const pad = (n) => (n < 10 ? "0" : "") + n;
+    let total = cards.length, cur = 0;
+    function place() {
+      cards.forEach((c, i) => { c.dataset.pos = Math.min(i, 3); c.style.zIndex = 10 - i; });
+      deck.classList.toggle("single", cards.length < 2); ctrl.classList.toggle("hide", cards.length < 2);
+      total = cards.length; cnt.textContent = pad(cur + 1) + " / " + pad(total);
+    }
+    place();
+    let busy = false, timer = 0;
+    function restartProg() { prog.style.animation = "none"; void prog.offsetWidth; prog.style.animation = ""; }
+    function next(dir) {
+      if (busy || cards.length < 2) return; busy = true;
+      const front = cards[0]; front.classList.add(dir === "l" ? "leaving-l" : "leaving");
+      setTimeout(() => { front.classList.remove("leaving", "leaving-l"); front.style.transform = ""; cards.push(cards.shift()); cur = (cur + 1) % total; place(); setTimeout(() => (busy = false), 420); }, 400);
+      restartProg();
+    }
+    function prev() {
+      if (busy || cards.length < 2) return; busy = true;
+      const c = cards.pop(); c.classList.add("entering"); cards.unshift(c); cur = (cur - 1 + total) % total; place();
+      void c.offsetWidth; c.classList.remove("entering"); setTimeout(() => (busy = false), 600); restartProg();
+    }
+    function auto() { clearInterval(timer); if (cards.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(() => next(), 5500); restartProg(); }
+    nextB.addEventListener("click", () => { next(); auto(); }); prevB.addEventListener("click", () => { prev(); auto(); });
+    deck.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") { next(); auto(); } });
+    // drag the top card away (swipe on touch)
+    let dx0 = null, dx = 0, moved = false;
+    deck.addEventListener("pointerdown", (e) => { if (cards.length < 2 || busy) return; dx0 = e.clientX; dx = 0; moved = false; deck.setPointerCapture(e.pointerId); cards[0].style.transition = "none"; });
+    deck.addEventListener("pointermove", (e) => { if (dx0 == null) return; dx = e.clientX - dx0; if (Math.abs(dx) > 6) moved = true; cards[0].style.transform = "translateX(" + dx + "px) rotate(" + dx * 0.06 + "deg)"; });
+    function endDrag() {
+      if (dx0 == null) return; const f = cards[0]; f.style.transition = ""; const d = dx; dx0 = null;
+      if (Math.abs(d) > 90) { f.style.transform = ""; next(d < 0 ? "l" : "r"); auto(); }
+      else { f.style.transform = ""; if (!moved) { next(); auto(); } }
+    }
+    deck.addEventListener("pointerup", endDrag); deck.addEventListener("pointercancel", endDrag);
+    auto();
+    stage.append(el("i", "ab-glow"), orbit, deck, ctrl);
     (cfg.floats || ["AI / ML", "Full Stack", "DevOps"]).slice(0, 3).forEach((t, i) => stage.appendChild(el("div", "ab-float f" + (i + 1), t)));
     vis.appendChild(stage); wrap.appendChild(vis);
     // 3D tilt following the mouse
@@ -223,6 +270,56 @@
     const cue = el("button", "ab-scroll", "", [el("i", "", "", [el("b")]), el("span", "", "scroll")]); cue.type = "button"; cue.setAttribute("aria-label", "Scroll down");
     cue.addEventListener("click", () => { const m = $("abMarquee") || $("about"); m.scrollIntoView({ behavior: "smooth", block: "start" }); });
     hero.appendChild(cue);
+  }
+
+
+  // ---- photo gallery: expanding strips (hover / tap to open one), auto-play, full-screen viewer with arrows + swipe ----
+  function gallery(g) {
+    const sec = $("about");
+    if (!g || !g.items || !g.items.length || sec.querySelector(".ab-gal")) return;
+    const box = el("div", "ab-wrap ab-wrap--gal");
+    const head = el("div", "ab-gal-head", "", [el("span", "ab-gal-eyebrow", g.eyebrow || "Gallery"), el("h3", "", g.title || "Moments")]);
+    if (g.subtitle) head.appendChild(el("p", "", g.subtitle));
+    const row = el("div", "ab-gal"), prog = el("i", "ab-gal-prog");
+    box.append(head, row); sec.appendChild(box); box.hidden = true;
+    let items = [], cur = 0, timer = 0, hover = false, seen = false;
+    g.items.forEach((it) => {
+      const src = typeof it === "string" ? it : it.src, cap = typeof it === "string" ? "" : it.caption || "";
+      const d = el("button", "ab-gx"); d.type = "button";
+      const img = document.createElement("img"); img.src = src; img.alt = cap;
+      img.onload = () => { box.hidden = false; };
+      img.onerror = () => { const i = items.indexOf(d); if (i > -1) items.splice(i, 1); d.remove(); if (!items.length) box.hidden = true; else { number(); set(Math.min(cur, items.length - 1)); } };
+      d.append(img, el("span", "ab-gx-n", ""), el("span", "ab-gx-cap", cap), el("i", "ab-gx-bar"));
+      d._src = src; d._cap = cap; items.push(d); row.appendChild(d);
+    });
+    function number() { items.forEach((d, i) => { d.querySelector(".ab-gx-n").textContent = String(i + 1).padStart(2, "0"); }); }
+    function set(i) { cur = (i + items.length) % items.length; items.forEach((d, k) => d.classList.toggle("on", k === cur)); restart(); }
+    function restart() {
+      clearInterval(timer); items.forEach((d) => d.classList.remove("run")); void row.offsetWidth;
+      if (items[cur]) items[cur].classList.add("run");
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches && items.length > 1) timer = setInterval(() => { if (!hover && seen && !viewer.classList.contains("open")) set(cur + 1); }, 3800);
+    }
+    number();
+    row.addEventListener("pointerover", (e) => { const d = e.target.closest(".ab-gx"); if (d && matchMedia("(hover: hover)").matches) { const i = items.indexOf(d); if (i !== cur) set(i); } });
+    row.addEventListener("mouseenter", () => (hover = true)); row.addEventListener("mouseleave", () => (hover = false));
+    row.addEventListener("click", (e) => { const d = e.target.closest(".ab-gx"); if (!d) return; const i = items.indexOf(d); if (i === cur) open(i); else set(i); });
+    new IntersectionObserver((es) => (seen = es[0].isIntersecting), { threshold: 0.3 }).observe(row);
+
+    // viewer
+    const viewer = el("div", "ab-view"), vimg = document.createElement("img"), vcap = el("div", "ab-view-cap"), vn = el("div", "ab-view-n");
+    const bx = el("button", "ab-view-x", "✕"), bp = el("button", "ab-view-p", "‹"), bn = el("button", "ab-view-nx", "›");
+    [bx, bp, bn].forEach((b) => (b.type = "button")); bx.setAttribute("aria-label", "Close"); bp.setAttribute("aria-label", "Previous"); bn.setAttribute("aria-label", "Next");
+    viewer.append(vimg, vcap, vn, bx, bp, bn); document.body.appendChild(viewer);
+    let vi = 0;
+    function show(i) { vi = (i + items.length) % items.length; vimg.classList.remove("in"); vimg.src = items[vi]._src; vcap.textContent = items[vi]._cap; vn.textContent = (vi + 1) + " / " + items.length; requestAnimationFrame(() => requestAnimationFrame(() => vimg.classList.add("in"))); }
+    function open(i) { show(i); viewer.classList.add("open"); document.documentElement.style.overflow = "hidden"; }
+    function close() { viewer.classList.remove("open"); document.documentElement.style.overflow = ""; set(vi); }
+    bx.onclick = close; bp.onclick = (e) => { e.stopPropagation(); show(vi - 1); }; bn.onclick = (e) => { e.stopPropagation(); show(vi + 1); };
+    viewer.addEventListener("click", (e) => { if (e.target === viewer) close(); });
+    addEventListener("keydown", (e) => { if (!viewer.classList.contains("open")) return; if (e.key === "Escape") close(); else if (e.key === "ArrowLeft") show(vi - 1); else if (e.key === "ArrowRight") show(vi + 1); });
+    let sx = 0; viewer.addEventListener("touchstart", (e) => (sx = e.touches[0].clientX), { passive: true });
+    viewer.addEventListener("touchend", (e) => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) show(vi + (dx < 0 ? 1 : -1)); });
+    set(0);
   }
 
   // ---- scroll reveal + card spotlight ----
