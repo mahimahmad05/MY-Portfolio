@@ -144,10 +144,17 @@
     const cur = el("div", "ab-tl ab-tl-end", "", [el("span", "k", "$"), el("span", "ab-caret")]);
     body.appendChild(cur); box.append(head, body);
     const quick = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function outro() {
+      const cmd = "./hire-me.sh", k = cur.querySelector(".k"), cr = cur.querySelector(".ab-caret");
+      const t = el("span", "v ab-cmd", ""); cur.insertBefore(t, cr); let c = 0;
+      (function type() { c += quick ? cmd.length : 1; t.textContent = " " + cmd.slice(0, c); if (c < cmd.length) setTimeout(type, 55); else setTimeout(() => {
+        const ok = el("div", "ab-tl on ab-ok", "", [el("span", "k", "✔"), el("span", "v", " ready to collaborate · open to work")]);
+        body.insertBefore(ok, cur); cur.classList.add("on"); }, 350); })();
+    }
     function run() {
       let r = 0;
       (function next() {
-        if (r >= rows.length) return;
+        if (r >= rows.length) { outro(); return; }
         const v = rows[r], t = v.dataset.t; let c = 0; v.parentNode.classList.add("on");
         (function type() { c += quick ? t.length : 1; v.textContent = t.slice(0, c); if (c < t.length) setTimeout(type, 16); else { r++; setTimeout(next, 90); } })();
       })();
@@ -341,6 +348,21 @@
       tile.style.setProperty("--tp", Math.max(0.18, (s.num || 0) / mx));
       st.appendChild(tile);
     });
+    st.querySelectorAll(".ab-stat").forEach((t) => {
+      t.addEventListener("pointermove", (e) => { if (e.pointerType !== "mouse") return; const r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        t.style.setProperty("--mx", x * 100 + "%"); t.style.setProperty("--my", y * 100 + "%"); t.style.setProperty("--tr", ((y - .5) * -8).toFixed(1) + "deg"); t.style.setProperty("--tc", ((x - .5) * 8).toFixed(1) + "deg"); });
+      t.addEventListener("pointerleave", () => { t.style.setProperty("--tr", "0deg"); t.style.setProperty("--tc", "0deg"); });
+    });
+    const KW = /(RecycleHub|TensorFlow|Generative AI|DevOps|AI\/ML|Python|NLP|Linux|WSL2|SRS|DFDs)/g;
+    ps.querySelectorAll("p").forEach((p) => { p.innerHTML = p.innerHTML.replace(KW, '<mark class="ab-kw">$1</mark>'); });
+    const pl = [...ps.querySelectorAll("p")];
+    let tk = false;
+    function prog() {
+      tk = false; const r = ps.getBoundingClientRect(), mid = innerHeight * 0.55;
+      ps.style.setProperty("--fill", Math.max(0, Math.min(1, (mid - r.top) / r.height)) * 100 + "%");
+      pl.forEach((p) => { const q = p.getBoundingClientRect(); p.classList.toggle("reached", q.top < mid); p.classList.toggle("now", q.top < mid && q.bottom > mid); });
+    }
+    addEventListener("scroll", () => { if (!tk) { tk = true; requestAnimationFrame(prog); } }, { passive: true }); addEventListener("resize", prog); prog();
     const io = new IntersectionObserver((es) => {
       es.forEach((e) => { if (e.isIntersecting) { nums.forEach(count); io.disconnect(); } });
     }, { threshold: 0.4 });
