@@ -354,7 +354,7 @@
       t.addEventListener("pointerleave", () => { t.style.setProperty("--tr", "0deg"); t.style.setProperty("--tc", "0deg"); });
     });
     const KW = /(RecycleHub|TensorFlow|Generative AI|DevOps|AI\/ML|Python|NLP|Linux|WSL2|SRS|DFDs)/g;
-    ps.querySelectorAll("p").forEach((p) => { p.innerHTML = p.innerHTML.replace(KW, '<mark class="ab-kw">$1</mark>'); });
+    ps.querySelectorAll("p").forEach((p) => { p.innerHTML = '<span class="ab-pt">' + p.innerHTML + '</span>'; });
     const pl = [...ps.querySelectorAll("p")];
     let tk = false;
     function prog() {
