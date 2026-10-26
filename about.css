@@ -372,3 +372,10 @@
 .ab-name .ab-ch, .ab-hero h1 { background-size: 200% 100%; }
 @media (prefers-reduced-motion: reduce) { .ab-deck .ab-id[data-pos="0"]::after { animation: none; } }
 @media (min-width: 981px) { .ab-badge.b1 { left: auto; right: -12%; top: 7%; } .ab-badge.b2 { right: auto; left: -12%; bottom: 8%; } }
+
+/* badges removed, taller cards */
+.ab-badge { display: none !important; }
+.ab-deck { width: min(285px, 68%); }
+.ab-deck .ab-id-photo { aspect-ratio: .68; }
+.ab-deck .ab-id-photo img { object-position: 50% 12%; }
+@media (max-width: 980px) { .ab-deck { width: min(260px, 72%); } .ab-deck .ab-id-photo { aspect-ratio: .7; } }
