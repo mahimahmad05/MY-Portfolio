@@ -399,3 +399,14 @@
 .ab-cmd { color: #9cc2ff; } .ab-ok { color: #5df0a0; } .ab-ok .v { color: #bff7d8; }
 @media (prefers-reduced-motion: reduce) { .ab-paras p { opacity: 1; } }
 .ab-ok .k { min-width: 0; width: auto; margin-right: 2px; }
+
+/* equal-height columns: timeline stretches to the bottom of the stats */
+@media (min-width: 981px) {
+  .ab-card { align-items: stretch; }
+  .ab-left { display: flex; flex-direction: column; }
+  .ab-left .ab-paras { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; }
+  .ab-left .ab-paras p { margin: 0; }
+  .ab-left .ab-paras p::before { top: 6px; }
+}
+.ab-paras p { opacity: .75; }
+.ab-paras p.now { opacity: 1; }
