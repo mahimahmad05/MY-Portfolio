@@ -62,12 +62,14 @@ function link(item) {
 
 
 // ---------- Page background video (just drop the file in assets/backgrounds/, see data.json "backgrounds") ----------
+function bgMode() { try { return localStorage.getItem("bgMode") === "video" ? "video" : "regular"; } catch (e) { return "regular"; } }
 function initPageBackground(cfg) {
-  if (!cfg || cfg.enabled === false) return;
+  document.querySelectorAll(".page-bg").forEach((n) => n.remove());
+  document.body.classList.remove("has-bg");
+  if (!cfg || cfg.enabled === false || bgMode() !== "video") return;               // Regular theme = no video
   const file = (location.pathname.split("/").pop() || "index.html").toLowerCase().replace(/\.html$/, "");
   const key = file === "index" ? "home" : file;
   const pages = cfg.pages || {};
-  if (!(key in pages) && (cfg.skip || ["home", "about"]).includes(key)) return;      // home + about keep their own look unless listed in "pages"
   if (pages[key] === false) return;
   const folder = cfg.folder || "assets/backgrounds/";
   const exts = cfg.formats || ["mp4", "webm"];
@@ -76,6 +78,7 @@ function initPageBackground(cfg) {
   if (!names.length) {                                    // "news.mp4" / "news.webm" by default; on phones "news-mobile.mp4" is tried first (optional tall clip)
     if (phone) exts.forEach((e) => names.push(folder + key + "-mobile." + e));
     exts.forEach((e) => names.push(folder + key + "." + e));
+    exts.forEach((e) => names.push(folder + "default." + e));       // theme video used on every page that has no video of its own
   }
   const wrap = document.createElement("div"); wrap.className = "page-bg"; wrap.setAttribute("aria-hidden", "true");
   const v = document.createElement("video");
@@ -103,6 +106,21 @@ function initPageBackground(cfg) {
   next();
 }
 
+function buildModeToggle(cfg) {
+  if (!cfg || cfg.enabled === false || document.querySelector(".mode-toggle")) return;
+  const box = document.createElement("div"); box.className = "mode-toggle"; box.setAttribute("role", "group"); box.setAttribute("aria-label", "Theme");
+  const mk = (id, icon, label) => { const b = document.createElement("button"); b.type = "button"; b.dataset.mode = id; b.title = label + " theme"; b.setAttribute("aria-label", label + " theme"); b.innerHTML = '<span class="mt-i">' + icon + '</span><span class="mt-t">' + label + "</span>"; return b; };
+  const glider = document.createElement("i"); glider.className = "mt-glider";
+  box.append(glider, mk("regular", '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>', "Regular"), mk("video", '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>', "Video"));
+  const sync = () => { const m = bgMode(); box.dataset.mode = m; box.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === m))); };
+  box.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    try { localStorage.setItem("bgMode", b.dataset.mode); } catch (er) {}
+    sync(); initPageBackground(cfg);
+  });
+  sync(); document.body.appendChild(box);
+}
+
 function render(data) {
   const { person, navbar, hero, site } = data;
   const intro = data.intro || {};
@@ -110,6 +128,7 @@ function render(data) {
   const pageTitle = document.body.dataset.title;
   document.title = pageTitle ? pageTitle + " | " + site.title : site.title;
   initPageBackground(data.backgrounds);
+  buildModeToggle(data.backgrounds);
 
   // Navbar
   const logo = $("logo");
