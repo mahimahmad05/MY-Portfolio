@@ -410,3 +410,17 @@
 }
 .ab-paras p { opacity: .75; }
 .ab-paras p.now { opacity: 1; }
+
+/* simplify: no glowing progress bar, no highlighted words, no big gaps */
+.ab-paras::after { display: none; }
+.ab-paras p, .ab-paras p.reached, .ab-paras p.now { opacity: 1; color: var(--ink-dim); }
+.ab-paras p::before, .ab-paras p.reached::before, .ab-paras p.now::before { background: #0a1a45; border: 3px solid #2f6bff; box-shadow: none; transform: none; }
+.ab-kw { background: none; color: inherit; font-weight: inherit; padding: 0; }
+@media (min-width: 981px) {
+  .ab-card { align-items: center; }
+  .ab-left { display: block; }
+  .ab-left .ab-paras { display: block; }
+  .ab-left .ab-paras p { margin-bottom: 14px; }
+  .ab-left .ab-paras p:last-child { margin-bottom: 0; }
+  .ab-left .ab-paras p::before { top: 8px; }
+}
