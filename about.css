@@ -358,3 +358,17 @@
 @media (max-width: 980px) { .ab-badge.b1 { left: -1%; top: 0; } .ab-badge.b2 { right: -1%; bottom: -2%; } }
 @media (min-width: 981px) { .ab-badge { transform: translateZ(90px); } }
 @media (min-width: 981px) { .ab-badge.b2 { bottom: 3%; right: -12%; } }
+
+/* =================== About: signature — holo foil + live border =================== */
+.ab-deck .ab-id[data-pos="0"] { overflow: visible; }
+.ab-deck .ab-id[data-pos="0"]::after { content: ""; position: absolute; inset: -2px; border-radius: 30px; padding: 2px; pointer-events: none; z-index: 5;
+  background: conic-gradient(from var(--abp), transparent 0 55%, #2f6bff 72%, #bcd6ff 86%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: abSpin 5s linear infinite; }
+@keyframes abSpin { to { --abp: 360deg; } }
+.ab-deck .ab-id-photo::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; mix-blend-mode: soft-light; opacity: .75; transition: opacity .3s;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 40%), rgba(255,255,255,.75), transparent 42%),
+              linear-gradient(115deg, transparent 20%, rgba(90,160,255,.55) 38%, rgba(190,140,255,.45) 50%, rgba(90,255,230,.4) 62%, transparent 80%);
+  background-size: 100% 100%, 220% 220%; background-position: 0 0, calc(var(--gx, 50%) * 1.2) calc(var(--gy, 50%) * 1.2); }
+.ab-name .ab-ch, .ab-hero h1 { background-size: 200% 100%; }
+@media (prefers-reduced-motion: reduce) { .ab-deck .ab-id[data-pos="0"]::after { animation: none; } }
+@media (min-width: 981px) { .ab-badge.b1 { left: auto; right: -12%; top: 7%; } .ab-badge.b2 { right: auto; left: -12%; bottom: 8%; } }
