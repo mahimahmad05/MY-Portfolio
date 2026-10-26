@@ -122,7 +122,7 @@
       const hero = document.querySelector("#about .ab-hero");
       hero.addEventListener("pointermove", (e) => {
         const r = stage.getBoundingClientRect(), x = (e.clientX - (r.left + r.width / 2)) / (innerWidth / 2), y = (e.clientY - (r.top + r.height / 2)) / (innerHeight / 2);
-        stage.style.setProperty("--rx", (-y * 9).toFixed(2) + "deg"); stage.style.setProperty("--ry", (x * 12).toFixed(2) + "deg");
+        stage.style.setProperty("--rx", (-y * 4).toFixed(2) + "deg"); stage.style.setProperty("--ry", (x * 5).toFixed(2) + "deg");
         stage.style.setProperty("--gx", (50 + x * 40) + "%"); stage.style.setProperty("--gy", (50 + y * 40) + "%");
       });
       hero.addEventListener("pointerleave", () => { stage.style.setProperty("--rx", "0deg"); stage.style.setProperty("--ry", "0deg"); });

@@ -299,3 +299,25 @@
 .ab-deck.spread .ab-id:hover .ab-id-meta, .ab-deck.spread .ab-id:hover .ab-id-bar { opacity: 1; }
 .ab-hint { position: absolute; z-index: 3; left: 50%; bottom: -13%; transform: translateX(-50%); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: #7f98cf; white-space: nowrap; pointer-events: none; }
 .ab-hint::before { content: "✦ "; color: #6c9dff; }
+
+/* =================== About: calmer / cleaner =================== */
+.ab-float, .ab-orbit, .ab-chip { display: none !important; }
+.ab-id-top, .ab-id-bar, .ab-id-shine { display: none; }
+.ab-id::before { display: none; }
+.ab-id { padding: 10px; border-radius: 22px; border-color: rgba(120,170,255,.28); box-shadow: 0 26px 60px -24px rgba(0,0,0,.8); }
+.ab-id-photo { aspect-ratio: 1 / 1.08; border-radius: 15px; }
+.ab-id-meta { padding: 14px 8px 8px; }
+.ab-id-meta strong { font-size: 18px; }
+.ab-glow { opacity: .55; animation: none; filter: blur(46px); }
+.ab-hero::before { opacity: .22; }
+.ab-stage { transition-duration: .5s; }
+.ab-hint { bottom: -9%; opacity: .75; }
+.ab-ch { background-size: 200% 100%; }
+.go .ab-ch { animation: abRise .8s cubic-bezier(.2, .9, .2, 1) calc(var(--i) * 80ms + .1s) forwards; }
+.ab-deck.spread .ab-id:hover { box-shadow: 0 30px 60px -20px rgba(0,0,0,.8); }
+.ab-deck .ab-id[data-pos="1"] { transform: translate(14px, 12px) rotate(3.5deg) scale(.96); filter: brightness(.7); }
+.ab-deck .ab-id[data-pos="2"] { transform: translate(-12px, 22px) rotate(-3.5deg) scale(.92); filter: brightness(.5); }
+.ab-card { box-shadow: 0 30px 70px -40px rgba(0,0,0,.8); }
+.ab-card::after { display: none; }
+.ab-paras::before { opacity: .6; }
+.ab-paras p::before { box-shadow: none; }
