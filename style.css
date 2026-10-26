@@ -608,3 +608,5 @@ html, body { overflow-x: clip; }
 @media (max-width: 1280px) { .mode-toggle .mt-t { display: none; } .mode-toggle button { padding: 9px 13px; } }
 
 @media (max-width: 560px) { .mode-toggle { margin: 0 8px 0 auto; padding: 0; } .mode-toggle .mt-glider, .mode-toggle button[aria-pressed="true"] { display: none; } .mode-toggle button { width: 44px; height: 44px; padding: 0; justify-content: center; color: #fff; background: linear-gradient(135deg, #2f6bff, #1b4fd8); } }
+.mode-toggle .mt-t { display: none !important; }
+.mode-toggle button { padding: 9px 13px; }
