@@ -115,7 +115,8 @@
     });
     document.addEventListener("click", (e) => { if (!deck.contains(e.target)) spread(false); });
     stage.append(el("i", "ab-glow"), orbit, deck, ctrl);
-    (cfg.floats || ["AI / ML", "Full Stack", "DevOps"]).slice(0, 3).forEach((t, i) => stage.appendChild(el("div", "ab-float f" + (i + 1), t)));
+    ((cfg.card || {}).stats || []).slice(0, 2).forEach((st, i) => stage.appendChild(el("div", "ab-badge b" + (i + 1), "", [el("b", "", (st.num || 0) + (st.suffix || "")), el("span", "", st.label || "")])));
+    for (let i = 0; i < 7; i++) { const sp = el("i", "ab-spark"); sp.style.cssText = "left:" + (6 + Math.random() * 88) + "%;top:" + (4 + Math.random() * 90) + "%;animation-delay:" + (Math.random() * 4).toFixed(2) + "s;--s:" + (0.6 + Math.random() * 0.9).toFixed(2); stage.appendChild(sp); }
     vis.appendChild(stage); wrap.appendChild(vis);
     // 3D tilt following the mouse
     if (matchMedia("(hover: hover)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
