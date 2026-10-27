@@ -613,7 +613,6 @@ html, body { overflow-x: clip; }
 
 /* ---------- Regular theme: cards are see-through glass too ---------- */
 body:not(.has-bg) { --card-glass: .22; --card-blur: 6px; }
-body:not(.has-bg) main > section { --bg-alt: rgba(8, 20, 58, var(--card-glass)); --bg: rgba(5, 11, 31, calc(var(--card-glass) + .1)); }
 body:not(.has-bg) .skill-card, body:not(.has-bg) .service-card, body:not(.has-bg) .cert-card, body:not(.has-bg) .contact-card, body:not(.has-bg) .contact-cta,
 body:not(.has-bg) .edu-card, body:not(.has-bg) .lang-card, body:not(.has-bg) .value-card, body:not(.has-bg) .proj-card, body:not(.has-bg) .gh-stat-card,
 body:not(.has-bg) .gh-chart-card, body:not(.has-bg) .hl-frame, body:not(.has-bg) .nl-more, body:not(.has-bg) .gh-cta a, body:not(.has-bg) .page-nav {
