@@ -610,3 +610,13 @@ html, body { overflow-x: clip; }
 @media (max-width: 560px) { .mode-toggle { margin: 0 8px 0 auto; padding: 0; } .mode-toggle .mt-glider, .mode-toggle button[aria-pressed="true"] { display: none; } .mode-toggle button { width: 44px; height: 44px; padding: 0; justify-content: center; color: #fff; background: linear-gradient(135deg, #2f6bff, #1b4fd8); } }
 .mode-toggle .mt-t { display: none !important; }
 .mode-toggle button { padding: 9px 13px; }
+
+/* ---------- Regular theme: cards are see-through glass too ---------- */
+body:not(.has-bg) { --card-glass: .22; --card-blur: 6px; }
+body:not(.has-bg) main > section { --bg-alt: rgba(8, 20, 58, var(--card-glass)); --bg: rgba(5, 11, 31, calc(var(--card-glass) + .1)); }
+body:not(.has-bg) .skill-card, body:not(.has-bg) .service-card, body:not(.has-bg) .cert-card, body:not(.has-bg) .contact-card, body:not(.has-bg) .contact-cta,
+body:not(.has-bg) .edu-card, body:not(.has-bg) .lang-card, body:not(.has-bg) .value-card, body:not(.has-bg) .proj-card, body:not(.has-bg) .gh-stat-card,
+body:not(.has-bg) .gh-chart-card, body:not(.has-bg) .hl-frame, body:not(.has-bg) .nl-more, body:not(.has-bg) .gh-cta a, body:not(.has-bg) .page-nav {
+  -webkit-backdrop-filter: blur(var(--card-blur)); backdrop-filter: blur(var(--card-blur));
+}
+body:not(.has-bg) .skill-pop, body:not(.has-bg) .skill-modal-box, body:not(.has-bg) .ex-box, body:not(.has-bg) .cx-box, body:not(.has-bg) .px-box { background: #0a1a45 !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
