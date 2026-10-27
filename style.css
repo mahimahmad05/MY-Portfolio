@@ -620,3 +620,12 @@ body:not(.has-bg) .gh-chart-card, body:not(.has-bg) .hl-frame, body:not(.has-bg)
   -webkit-backdrop-filter: blur(var(--card-blur)); backdrop-filter: blur(var(--card-blur));
 }
 body:not(.has-bg) .skill-pop, body:not(.has-bg) .skill-modal-box, body:not(.has-bg) .ex-box, body:not(.has-bg) .cx-box, body:not(.has-bg) .px-box { background: #0a1a45 !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* ---------- Regular theme: clearly transparent cards ---------- */
+body:not(.has-bg) { --card-glass: .08; --card-blur: 8px; }
+body:not(.has-bg) :is(.tl-card, .ab-card, .ab-stat, .ab-info, .ab-term, .ab-paras p, .cf-card, .ct-card, .contact-card, .ec, .edu-card, .pc-panel, .gh-panel, .gh-card, .cz-card, .cz-info, .hl-frame, .nl-more, .skill-card, .proj-card, .sk-card, .pn-card, .ns-card, .nw-stat, .nw-card, .gh-stat-card, .gh-chart-card) {
+  background: rgba(10, 26, 69, .14) !important; border-color: rgba(130, 175, 255, .22) !important; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: none;
+}
+body:not(.has-bg) .ab-term-body { background: rgba(5, 11, 31, .2) !important; } body:not(.has-bg) .ab-term-head { background: rgba(10, 26, 69, .25) !important; }
+body:not(.has-bg) :is(.tl-card, .ab-card, .ab-stat, .ab-info, .ab-term, .ab-paras p, .cf-card, .ct-card, .contact-card, .ec, .edu-card, .pc-panel, .gh-panel, .gh-card, .cz-card, .cz-info, .hl-frame, .nl-more, .skill-card, .proj-card, .sk-card, .pn-card, .ns-card, .nw-stat, .nw-card, .gh-stat-card, .gh-chart-card) {
+  background: linear-gradient(145deg, rgba(110, 160, 255, .10), rgba(60, 100, 220, .04)) !important; border-color: rgba(150, 190, 255, .28) !important; }
